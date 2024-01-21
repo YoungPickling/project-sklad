@@ -1,0 +1,164 @@
+:root {
+  --s-background: #fff;
+  --s-separation: #ddd;
+  --s-emptyness: #aaa;
+  --s-highlight: #333;
+  --s-hover-element: #cef;
+}
+
+html {
+  overflow-y: auto; 
+  margin: 0;
+}
+
+body {
+  background-color: var(--s-emptyness);
+  font-family: "Inter",-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif;
+  margin: 0;
+}
+
+p {
+  -webkit-font-smoothing: antialiased;
+}
+
+.material-icons {
+  font-family: 'Material Icons';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;  /* Preferred icon size */
+  display: inline-block;
+  line-height: 1;
+  text-transform: none;
+  letter-spacing: normal;
+  word-wrap: normal;
+  white-space: nowrap;
+  direction: ltr;
+
+  /* Support for all WebKit browsers. */
+  -webkit-font-smoothing: antialiased;
+  /* Support for Safari and Chrome. */
+  text-rendering: optimizeLegibility;
+
+  /* Support for Firefox. */
+  -moz-osx-font-smoothing: grayscale;
+
+  /* Support for IE. */
+  font-feature-settings: 'liga';
+}
+
+.sklad {
+  display: flex;
+  flex-direction: row;
+  width: inherit;
+  height: inherit;
+}
+
+.sklad-left-bar {
+  /* vertical-align: top; */
+  display: block;
+  background-color: var(--s-separation);
+  width: 300px;
+  height: 100vh;
+  margin: 0;
+}
+
+.sklad-left-bar-box {
+  /* overflow-y: hidden; */
+  display: block;
+  border-radius: 10px;
+  width: calc(100% - 4px - 9px);
+  height: calc(100% - 20px - 20px);
+  background-color: var(--s-background);
+  padding: 10px 0px 10px 4px;
+  margin: 10px 0 10px 9px;
+}
+
+.sklad-left-bar-content {
+  display: block;
+  overflow-x: auto;
+  overflow-y: auto;
+  min-height: 100%;
+}
+
+.sklad-tab::-webkit-scrollbar,
+.sklad-left-bar-content::-webkit-scrollbar {
+  height: 0.6em;
+  width: 0.6em;
+}
+
+/* Track */
+.sklad-tab::-webkit-scrollbar-track,
+.sklad-left-bar-content::-webkit-scrollbar-track {
+  background: #f1f1f1; 
+}
+ 
+/* Handle */
+.sklad-tab::-webkit-scrollbar-thumb,
+.sklad-left-bar-content::-webkit-scrollbar-thumb {
+  background: #888; 
+}
+
+/* Handle on hover */
+.sklad-tab::-webkit-scrollbar-thumb:hover,
+.sklad-left-bar-content::-webkit-scrollbar-thumb:hover {
+  background: #555; 
+}
+
+.sklad-left-bar-element {
+  /* test  */
+  display: block;
+  min-width: 100%;
+  width: fit-content;
+  cursor: pointer;
+  white-space: nowrap;
+  height: 2em;
+  font-size: 0.87em;
+}
+
+.sklad-left-bar-element:hover {
+  background-color: var(--s-hover-element);
+}
+
+.sklad-left-bar-element .mat-icon {
+  display: inline-block;
+  margin-top: 0.1em;
+}
+
+.sklad-left-bar-element span {
+  user-select: none;
+  vertical-align: top;
+  display: inline-block;
+  margin: 0.4em 0.5em;
+}
+
+.sklad-left-bar-resizer {
+  /* vertical-align: top; */
+  display: block;
+  background-color: var(--s-separation);
+  cursor: e-resize;
+  min-width: 9px;
+  height: 100vh;
+}
+
+.sklad-left-bar-resizer:hover {
+  box-shadow: 1px 0 1px 0px var(--s-highlight) inset;
+}
+
+.sklad-tab-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.sklad-tab-bar {
+  background-color: var(--s-hover-element);
+  height: 1.3em;
+  width: 100%;
+}
+
+.sklad-tab {
+  overflow-y: auto;
+  width: 100%;
+  height: 100%;
+  background-color: var(--s-background);
+}
