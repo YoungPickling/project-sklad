@@ -45,7 +45,7 @@ public class UserService {
      * @return An optional containing the retrieved user, or an empty optional if not found.
      */
 
-    public Optional<User> getByUsername(String username) { return repo.findByEmail(username); }
+    public Optional<User> getByUsername(final String username) { return repo.findByEmail(username); }
 
     /**
      * Retrieves a list of all usernames.
@@ -70,7 +70,7 @@ public class UserService {
      * @return The saved user.
      */
 
-    public User saveUser(User user) { return repo.save(user); }
+    public User saveUser(final User user) { return repo.save(user); }
 
     /**
      * Deletes a user.
@@ -78,7 +78,7 @@ public class UserService {
      * @param user The user to be deleted.
      */
 
-    public void deleteUser(User user) {
+    public void deleteUser(final User user) {
         repo.delete(user);
     }
 
@@ -89,7 +89,7 @@ public class UserService {
      * @return true if a user with the email exists, false otherwise.
      */
 
-    public boolean hasEmail(String email) { return repo.existsByEmail(email); }
+    public boolean hasEmail(final String email) { return repo.existsByEmail(email); }
 
     /**
      * Checks if a user with the given username exists.
@@ -98,7 +98,7 @@ public class UserService {
      * @return true if a user with the username exists, false otherwise.
      */
 
-    public boolean hasUsername(String username) { return repo.existsByUsername(username); }
+    public boolean hasUsername(final String username) { return repo.existsByUsername(username); }
 
     /**
      * Retrieves a user by their username.
@@ -107,7 +107,7 @@ public class UserService {
      * @return An optional containing the retrieved user, or an empty optional if not found.
      */
 
-    public Optional<User> findByUsername(String username) { return repo.findByUsername(username);}
+    public Optional<User> findByUsername(final String username) { return repo.findByUsername(username);}
 
     /**
      * Saves a user.
@@ -116,5 +116,5 @@ public class UserService {
      * @return The saved user.
      */
 
-    public User save(User user) { return repo.save(user);}
+    public User save(final User user) { return repo.save(user);}
 }

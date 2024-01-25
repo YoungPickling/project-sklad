@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 @RestController
-@RequestMapping("/user/")
+@RequestMapping("/api/secret/user/")
 @RequiredArgsConstructor
 public class UserController {
     private final TokenService tokenService;

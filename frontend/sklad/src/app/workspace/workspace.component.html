@@ -1,0 +1,65 @@
+<div class="sklad">
+
+  <nav class="sklad-top-bar">
+    <div class="sklad-top-icon" (click)="toggleLeftBar()">
+      <div *ngIf="showLeftBar; then leftBarOn else leftBarOff"></div>
+      
+      <ng-template #leftBarOn>
+        <img src="/assets/lb-on-ico.svg" alt="Скрыть левую панель"/>
+      </ng-template>
+
+      <ng-template #leftBarOff>
+        <img src="/assets/lb-off-ico.svg" alt="Открыть левую панель"/>
+      </ng-template>
+    </div>
+  </nav>
+
+  <div class="sklad-workspace">
+
+    <left-bar></left-bar>
+    <div class="sklad-left-bar-resizer"></div>
+
+    <div class="sklad-tab-container">
+      <nav class="sklad-tab-bar">
+
+        <div class="sklad-tab">
+          <span>Карта</span>
+          <button>X</button>
+        </div>
+
+        <div class="sklad-tab sklad-tab-disabled">
+          <span>Таблица</span>
+          <button hidden>X</button>
+        </div>
+
+      </nav>
+      <main class="sklad-window">
+        <div class="sklad-window-table-head">
+          <div class="sklad-window-table-head-image">
+            <div class="sklad-head-image-circle">?</div>
+          </div>
+          <div class="sklad-head-contents">
+            <h1>Pavadinimas</h1>
+            <hr/>
+          </div>
+        </div>
+
+        <table mat-table>
+          <!-- <tr>
+            <th>1</th>
+            <th>2</th>
+            <th>3</th>
+          </tr>
+          <tr>
+            <td>1</td>
+            <td>2</td>
+            <td>3</td>
+          </tr> -->
+        </table>
+
+      </main>
+    </div>
+  </div>
+
+</div>
+<router-outlet></router-outlet>

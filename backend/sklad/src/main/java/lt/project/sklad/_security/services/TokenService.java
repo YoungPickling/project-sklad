@@ -28,7 +28,7 @@ public class TokenService {
      * @return An optional containing the user associated with the token, or an empty optional if not found.
      */
 
-    public Optional<User> getUserByToken(String token) {
+    public Optional<User> getUserByToken(final String token) {
         return repo.getUserByToken(token);
     }
 
@@ -39,7 +39,7 @@ public class TokenService {
      * @return An optional containing the found token, or an empty optional if not found.
      */
 
-    public Optional<Token> findByToken(String token){ return repo.findByToken(token); }
+    public Optional<Token> findByToken(final String token){ return repo.findByToken(token); }
 
     /**
      * Saves a token in the repository.
@@ -48,7 +48,7 @@ public class TokenService {
      * @return The saved token.
      */
 
-    public Token save(Token storedToken) { return repo.save(storedToken); }
+    public Token save(final Token storedToken) { return repo.save(storedToken); }
 
     /**
      * Saves a list of tokens in the repository.
@@ -57,7 +57,7 @@ public class TokenService {
      * @return The list of saved tokens.
      */
 
-    public List<Token> saveAll(List<Token> tokens) { return repo.saveAll(tokens); }
+    public List<Token> saveAll(final List<Token> tokens) { return repo.saveAll(tokens); }
 
     /**
      * Finds all valid tokens associated with a specific user.
@@ -66,5 +66,5 @@ public class TokenService {
      * @return The list of valid tokens associated with the user.
      */
 
-    public List<Token> findAllValidTokenByUser(Long id) {return repo.findAllValidTokenByUser(id); }
+    public List<Token> findAllValidTokenByUser(final Long id) {return repo.findAllValidTokenByUser(id); }
 }

@@ -22,6 +22,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 
 import static org.springframework.http.HttpStatus.FORBIDDEN;
 
@@ -53,12 +54,16 @@ public class AuthenticationService {
      * @param response The HTTP response object for setting the refresh token cookie.
      * @return An instance of {@link AuthenticationResponse} containing the access token.
      */
-    public AuthenticationResponse register(RegisterRequest request, HttpServletResponse response) {
+    public AuthenticationResponse register(
+            final RegisterRequest request,
+            final HttpServletResponse response)
+    {
         var user = User.builder()
                 .firstname(request.getFirstname())
                 .lastname(request.getLastname())
                 .username(request.getUsername())
                 .email(request.getEmail())
+                .registrationDate(LocalDateTime.now()) // System.currentTimeMillis()
                 .password( passwordEncoder.encode(request.getPassword()) )
                 .role( request.getRole() == null ? Role.USER : request.getRole() )
                 .build();
@@ -82,7 +87,10 @@ public class AuthenticationService {
      * @param response The HTTP response object for setting the refresh token cookie.
      * @return An instance of {@link AuthenticationResponse} containing the new access token.
      */
-    public AbstractResponse authenticate(AuthenticationRequest request, HttpServletResponse response) {
+    public AbstractResponse authenticate(
+            final AuthenticationRequest request,
+            final HttpServletResponse response)
+    {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getUsername(),
@@ -111,8 +119,8 @@ public class AuthenticationService {
      * @return A {@link ResponseEntity} with an instance of {@link MsgResponse} indicating a successful logout.
      */
     public ResponseEntity<AbstractResponse> logout(
-            HttpServletRequest request,
-            HttpServletResponse response
+            final HttpServletRequest request,
+            final HttpServletResponse response
     ) {
         final String authHeader = request.getHeader("Authorization");
         final String jwt;
@@ -140,7 +148,7 @@ public class AuthenticationService {
      * @param user      The user for whom the token is generated.
      * @param jwtToken  The access token generated for the user.
      */
-    private void saveUserToken(User user, String jwtToken) {
+    private void saveUserToken(final User user, final String jwtToken) {
         var token = Token.builder()
                 .user(user)
                 .token(jwtToken)
@@ -158,7 +166,7 @@ public class AuthenticationService {
      *
      * @param user  The user whose tokens are to be revoked.
      */
-    private void revokeAllUserTokens(User user) {
+    private void revokeAllUserTokens(final User user) {
         var validUserTokens = tokenService.findAllValidTokenByUser(user.getId());
         if (validUserTokens.isEmpty())
             return;
@@ -180,8 +188,8 @@ public class AuthenticationService {
      * @throws IOException If an I/O error occurs while handling the response.
      */
     public ResponseEntity<AbstractResponse> refreshTokenFromCookie(
-            HttpServletRequest request,
-            HttpServletResponse response
+            final HttpServletRequest request,
+            final HttpServletResponse response
     ) throws IOException {
         String refreshToken = jwtService.extractRefreshTokenFromCookie(request);
         if (refreshToken != null) {
@@ -207,8 +215,10 @@ public class AuthenticationService {
      * @param role        The user's role.
      * @return A {@link ResponseEntity} with the new access token and role encapsulated in an instance of {@link AuthenticationResponse}.
      */
-    private ResponseEntity<AbstractResponse> createTokensResponse(String accessToken, String role) {
+    private ResponseEntity<AbstractResponse> createTokensResponse(
+            final String accessToken,
+            final String role)
+    {
         return ResponseEntity.ok(new AuthenticationResponse(accessToken,role));
-
     }
 }

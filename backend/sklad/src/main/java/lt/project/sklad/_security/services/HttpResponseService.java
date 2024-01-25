@@ -54,7 +54,7 @@ public class HttpResponseService {
      * @author  Maksim Pavlenko
      */
     public ResponseEntity<AbstractResponse> error(
-            HttpStatus status, String msg)
+            final HttpStatus status, final String msg)
     {
         return ResponseEntity.status( status )
                 .body(new ErrorResponse( status.value() ,msg));
@@ -68,7 +68,7 @@ public class HttpResponseService {
      * @version 1.0, 11 Aug 2023
      * @author  Maksim Pavlenko
      */
-    public ResponseEntity<AbstractResponse> msg(String text) {
+    public ResponseEntity<AbstractResponse> msg(final String text) {
         return ResponseEntity.ok(new MsgResponse(text));
     }
 
@@ -80,7 +80,7 @@ public class HttpResponseService {
      * @version 1.0, 11 Aug 2023
      * @author Maksim Pavlenko
      */
-    public boolean isBearer(String authHeader) {
+    public boolean isBearer(final String authHeader) {
         return authHeader == null
                 || !authHeader.startsWith("Bearer ");
     }
@@ -105,7 +105,8 @@ public class HttpResponseService {
      * @author              Maksim Pavlenko
      */
     public ResponseEntity<AbstractResponse> regisrationValidation(
-            BindingResult bindingResult, RegisterRequest request)
+            final BindingResult bindingResult,
+            final RegisterRequest request)
     {
             var error = isRegRequestValid(bindingResult);
             if (error != null)
@@ -131,11 +132,11 @@ public class HttpResponseService {
      * @since 1.0, 13 Aug 2023
      * @author Maksim Pavlenko
      */
-    public ResponseEntity<AbstractResponse> isRegRequestValid(BindingResult bindingResult) {
+    public ResponseEntity<AbstractResponse> isRegRequestValid(final BindingResult bindingResult) {
         if (bindingResult.hasFieldErrors() || bindingResult.hasGlobalErrors()) {
-            HttpStatus status = NOT_ACCEPTABLE; // status 406
-            List<ObjectError> err = bindingResult.getAllErrors();
-            Set<String> errorResponse = new HashSet<>();
+            final HttpStatus status = NOT_ACCEPTABLE; // status 406
+            final List<ObjectError> err = bindingResult.getAllErrors();
+            final Set<String> errorResponse = new HashSet<>();
             for (ObjectError x: err)
                 errorResponse.add( x.getDefaultMessage() );
             return ResponseEntity.status( status )
@@ -154,7 +155,7 @@ public class HttpResponseService {
      * @author        Maksim Pavlenko
      */
 
-    public ResponseEntity<AbstractResponse> isEmailTaken(RegisterRequest request) {
+    public ResponseEntity<AbstractResponse> isEmailTaken(final RegisterRequest request) {
         if ( userService.hasUsername( request.getUsername() ) ) {
             HttpStatus status = BAD_REQUEST; // status 400
             return ResponseEntity.status( status )
@@ -173,7 +174,7 @@ public class HttpResponseService {
      * @author      Maksim Pavlenko
      */
 
-    public ResponseEntity<AbstractResponse> isUsernameTaken(RegisterRequest request) {
+    public ResponseEntity<AbstractResponse> isUsernameTaken(final RegisterRequest request) {
         if ( userService.hasEmail( request.getEmail() ) ) {
             HttpStatus status = BAD_REQUEST; // status 400
             return ResponseEntity.status( status )

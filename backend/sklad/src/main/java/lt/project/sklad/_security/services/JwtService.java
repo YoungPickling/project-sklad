@@ -43,7 +43,7 @@ public class JwtService {
      * @param token The JWT token from which to extract the username.
      * @return The extracted username from the token's claims.
      */
-    public String extractUsername(String token) {
+    public String extractUsername(final String token) {
         return extractClaim(token, Claims::getSubject);
     }
 
@@ -55,7 +55,7 @@ public class JwtService {
      * @param <T>           The type of the claim being extracted.
      * @return The extracted claim.
      */
-    public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
+    public <T> T extractClaim(final String token, final Function<Claims, T> claimsResolver) {
         final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
     }
@@ -66,7 +66,7 @@ public class JwtService {
      * @param userDetails The user details for which the token is generated.
      * @return The generated access token.
      */
-    public String buildAccessToken(UserDetails userDetails) {
+    public String buildAccessToken(final UserDetails userDetails) {
         return buildAccessToken(new HashMap<>(), userDetails);
     }
 
@@ -78,8 +78,8 @@ public class JwtService {
      * @return The generated access token.
      */
     public String buildAccessToken(
-            Map<String, Object> extraClaims,
-            UserDetails userDetails
+            final Map<String, Object> extraClaims,
+            final UserDetails userDetails
     ) {
         return buildToken(extraClaims, userDetails, jwtExpiration);
     }
@@ -90,8 +90,8 @@ public class JwtService {
      * @param userDetails The user details for which the refresh token is generated.
      * @return The generated refresh token.
      */
-    public String buildRefreshToken(UserDetails userDetails) {
-        Map<String, Object> claims = new HashMap<>();
+    public String buildRefreshToken(final UserDetails userDetails) {
+        final Map<String, Object> claims = new HashMap<>();
         return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(userDetails.getUsername())
@@ -110,9 +110,9 @@ public class JwtService {
      * @return The generated JWT token.
      */
     private String buildToken(
-            Map<String, Object> extraClaims,
-            UserDetails userDetails,
-            long expiration
+            final Map<String, Object> extraClaims,
+            final UserDetails userDetails,
+            final long expiration
     ) {
         return Jwts
                 .builder()
@@ -131,7 +131,10 @@ public class JwtService {
      * @param userDetails The user details for which the token is being validated.
      * @return True if the token is valid, otherwise false.
      */
-    public boolean isTokenValid(String token, UserDetails userDetails) {
+    public boolean isTokenValid(
+            final String token,
+            final UserDetails userDetails)
+    {
         final String username = extractUsername(token);
         return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
     }
@@ -142,7 +145,7 @@ public class JwtService {
      * @param token The token to be checked for expiration.
      * @return True if the token has expired, otherwise false.
      */
-    private boolean isTokenExpired(String token) {
+    private boolean isTokenExpired(final String token) {
         return extractExpiration(token).before(new Date()) ;
     }
 
@@ -152,7 +155,7 @@ public class JwtService {
      * @param token The token from which to extract the expiration date.
      * @return The expiration date of the token.
      */
-    private Date extractExpiration(String token) {
+    private Date extractExpiration(final String token) {
         return extractClaim(token, Claims::getExpiration);
     }
 
@@ -162,7 +165,7 @@ public class JwtService {
      * @param token The JWT token from which to extract the claims.
      * @return All claims contained in the token.
      */
-    private Claims extractAllClaims(String token) {
+    private Claims extractAllClaims(final String token) {
         return Jwts
                 .parserBuilder()
                 .setSigningKey(getSignInKey())
@@ -187,7 +190,7 @@ public class JwtService {
      * @param request The HTTP request containing cookies.
      * @return The value of the refresh token cookie, or null if not found.
      */
-    public String extractRefreshTokenFromCookie(HttpServletRequest request) {
+    public String extractRefreshTokenFromCookie(final HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {
             for (Cookie cookie : cookies) {
@@ -204,7 +207,7 @@ public class JwtService {
      * @param response      The HTTP response object for setting the refresh token cookie.
      * @param refreshToken The refresh token to be stored in the cookie.
      */
-    public void addRefreshTokenCookie(HttpServletResponse response, String refreshToken) {
+    public void addRefreshTokenCookie(final HttpServletResponse response, String refreshToken) {
         Cookie cookie = new Cookie("refreshToken", refreshToken);
         cookie.setPath("/");
         cookie.setHttpOnly(true); // prevents javascript from accessing the cookie
@@ -217,7 +220,7 @@ public class JwtService {
      *
      * @param response The HTTP response object to which the cookie will be added.
      */
-    public void deleteRefreshTokenCookie(HttpServletResponse response) {
+    public void deleteRefreshTokenCookie(final HttpServletResponse response) {
         Cookie refreshTokenCookie = new Cookie("refreshToken", null);
         refreshTokenCookie.setMaxAge(0); // Set the cookie's max age to 0 to delete it
         refreshTokenCookie.setPath("/"); // Set the cookie's path to match where it was set
