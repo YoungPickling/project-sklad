@@ -12,45 +12,44 @@ import lt.project.sklad._security.entities.Company;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class Location {
+public class Supplier {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "location_id")
+    @Column(name = "supplier_id")
     private Long id;
 
-    /**
-     * Company that owns this warehouse location note
-     */
-    @ManyToOne
-    @JoinColumn(name = "owner_id", nullable = false)
-    private Company owner;
-
-    @Column(name = "location_name")
-    private String locationName;
+    @Column(nullable = false)
+    private String name;
 
     /**
-     * Image for the location
+     * Image for this supplier
      */
     @OneToOne
     @JoinColumn(name = "image_id")
     private ImageData image;
 
-    @Column(name = "street_and_number")
     private String streetAndNumber;
 
-    @Column(name = "city_or_town")
     private String cityOrTown;
 
-    @Column(name = "country_code", length = 2)
+    @Column(length = 2)
     private String countryCode;
 
-    @Column(name = "postal_code")
     private String postalCode;
 
     private String phoneNumber;
 
     private String phoneNumberTwo;
 
+    private String website;
+
     @Lob
     private String description;
+
+    /**
+     * Company, which owns the supplier note
+     */
+    @ManyToOne
+    @JoinColumn(name = "owner_id", nullable = false)
+    private Company owner;
 }

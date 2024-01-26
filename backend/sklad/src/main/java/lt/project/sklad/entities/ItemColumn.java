@@ -11,21 +11,27 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "column_element")
-public class ColumnElement {
+public class ItemColumn {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "column_element_id")
+    @Column(name = "item_column_id")
     private Long id;
 
     @Column(nullable = false)
     private String name;
 
+    /**
+     * Item table this column belongs to
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "item_table_id", nullable = false)
+    private ItemTable ofTable;
+
     @Lob
     private String value;
 
-    // metadata
+    @Column(nullable = false)
+    private Integer color = 0xffffff; // metadata
 
-    @Column(name = "column_color", nullable = false)
-    private Integer columnColor;
+    private Integer width; // metadata
 }

@@ -1,13 +1,10 @@
 package lt.project.sklad.utils;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.Deflater;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
 import java.util.zip.Inflater;
 
 public class ImageUtils {
@@ -92,5 +89,28 @@ public class ImageUtils {
         } while (isFileNamePresent.test(newFileName));
 
         return newFileName;
+    }
+
+    public static byte[] convertToBlackAndWhite(byte[] imageData, int width, int height) {
+        // Create a new byte array for the black and white image
+        byte[] bwImageData = new byte[imageData.length];
+
+        // Iterate through the pixel data
+        for (int i = 0; i < imageData.length; i += 3) { // Assuming each pixel has 3 bytes (RGB)
+            // Extract RGB components of the pixel
+            int r = imageData[i] & 0xff; // Red component
+            int g = imageData[i + 1] & 0xff; // Green component
+            int b = imageData[i + 2] & 0xff; // Blue component
+
+            // Calculate grayscale value (average of RGB components)
+            int gray = (r + g + b) / 3;
+
+            // Set all RGB components to the grayscale value to convert to black and white
+            bwImageData[i] = (byte) gray; // Red
+            bwImageData[i + 1] = (byte) gray; // Green
+            bwImageData[i + 2] = (byte) gray; // Blue
+        }
+
+        return bwImageData;
     }
 }

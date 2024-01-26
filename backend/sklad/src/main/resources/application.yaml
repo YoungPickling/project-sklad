@@ -12,36 +12,18 @@ spring:
     generate-ddl: true
     hibernate:
       ddl-auto: update
-#    show-sql: true # Set to true if you want to see SQL queries in the console
     properties:
       hibernate:
-#        dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
-# If you want to enable Hibernate's second-level caching, add the following:
-#   jpa:
-#     properties:
-#       hibernate:
-#         cache:
-#           use_second_level_cache: true
-#           region.factory_class: org.hibernate.cache.jcache.JCacheRegionFactory
   output:
     ansi:
       enabled: ALWAYS
-#  spring:
-#    servlet:
-#      multipart:
-#        max-file-size: 35MB
-#        max-request-size: 35MB
-#        resolve-lazily: true
 
 # ===============================
 #            SERVER
 # ===============================
 server:
   port: 8082
-#  tomcat:
-#    max-swallow-size: 4096MB
-#    max-http-post-size: 4096MB
 
 # ===============================
 # Security

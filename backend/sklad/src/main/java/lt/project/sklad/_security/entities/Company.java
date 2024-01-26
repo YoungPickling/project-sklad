@@ -5,8 +5,12 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lt.project.sklad.entities.ImageData;
+import lt.project.sklad.entities.ItemTable;
 import lt.project.sklad.entities.Location;
+import lt.project.sklad.entities.Supplier;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -30,12 +34,49 @@ public class Company {
 
     private String name;
 
+    /**
+     * Image for the company
+     */
+    @OneToOne
+    @JoinColumn(name = "image_id")
+    private ImageData image;
+
+    /**
+     * Users that have access to company's information.
+     * Made for cases when more than one person manages
+     * one or few warehouses.
+     */
     @ManyToMany
-    @JoinTable(name = "company_user", joinColumns = @JoinColumn(name = "company_id"), inverseJoinColumns = @JoinColumn(name = "user_id"))
+    @JoinTable(
+            name = "company_user",
+            joinColumns = @JoinColumn(name = "company_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
     private Set<User> user;
 
+    /**
+     * Company's gallery
+     */
+    @OneToMany(mappedBy = "ownedByCompany")
+    private List<ImageData> imageData;
+
+    /**
+     * Warehouses of the company or it's branch
+     */
     @OneToMany(mappedBy = "owner")
     private Set<Location> locations;
+
+    /**
+     * Parts and products company uses
+     */
+    @OneToMany(mappedBy = "company")
+    private List<ItemTable> items;
+
+    /**
+     * Company's supplier list
+     */
+    @OneToMany(mappedBy = "owner")
+    private List<Supplier> suppliers;
 
     @Lob // Large Object a.k.a psql TEXT datatype
     private String description;
