@@ -3,6 +3,8 @@ package lt.project.sklad._security.services;
 import lombok.RequiredArgsConstructor;
 import lt.project.sklad._security.dto_request.RegisterRequest;
 import lt.project.sklad._security.dto_response.AbstractResponse;
+import lt.project.sklad._security.dto_response.BriefErrorResponse;
+import lt.project.sklad._security.dto_response.BriefMsgResponse;
 import lt.project.sklad._security.dto_response.ErrorResponse;
 import lt.project.sklad._security.dto_response.MsgResponse;
 import lt.project.sklad._security.dto_response.MultiErrorResponse;
@@ -54,10 +56,17 @@ public class HttpResponseService {
      * @author  Maksim Pavlenko
      */
     public ResponseEntity<AbstractResponse> error(
-            final HttpStatus status, final String msg)
-    {
+            final HttpStatus status, final String msg
+    ) {
         return ResponseEntity.status( status )
                 .body(new ErrorResponse( status.value() ,msg));
+    }
+
+    public ResponseEntity<AbstractResponse> error(
+            final HttpStatus status, final String msg, final String details
+    ) {
+        return ResponseEntity.status( status )
+                .body(new BriefErrorResponse( status.value(), msg, details));
     }
 
     /**
@@ -70,6 +79,10 @@ public class HttpResponseService {
      */
     public ResponseEntity<AbstractResponse> msg(final String text) {
         return ResponseEntity.ok(new MsgResponse(text));
+    }
+
+    public ResponseEntity<AbstractResponse> msg(final String text, final String details) {
+        return ResponseEntity.ok(new BriefMsgResponse(text, details));
     }
 
     /**

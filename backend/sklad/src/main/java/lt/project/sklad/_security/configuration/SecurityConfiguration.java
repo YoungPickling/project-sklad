@@ -15,6 +15,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import javax.sql.DataSource;
 
+import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.OPTIONS;
 
 /**
@@ -60,8 +61,16 @@ public class SecurityConfiguration {
                                 "/swagger-ui/**",
                                 "/webjars/**",
                                 "/swagger-ui.html",
-                                "/api/secret/image/**"
+                                "/api/secret/demo/**"
                         ).permitAll()
+                        .requestMatchers(
+                                "/api/secret/user/**",
+                                "/api/secret/company/**",
+                                "/api/secret/location/**",
+                                "/api/secret/supplier/**",
+                                "/api/secret/image/**",
+                                "/api/secret/item/**"
+                        ).authenticated()
                         .requestMatchers("/user/").authenticated()
 //                        .requestMatchers("/api/pizza/**").permitAll()
                         .anyRequest().permitAll()

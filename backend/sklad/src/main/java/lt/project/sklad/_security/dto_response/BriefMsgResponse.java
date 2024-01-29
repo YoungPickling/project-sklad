@@ -1,4 +1,4 @@
-package lt.project.sklad.model;
+package lt.project.sklad._security.dto_response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class BriefMsgResponse {
+public class BriefMsgResponse implements AbstractResponse {
     private String msg;
     private String details;
 }

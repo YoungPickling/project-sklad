@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lt.project.sklad.entities.Company;
 import lt.project.sklad.entities.ImageData;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -64,7 +65,7 @@ public class User implements UserDetails {
 	@JoinColumn(name = "image_id")
 	private ImageData image;
 	/**
-	 * User's company name.
+	 * Companies user belongs to.
 	 */
 	@ManyToMany(mappedBy = "user")
 	private Set<Company> company;

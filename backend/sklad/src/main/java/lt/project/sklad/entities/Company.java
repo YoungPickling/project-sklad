@@ -1,23 +1,31 @@
-package lt.project.sklad._security.entities;
+package lt.project.sklad.entities;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.Lob;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lt.project.sklad.entities.ImageData;
-import lt.project.sklad.entities.ItemTable;
-import lt.project.sklad.entities.Location;
-import lt.project.sklad.entities.Supplier;
+import lt.project.sklad._security.entities.User;
 
 import java.util.List;
 import java.util.Set;
 
 /**
- * Company entity that owns warehouses
- * that {@link User}s manage
- * @version 1.0, 15 Aug 2023
- * @since 1.0, 3 Aug 2023
+ * Company entity that {@link User}s manage.
+ * Contains notes of Users authorized to warehouse management,
+ * suppliers, tables, item images and warehouse locations.
+ * @version 1.0, 24 Jan 2024
+ * @since 1.0, 24 Jan 2024
  * @author Maksim Pavlenko
  */
 

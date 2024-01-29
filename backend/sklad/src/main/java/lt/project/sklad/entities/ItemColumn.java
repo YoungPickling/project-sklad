@@ -1,10 +1,26 @@
 package lt.project.sklad.entities;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Lob;
+import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lt.project.sklad._security.entities.User;
+
+/**
+ * Column for an {@link ItemColumn}
+ * @version 1.0, 24 Jan 2024
+ * @since 1.0, 24 Jan 2024
+ * @author Maksim Pavlenko
+ */
 
 @Data
 @Builder

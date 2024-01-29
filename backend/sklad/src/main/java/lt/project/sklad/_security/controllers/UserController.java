@@ -32,7 +32,7 @@ public class UserController {
     }
 
     @GetMapping("/role")
-    public ResponseEntity<AbstractResponse> checkRole(HttpServletRequest request) {
+    public ResponseEntity<?> checkRole(HttpServletRequest request) {
         String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
         if (responseService.isBearer(authHeader))
             return responseService.error(UNAUTHORIZED,"Bad credentials");

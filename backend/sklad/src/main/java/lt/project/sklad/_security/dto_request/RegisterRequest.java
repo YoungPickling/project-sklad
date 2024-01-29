@@ -23,7 +23,6 @@ import lt.project.sklad._security.entities.Role;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RegisterRequest {
-
     @NotBlank(message = "Firstname is required")
     @Size(min = 2, message = "Firstname is too short")
     private String firstname;
@@ -48,5 +47,6 @@ public class RegisterRequest {
     @Size(max = 64, message = "Password is too long")
     private String password;
 
+    // TODO
     private Role role;
 }

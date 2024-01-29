@@ -59,7 +59,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain
     ) throws ExpiredJwtException, ServletException, IOException {
-        if (request.getServletPath().contains("/api/v1.00/auth")) {
+        if (request.getServletPath().contains("/api/secret/")) {
             filterChain.doFilter(request, response);
             return;
         }

@@ -26,7 +26,7 @@ public class ImageUtils {
             deflater.end();
             return outputStream.toByteArray();
         } catch (Exception e) {
-            e.printStackTrace(); // Handle exception appropriately
+            e.printStackTrace();
             return new byte[0]; // Return empty byte array if compression fails
         }
     }
@@ -45,7 +45,7 @@ public class ImageUtils {
             inflater.end();
             return outputStream.toByteArray();
         } catch (Exception e) {
-            e.printStackTrace(); // Handle exception appropriately
+            e.printStackTrace();
             return new byte[0]; // Return empty byte array if decompression fails
         }
     }

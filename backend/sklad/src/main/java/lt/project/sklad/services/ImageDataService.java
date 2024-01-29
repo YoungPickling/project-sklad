@@ -1,13 +1,13 @@
 package lt.project.sklad.services;
 
-
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lt.project.sklad._security.dto_response.ErrorResponse;
 import lt.project.sklad._security.dto_response.MsgResponse;
+import lt.project.sklad._security.services.HttpResponseService;
 import lt.project.sklad.entities.ImageData;
-import lt.project.sklad.model.BriefErrorResponse;
-import lt.project.sklad.model.BriefMsgResponse;
+import lt.project.sklad._security.dto_response.BriefErrorResponse;
+import lt.project.sklad._security.dto_response.BriefMsgResponse;
 import lt.project.sklad.repositories.ImageDataRepository;
 import lt.project.sklad.utils.ImageUtils;
 import org.springframework.http.HttpStatus;
@@ -22,6 +22,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ImageDataService {
     private final ImageDataRepository imageDataRepository;
+    private final HttpResponseService responseService;
 
     @Transactional
     public ResponseEntity<?> uploadImage(final MultipartFile file) {
@@ -36,42 +37,38 @@ public class ImageDataService {
             Optional<ImageData> existingImageData = imageDataRepository.findByName(file.getOriginalFilename());
             String filename;
 
-            if (existingImageData.isPresent()) {
+            if (existingImageData.isPresent())
                 filename = ImageUtils.incrementFileName(
                         file.getOriginalFilename(),
-                        (x) -> imageDataRepository.findByName(x).isPresent()
+                        (x) -> imageDataRepository.findByName(x).isPresent() // continue incrementing file name while new name is not occupied
                 );
-            } else {
+            else
                 filename = file.getOriginalFilename();
-            }
+
+            byte[] compressedImage = ImageUtils.compressImage(file.getBytes());
 
             ImageData imageData = imageDataRepository.save(ImageData.builder()
                     .name(filename)
                     .type(file.getContentType())
-                    .imageData(ImageUtils.compressImage(file.getBytes())).build());
+                    .size(file.getSize())
+                    .imageData(compressedImage)
+                    .compressedSize(compressedImage.length)
+                    .build());
 
-            if (imageData != null) {
-                return ResponseEntity.status(HttpStatus.OK)
-                        .body(new BriefMsgResponse("File uploaded successfully", filename));
-            }
-            final HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
-            return ResponseEntity.status(status)
-                    .body(new ErrorResponse(status.value(), "Failed to save the file"));
+            if (imageData != null)
+                return responseService.msg("Error during file upload", filename);
+
+            return responseService.error(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to save the file");
 
         } catch (Exception e) {
-            final HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
-            return ResponseEntity.status(status)
-                    .body(new BriefErrorResponse(
-                            status.value(),
-                            "Error during file upload",
-                            e.getMessage()
-                    ));
+            return responseService.error(HttpStatus.INTERNAL_SERVER_ERROR, "Error during file upload", e.getMessage());
         }
     }
 
     @Transactional
     public ResponseEntity<?> downloadImage(final String fileName) {
         Optional<ImageData> optionalDbImageData = imageDataRepository.findByName(fileName);
+
         if (optionalDbImageData.isPresent()) {
             final ImageData dbImageData = optionalDbImageData.get();
             byte[] result = ImageUtils.decompressImage(dbImageData.getImageData());
@@ -79,13 +76,7 @@ public class ImageDataService {
                     .contentType(MediaType.valueOf(dbImageData.getType()))
                     .body(result);
         }
-        final HttpStatus status = HttpStatus.NOT_FOUND;
-        return ResponseEntity.status(status)
-                .body(new BriefErrorResponse(
-                        status.value(),
-                        "Image not found",
-                        fileName
-                ));
+        return responseService.error(HttpStatus.NOT_FOUND, "Image not found");
     }
 
     @Transactional
@@ -94,15 +85,45 @@ public class ImageDataService {
 
         if (optionalDbImageData.isPresent()) {
             imageDataRepository.delete(optionalDbImageData.get());
-
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body(new MsgResponse("Removed successfully"));
+            return responseService.msg("Removed successfully");
         }
-        final HttpStatus status = HttpStatus.NOT_FOUND;
-        return ResponseEntity.status(status)
-                .body(new ErrorResponse(
-                        status.value(),
-                        "Image not found"
-                ));
+        return responseService.error(HttpStatus.NOT_FOUND, "Image not found");
     }
+
+//  TODO update image service
+//    @Transactional
+//    public ResponseEntity<?> updateImage(final MultipartFile file, final String id) {
+//        try {
+//            Optional<ImageData> optionalImageData = imageDataRepository.findById(Long.parseLong(id));
+//
+//            if (optionalImageData.isPresent()) {
+//
+//                Optional<ImageData> existingImageData = imageDataRepository.findByName(file.getOriginalFilename());
+//                String filename;
+//
+//                if (existingImageData.isPresent())
+//                    filename = ImageUtils.incrementFileName(
+//                            file.getOriginalFilename(),
+//                            (x) -> imageDataRepository.findByName(x).isPresent() // continue incrementing file name while new name is not occupied
+//                    );
+//                else
+//                    filename = file.getOriginalFilename();
+//
+//
+//                ImageData image = optionalImageData.get();
+//                image.setName(filename);
+//                image.setType(file.getContentType());
+//                image.setSize(file.getSize());
+//                image.setImageData(compressedImage);
+//                image.setCompressedSize(compressedImage.length);
+//
+//            } else {
+//                return responseService.error(HttpStatus.NOT_FOUND, "File not found");
+//            }
+//
+//        } catch (NumberFormatException e) {
+//            e.printStackTrace();
+//            return responseService.error(HttpStatus.BAD_REQUEST, "id error");
+//        }
+//    }
 }

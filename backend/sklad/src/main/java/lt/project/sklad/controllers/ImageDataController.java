@@ -29,6 +29,12 @@ public class ImageDataController {
         return imageDataService.downloadImage(fileName);
     }
 
+//    TODO image put mapping
+//    @PutMapping
+//    public ResponseEntity<?> uploadImage(@RequestParam("image")MultipartFile file, @RequestParam String id) throws IOException {
+//        return imageDataService.updateImage(file, id);
+//    }
+
     @DeleteMapping("/{fileName}")
     public ResponseEntity<?> removeImage(@PathVariable String fileName){
         return imageDataService.removeImage(fileName);

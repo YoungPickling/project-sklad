@@ -38,19 +38,19 @@ public class CentralExceptionHandler extends ResponseEntityExceptionHandler {
                 request);
     }
 
-    /**
-     * Handles InputValidationException and returns a ResponseEntity with a predefined
-     * error message and status code.
-     *
-     * @param exception The InputValidationException to be handled.
-     * @param request   The WebRequest associated with the exception.
-     * @return ResponseEntity containing an ErrorModel with a specific error message and status code.
-     */
-
     @ExceptionHandler(MaxUploadSizeExceededException.class)
     public String maxUploadSizeExceeded(MaxUploadSizeExceededException e) {
         return "max file size exceeded";
     }
+
+//    /**
+//     * Handles InputValidationException and returns a ResponseEntity with a predefined
+//     * error message and status code.
+//     *
+//     * @param exception The InputValidationException to be handled.
+//     * @param request   The WebRequest associated with the exception.
+//     * @return ResponseEntity containing an ErrorModel with a specific error message and status code.
+//     */
 
 //    @ExceptionHandler(InputValidationException.class)
 //    public ResponseEntity<Object> handleInvalidInput(final Exception exception, final WebRequest request) {

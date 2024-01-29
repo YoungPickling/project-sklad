@@ -5,11 +5,18 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lt.project.sklad._security.entities.Company;
+import lt.project.sklad._security.entities.User;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+/**
+ * Item element entity. Contains metadata,
+ * supplier
+ * @version 1.0, 24 Jan 2024
+ * @since 1.0, 24 Jan 2024
+ * @author Maksim Pavlenko
+ */
 
 @Data
 @Builder
@@ -21,6 +28,8 @@ public class ItemTable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "item_table_id")
     private Long id;
+
+    private String code;
 
     @Column(nullable = false)
     private String name;
@@ -78,4 +87,7 @@ public class ItemTable {
     @OneToOne
     @JoinColumn(name = "supplier_id")
     private Supplier supplier;
+
+    @Lob
+    private String description;
 }

@@ -1,4 +1,4 @@
-package lt.project.sklad.model;
+package lt.project.sklad._security.dto_response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class BriefErrorResponse {
+public class BriefErrorResponse implements AbstractResponse {
     private Integer status; // http status code
     private String error; // short error message
     private String details; // long error message
