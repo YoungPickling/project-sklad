@@ -40,7 +40,6 @@ public class SecurityConfiguration {
      * @return The configured SecurityFilterChain instance.
      * @throws Exception If an error occurs while configuring security.
      */
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -71,8 +70,6 @@ public class SecurityConfiguration {
                                 "/api/secret/image/**",
                                 "/api/secret/item/**"
                         ).authenticated()
-                        .requestMatchers("/user/").authenticated()
-//                        .requestMatchers("/api/pizza/**").permitAll()
                         .anyRequest().permitAll()
                 )
                 .sessionManagement(session -> session

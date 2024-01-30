@@ -4,7 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lt.project.sklad.dto_request.CreateCompanyRequest;
+import lt.project.sklad.dto_request.CompanyRequest;
 import lt.project.sklad.services.CompanyService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,43 +16,45 @@ public class CompanyController {
     private final CompanyService companyService;
 
     // TODO CompanyController POST, GET, PUT, DELETE
-    @GetMapping("{id}")
-    public ResponseEntity<?> createCompany(
-            @Valid @RequestParam String id,
-            HttpServletRequest request,
-            HttpServletResponse response
-    ) {
-//        return companyService.uploadImage(file);
-        return ResponseEntity.badRequest().build();
-    }
-
     @PostMapping
     public ResponseEntity<?> createCompany(
-        @Valid @RequestBody CreateCompanyRequest requestBody,
-        HttpServletRequest request,
-        HttpServletResponse response
+            @Valid @RequestBody CompanyRequest requestBody,
+            HttpServletRequest request,
+            HttpServletResponse response
     ) {
-//        return companyService.uploadImage(file);
-        return ResponseEntity.badRequest().build();
+//        return companyService.createCompany(file);
+        return ResponseEntity.ok().build();
     }
 
-    @PutMapping
+    @GetMapping("/{id}")
+    @ResponseBody
+    public ResponseEntity<?> readCompany(
+            @PathVariable String id,
+            HttpServletRequest request,
+            HttpServletResponse response
+    ) {
+//        return companyService.readCompany(file);
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/{id}")
     public ResponseEntity<?> updateCompany(
-            @Valid @RequestParam String id,
+            @PathVariable String id,
+            @Valid @RequestBody CompanyRequest requestBody,
             HttpServletRequest request,
             HttpServletResponse response
     ) {
-//        return companyService.uploadImage(file);
-        return ResponseEntity.badRequest().build();
+//        return companyService.updateCompany(file);
+        return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping
+    @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteCompany(
-            @Valid @RequestParam String id,
+            @PathVariable String id,
             HttpServletRequest request,
             HttpServletResponse response
     ) {
-//        return companyService.uploadImage(file);
-        return ResponseEntity.badRequest().build();
+//        return companyService.deleteCompany(file);
+        return ResponseEntity.ok().build();
     }
 }

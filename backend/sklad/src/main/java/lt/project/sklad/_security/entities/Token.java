@@ -38,11 +38,12 @@ public class Token {
   /**
    * The value of the token.
    */
-  @Column(unique = true)
+  @Column(columnDefinition = "TEXT", unique = true)
   public String token;
   /**
    * The type of the token.
    */
+  @Column(columnDefinition = "TEXT")
   @Enumerated(EnumType.STRING)
   public TokenType tokenType = TokenType.BEARER;
   /**

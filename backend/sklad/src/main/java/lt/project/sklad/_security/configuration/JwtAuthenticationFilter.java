@@ -59,7 +59,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain
     ) throws ExpiredJwtException, ServletException, IOException {
-        if (request.getServletPath().contains("/api/secret/")) {
+        if (!request.getServletPath().contains("api/secret")) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -77,10 +77,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             username = jwtService.extractUsername(jwt);
         } catch (ExpiredJwtException e) {
             e.printStackTrace();
-            username = null;
+            filterChain.doFilter(request, response);
+            return;
         }
 
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+        if (SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
             var isTokenValid = tokenService.findByToken(jwt)
                     .map(t -> !t.isExpired() && !t.isRevoked())

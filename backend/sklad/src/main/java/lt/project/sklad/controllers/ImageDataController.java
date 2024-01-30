@@ -29,7 +29,14 @@ public class ImageDataController {
         return imageDataService.downloadImage(fileName);
     }
 
-//    TODO image put mapping
+    // For tech demo, has no authentication
+    @GetMapping("demo/{fileName}")
+    public ResponseEntity<?> demoGetImage(@PathVariable String fileName){
+        // TODO create an ImageData service method for tech demos
+        return imageDataService.downloadImage(fileName);
+    }
+
+//    TODO image put endpoint, mostly for profile pictures
 //    @PutMapping
 //    public ResponseEntity<?> uploadImage(@RequestParam("image")MultipartFile file, @RequestParam String id) throws IOException {
 //        return imageDataService.updateImage(file, id);
