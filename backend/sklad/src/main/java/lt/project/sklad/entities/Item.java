@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lt.project.sklad._security.entities.User;
 
 import java.util.Map;
 import java.util.Set;
@@ -23,7 +22,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class ItemTable {
+public class Item {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "item_table_id")
@@ -39,7 +38,7 @@ public class ItemTable {
      */
     @OneToOne
     @JoinColumn(name = "image_id")
-    private ImageData image;
+    private Image image;
 
     @Column(nullable = false)
     private Integer color;
@@ -55,14 +54,14 @@ public class ItemTable {
      * Parts that use this part.
      */
     @OneToMany
-    private Set<ItemTable> parents;
+    private Set<Item> parents;
 
     /**
      * Item's children classes.
      * Parts from which this one is made out of.
      */
     @OneToMany
-    private Set<ItemTable> children;
+    private Set<Item> children;
 
     /**
      * Made to keeps track of which location

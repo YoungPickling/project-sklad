@@ -47,7 +47,7 @@ public class Company {
      */
     @OneToOne
     @JoinColumn(name = "image_id")
-    private ImageData image;
+    private Image image;
 
     /**
      * Users that have access to company's information.
@@ -66,7 +66,7 @@ public class Company {
      * Company's gallery
      */
     @OneToMany(mappedBy = "ownedByCompany")
-    private List<ImageData> imageData;
+    private List<Image> imageData;
 
     /**
      * Warehouses of the company or it's branch
@@ -78,7 +78,7 @@ public class Company {
      * Parts and products company uses
      */
     @OneToMany(mappedBy = "company")
-    private List<ItemTable> items;
+    private List<Item> items;
 
     /**
      * Company's supplier list

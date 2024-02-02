@@ -40,7 +40,7 @@ public class Location {
      */
     @OneToOne
     @JoinColumn(name = "image_id")
-    private ImageData image;
+    private Image image;
 
     @Column(name = "street_and_number")
     private String streetAndNumber;

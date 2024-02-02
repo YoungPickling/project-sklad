@@ -33,7 +33,7 @@ public class Supplier {
      */
     @OneToOne
     @JoinColumn(name = "image_id")
-    private ImageData image;
+    private Image image;
 
     private String streetAndNumber;
 

@@ -9,13 +9,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.util.unit.DataSize;
 
 @SpringBootApplication
-public class WarehouseApplication /*implements CommandLineRunner*/ {
+public class WarehouseApplication  {
 	public static void main(String[] args) {
 		SpringApplication.run(WarehouseApplication.class, args);
 	}
 
-//	@Override
-//	public void run(String... args) throws Exception {
+//	@Bean
+//	CommandLineRunner commandLineRunner() {
 //
 //	}
 

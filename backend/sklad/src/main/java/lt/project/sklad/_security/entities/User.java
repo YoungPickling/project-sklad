@@ -6,7 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lt.project.sklad.entities.Company;
-import lt.project.sklad.entities.ImageData;
+import lt.project.sklad.entities.Image;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -63,7 +63,7 @@ public class User implements UserDetails {
 	 */
 	@OneToOne
 	@JoinColumn(name = "image_id")
-	private ImageData image;
+	private Image image;
 	/**
 	 * Companies user belongs to.
 	 */

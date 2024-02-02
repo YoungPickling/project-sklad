@@ -1,12 +1,7 @@
 package lt.project.sklad.controllers;
 
 import lombok.RequiredArgsConstructor;
-import lt.project.sklad._security.dto_response.MsgResponse;
-import lt.project.sklad.entities.ImageData;
-import lt.project.sklad.services.ImageDataService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
+import lt.project.sklad.services.ImageService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -16,24 +11,24 @@ import java.io.IOException;
 @RestController
 @RequestMapping("/api/secret/image")
 @RequiredArgsConstructor
-public class ImageDataController {
-    private final ImageDataService imageDataService;
+public class ImageController {
+    private final ImageService imageService;
 
     @PostMapping
     public ResponseEntity<?> uploadImage(@RequestParam("image")MultipartFile file) throws IOException {
-        return imageDataService.uploadImage(file);
+        return imageService.uploadImage(file);
     }
 
     @GetMapping("/{fileName}")
     public ResponseEntity<?> downloadImage(@PathVariable String fileName){
-        return imageDataService.downloadImage(fileName);
+        return imageService.downloadImage(fileName);
     }
 
     // For tech demo, has no authentication
     @GetMapping("demo/{fileName}")
     public ResponseEntity<?> demoGetImage(@PathVariable String fileName){
         // TODO create an ImageData service method for tech demos
-        return imageDataService.downloadImage(fileName);
+        return imageService.downloadImage(fileName);
     }
 
 //    TODO image put endpoint, mostly for profile pictures
@@ -44,6 +39,6 @@ public class ImageDataController {
 
     @DeleteMapping("/{fileName}")
     public ResponseEntity<?> removeImage(@PathVariable String fileName){
-        return imageDataService.removeImage(fileName);
+        return imageService.removeImage(fileName);
     }
 }

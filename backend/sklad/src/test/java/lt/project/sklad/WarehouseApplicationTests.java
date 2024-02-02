@@ -15,7 +15,7 @@ class WarehouseApplicationTests {
 
 	@Test
 	public void givenRawPassword_whenEncodedWithArgon2_thenMatchesEncodedPassword() {
-		String rawPassword = "Baeldung";
+		String rawPassword = "Random1977";
 		Argon2PasswordEncoder encoder = new Argon2PasswordEncoder(24, 32, 2, 24576, 2);
 		String springBouncyHash = encoder.encode(rawPassword);
 

@@ -13,7 +13,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lt.project.sklad._security.entities.User;
 
 /**
  * Column for an {@link ItemColumn}
@@ -41,7 +40,7 @@ public class ItemColumn {
      */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "item_table_id", nullable = false)
-    private ItemTable ofTable;
+    private Item ofTable;
 
     @Lob
     private String value;

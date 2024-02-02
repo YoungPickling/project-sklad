@@ -12,7 +12,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lt.project.sklad._security.entities.User;
 
 /**
  * Image and it's metadata
@@ -26,7 +25,7 @@ import lt.project.sklad._security.entities.User;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class ImageData {
+public class Image {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "image_id")
