@@ -12,6 +12,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lt.project.sklad._security.dto_request.AuthenticationRequest;
+import lt.project.sklad._security.dto_request.ChangePasswordRequest;
 import lt.project.sklad._security.dto_request.RegisterRequest;
 import lt.project.sklad._security.dto_response.*;
 import lt.project.sklad._security.services.AuthenticationService;
@@ -198,5 +199,13 @@ public class AuthenticationController {
             HttpServletResponse response
     ) {
         return authService.logout(request, response);
+    }
+
+    @PostMapping("/new-password")
+    public ResponseEntity<AbstractResponse> passwordRenewal(
+            @Valid @RequestBody ChangePasswordRequest request,
+            HttpServletResponse response
+    ) {
+        return authService.passwordRenewal(request, response);
     }
 }

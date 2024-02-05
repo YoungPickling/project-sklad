@@ -1,5 +1,6 @@
 package lt.project.sklad._security.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -58,6 +59,7 @@ public class Token {
    * The user associated with the token.
    */
   @ManyToOne(fetch = FetchType.LAZY)
+  @JsonIgnoreProperties("tokens")
   @JoinColumn(name = "user_id")
   public User user;
 }

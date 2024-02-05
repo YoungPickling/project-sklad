@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lt.project.sklad._security.dto_request.AuthenticationRequest;
+import lt.project.sklad._security.dto_request.ChangePasswordRequest;
 import lt.project.sklad._security.dto_request.RegisterRequest;
 import lt.project.sklad._security.dto_response.AbstractResponse;
 import lt.project.sklad._security.dto_response.AuthenticationResponse;
@@ -217,8 +218,15 @@ public class AuthenticationService {
      */
     private ResponseEntity<AbstractResponse> createTokensResponse(
             final String accessToken,
-            final String role)
-    {
+            final String role
+    ) {
         return ResponseEntity.ok(new AuthenticationResponse(accessToken,role));
+    }
+
+    public ResponseEntity<AbstractResponse> passwordRenewal(
+            final ChangePasswordRequest request,
+            final HttpServletResponse response
+    ) {
+        return null;
     }
 }

@@ -1,8 +1,14 @@
 package lt.project.sklad._security.services;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lt.project.sklad._security.dto_response.UserDto;
 import lt.project.sklad._security.entities.User;
 import lt.project.sklad._security.repositories.UserRepository;
+import lt.project.sklad._security.utils.MessagingUtils;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,11 +20,11 @@ import java.util.Optional;
  * @since 1.0, 3 Aug 2023
  * @author Maksim Pavlenko
  */
-
 @Service
 @RequiredArgsConstructor
 public class UserService {
-    private final UserRepository repo;
+    private final UserRepository userRepository;
+    private final TokenService tokenService;
 
     /**
      * Retrieves a user by their ID.
@@ -26,8 +32,43 @@ public class UserService {
      * @param id The ID of the user to retrieve.
      * @return An optional containing the retrieved user, or an empty optional if not found.
      */
+    public Optional<User> getById(final Long id) { return userRepository.findById(id); }
 
-    public Optional<User> getById(Long id) { return repo.findById(id); }
+    @Transactional
+    public ResponseEntity<?> getAuthenticatedUser(final HttpServletRequest request) {
+        final String authHeader = request.getHeader("Authorization");
+
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            var token = tokenService.findByToken(authHeader.substring(7))
+                    .orElse(null);
+            if (token != null) {
+                final Long userId = token.getUser().getId();
+
+//                System.out.println(userId);
+
+                Optional<User> userOptional = userRepository.findById(userId);
+
+                if(!userOptional.isPresent())
+                    return MessagingUtils.error(HttpStatus.NOT_FOUND, "User not found");
+
+                User user = userOptional.get();
+
+                return ResponseEntity.ok().body(
+                        user
+//                        new UserDto(
+//                                user.getFirstname(),
+//                                user.getLastname(),
+//                                user.getUsername(),
+//                                user.getEmail(),
+//                                user.getRole().toString(),
+//                                user.getRegistrationDate().toString()
+//                        )
+                );
+            }
+        }
+
+        return MessagingUtils.error(HttpStatus.FORBIDDEN, "Please authenticate");
+    }
 
     /**
      * Retrieves a user by their email.
@@ -35,8 +76,7 @@ public class UserService {
      * @param email The email of the user to retrieve.
      * @return An optional containing the retrieved user, or an empty optional if not found.
      */
-
-    public Optional<User> getByEmail(String email) { return repo.findByEmail(email); }
+    public Optional<User> getByEmail(final String email) { return userRepository.findByEmail(email); }
 
     /**
      * Retrieves a user by their username.
@@ -44,24 +84,21 @@ public class UserService {
      * @param username The username of the user to retrieve.
      * @return An optional containing the retrieved user, or an empty optional if not found.
      */
-
-    public Optional<User> getByUsername(final String username) { return repo.findByEmail(username); }
+    public Optional<User> getByUsername(final String username) { return userRepository.findByEmail(username); }
 
     /**
      * Retrieves a list of all usernames.
      *
      * @return The list of usernames.
      */
-
-    public List<String> getAllUsernames() { return repo.getAllUsernames(); }
+    public List<String> getAllUsernames() { return userRepository.getAllUsernames(); }
 
     /**
      * Retrieves a list of all users.
      *
      * @return The list of users.
      */
-
-    public List<User> getAll() { return repo.findAll(); }
+    public List<User> getAll() { return userRepository.findAll(); }
 
     /**
      * Saves a user.
@@ -69,17 +106,15 @@ public class UserService {
      * @param user The user to be saved.
      * @return The saved user.
      */
-
-    public User saveUser(final User user) { return repo.save(user); }
+    public User saveUser(final User user) { return userRepository.save(user); }
 
     /**
      * Deletes a user.
      *
      * @param user The user to be deleted.
      */
-
     public void deleteUser(final User user) {
-        repo.delete(user);
+        userRepository.delete(user);
     }
 
     /**
@@ -88,8 +123,7 @@ public class UserService {
      * @param email The email to check.
      * @return true if a user with the email exists, false otherwise.
      */
-
-    public boolean hasEmail(final String email) { return repo.existsByEmail(email); }
+    public boolean hasEmail(final String email) { return userRepository.existsByEmail(email); }
 
     /**
      * Checks if a user with the given username exists.
@@ -97,8 +131,7 @@ public class UserService {
      * @param username The username to check.
      * @return true if a user with the username exists, false otherwise.
      */
-
-    public boolean hasUsername(final String username) { return repo.existsByUsername(username); }
+    public boolean hasUsername(final String username) { return userRepository.existsByUsername(username); }
 
     /**
      * Retrieves a user by their username.
@@ -106,8 +139,7 @@ public class UserService {
      * @param username The username of the user to retrieve.
      * @return An optional containing the retrieved user, or an empty optional if not found.
      */
-
-    public Optional<User> findByUsername(final String username) { return repo.findByUsername(username);}
+    public Optional<User> findByUsername(final String username) { return userRepository.findByUsername(username);}
 
     /**
      * Saves a user.
@@ -115,6 +147,5 @@ public class UserService {
      * @param user The user to be saved.
      * @return The saved user.
      */
-
-    public User save(final User user) { return repo.save(user);}
+    public User save(final User user) { return userRepository.save(user);}
 }

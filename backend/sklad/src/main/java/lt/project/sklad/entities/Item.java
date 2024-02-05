@@ -1,5 +1,7 @@
 package lt.project.sklad.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -37,6 +39,7 @@ public class Item {
      * Image for this item
      */
     @OneToOne
+    @JsonIgnoreProperties("ownedByCompany")
     @JoinColumn(name = "image_id")
     private Image image;
 
@@ -46,6 +49,7 @@ public class Item {
     /**
      * Additional columns of the Item
      */
+    @JsonIgnoreProperties("ofTable")
     @OneToMany(mappedBy = "ofTable", cascade = CascadeType.ALL, orphanRemoval = true) /*, */
     private Set<ItemColumn> columns;
 
@@ -53,6 +57,7 @@ public class Item {
      * Item's parent classes.
      * Parts that use this part.
      */
+    @JsonIgnore
     @OneToMany
     private Set<Item> parents;
 
@@ -60,6 +65,7 @@ public class Item {
      * Item's children classes.
      * Parts from which this one is made out of.
      */
+    @JsonIgnore
     @OneToMany
     private Set<Item> children;
 
@@ -77,6 +83,7 @@ public class Item {
      * Part of the company's item gallery
      */
     @ManyToOne
+    @JsonIgnoreProperties("items")
     @JoinColumn(name = "company_id", nullable = false)
     private Company company;
 
@@ -84,6 +91,7 @@ public class Item {
      * Supplier of this item
      */
     @OneToOne
+    @JsonIgnoreProperties("owner")
     @JoinColumn(name = "supplier_id")
     private Supplier supplier;
 

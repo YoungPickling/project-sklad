@@ -4,6 +4,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lt.project.sklad._security.dto_response.ErrorResponse;
 import lt.project.sklad._security.services.HttpResponseService;
+import lt.project.sklad._security.utils.MessagingUtils;
 import lt.project.sklad.entities.Image;
 import lt.project.sklad.repositories.ImageRepository;
 import lt.project.sklad.utils.ImageUtils;
@@ -20,24 +21,12 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ImageService {
     private final ImageRepository imageRepository;
-    private final HttpResponseService responseService;
 
     @Transactional
     public ResponseEntity<?> uploadImage(final MultipartFile file) {
         try {
-//            if(!file.isEmpty()) {
-//                System.out.println(file);
-//                System.out.println(file.getOriginalFilename());
-//                System.out.println(file.getResource());
-//                System.out.println(Arrays.toString(file.getBytes()));
-//                System.out.println(file.getSize());
-//                System.out.println(file.getContentType());
-//                System.out.println(file.getName());
-//
-//            }
-
             if (file.isEmpty())
-                return responseService.error(HttpStatus.BAD_REQUEST, "Uploaded file is empty");
+                return MessagingUtils.error(HttpStatus.BAD_REQUEST, "Uploaded file is empty");
 
             // Check if an ImageData with the same name already exists
             Optional<Image> existingImageData = imageRepository.findByName(file.getOriginalFilename());
@@ -62,38 +51,38 @@ public class ImageService {
                     .build());
 
             if (image != null)
-                return responseService.msg("Upload successful", filename);
-
-            return responseService.error(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to save the file");
+                return MessagingUtils.msg("Upload successful", filename);
+            else
+                return MessagingUtils.error(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to save the file");
 
         } catch (Exception e) {
-            return responseService.error(HttpStatus.INTERNAL_SERVER_ERROR, "Error during file upload", e.getMessage());
+            return MessagingUtils.error(HttpStatus.INTERNAL_SERVER_ERROR, "Error during file upload", e.getMessage());
         }
     }
 
     @Transactional
     public ResponseEntity<?> downloadImage(final String fileName) {
-        Optional<Image> optionalDbImageData = imageRepository.findByName(fileName);
+        Optional<Image> optionalImageData = imageRepository.findByName(fileName);
 
-        if (optionalDbImageData.isPresent()) {
-            final Image dbImage = optionalDbImageData.get();
+        if (optionalImageData.isPresent()) {
+            final Image dbImage = optionalImageData.get();
             byte[] result = ImageUtils.decompressImage(dbImage.getImageData());
             return ResponseEntity.status(HttpStatus.OK)
                     .contentType(MediaType.valueOf(dbImage.getType()))
                     .body(result);
         }
-        return responseService.error(HttpStatus.NOT_FOUND, "Image not found");
+        return MessagingUtils.error(HttpStatus.NOT_FOUND, "Image not found");
     }
 
     @Transactional
     public ResponseEntity<?> removeImage(final String fileName) {
-        Optional<Image> optionalDbImageData = imageRepository.findByName(fileName);
+        Optional<Image> optionalImageData = imageRepository.findByName(fileName);
 
-        if (optionalDbImageData.isPresent()) {
-            imageRepository.delete(optionalDbImageData.get());
-            return responseService.msg("Removed successfully");
+        if (optionalImageData.isPresent()) {
+            imageRepository.delete(optionalImageData.get());
+            return MessagingUtils.msg("Removed successfully");
         }
-        return responseService.error(HttpStatus.NOT_FOUND, "Image not found");
+        return MessagingUtils.error(HttpStatus.NOT_FOUND, "Image not found");
     }
 
 //  TODO update image service

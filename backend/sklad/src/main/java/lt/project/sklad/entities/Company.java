@@ -1,5 +1,7 @@
 package lt.project.sklad.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -46,6 +48,7 @@ public class Company {
      * Image for the company
      */
     @OneToOne
+    @JsonIgnoreProperties("ownedByCompany")
     @JoinColumn(name = "image_id")
     private Image image;
 
@@ -55,6 +58,7 @@ public class Company {
      * one or few warehouses.
      */
     @ManyToMany
+    @JsonIgnoreProperties("company")
     @JoinTable(
             name = "company_user",
             joinColumns = @JoinColumn(name = "company_id"),
@@ -65,24 +69,28 @@ public class Company {
     /**
      * Company's gallery
      */
+    @JsonIgnoreProperties("ownedByCompany")
     @OneToMany(mappedBy = "ownedByCompany")
     private List<Image> imageData;
 
     /**
      * Warehouses of the company or it's branch
      */
+    @JsonIgnoreProperties("owner")
     @OneToMany(mappedBy = "owner")
     private Set<Location> locations;
 
     /**
      * Parts and products company uses
      */
+    @JsonIgnoreProperties("company")
     @OneToMany(mappedBy = "company")
     private List<Item> items;
 
     /**
      * Company's supplier list
      */
+    @JsonIgnoreProperties("owner")
     @OneToMany(mappedBy = "owner")
     private List<Supplier> suppliers;
 

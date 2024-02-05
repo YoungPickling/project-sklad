@@ -1,5 +1,6 @@
 package lt.project.sklad.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -48,6 +49,7 @@ public class Image {
      * Made to display everything in
      * the company's gallery.
      */
+    @JsonIgnoreProperties({"imageData","image"})
     @ManyToOne
     @JoinColumn(name = "company_id")
     private Company ownedByCompany;

@@ -1,34 +1,42 @@
 package lt.project.sklad.services;
 
-import lt.project.sklad.services.ImageService;
-import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.context.SpringBootTest;
+import lt.project.sklad._security.dto_response.BriefMsgResponse;
+import lt.project.sklad.entities.Image;
+import lt.project.sklad.repositories.ImageRepository;
+import lt.project.sklad.utils.ImageUtils;
+import org.junit.jupiter.api.*;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.*;
 
-@DataJpaTest
-@Testcontainers
+//@DataJpaTest
+//@Testcontainers
+//@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class ImageServiceTests {
-    @Container
-    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16.0");
-    @Autowired
-    ImageService imageService;
+    @InjectMocks
+    private ImageService imageService;
+
+    // Mocking all ImageService's imports, see the class to find out more
+    @Mock
+    private ImageRepository imageRepository;
+
+    // Arrange
+    final String IMAGE_NAME = "tiny.jpg";
+
+    final byte[] PICTURE = new byte[]{-1,-40,-1,-32,0,16,74,70,73,70,0,1,1,1,0,72,0,72,0,0,-1,-37,0,67,0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-62,0,11,8,0,1,0,1,1,1,17,0,-1,-60,0,20,16,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,-1,-38,0,8,1,1,0,1,63,16};
 
     final MultipartFile TEST_FILE = new MultipartFile() {
         @Override
@@ -38,7 +46,7 @@ public class ImageServiceTests {
 
         @Override
         public String getOriginalFilename() {
-            return "tiny.jpg";
+            return IMAGE_NAME;
         }
 
         @Override
@@ -58,7 +66,7 @@ public class ImageServiceTests {
 
         @Override
         public byte[] getBytes() throws IOException {
-            return new byte[]{-1,-40,-1,-32,0,16,74,70,73,70,0,1,1,1,0,72,0,72,0,0,-1,-37,0,67,0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-62,0,11,8,0,1,0,1,1,1,17,0,-1,-60,0,20,16,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,-1,-38,0,8,1,1,0,1,63,16};
+            return PICTURE;
         }
 
         @Override
@@ -72,53 +80,75 @@ public class ImageServiceTests {
         }
     };
 
-    String imageName = "tiny.jpg";
+    final byte[] compressedImage = ImageUtils.compressImage(PICTURE);
+
+    final Image image = Image.builder()
+            .name(IMAGE_NAME)
+            .type("image/jpeg")
+            .size((long) PICTURE.length)
+            .imageData(compressedImage)
+            .compressedSize(compressedImage.length)
+            .build();
+
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
+    }
 
     @Test
     @Order(0)
-    void checkForNullReference_CompanyService() {
+    void checkForNullReference_ImageService() {
         assertNotNull(imageService);
     }
 
     @Test
     @Order(1)
     void checkForImageUpload() {
+        // Arrange
+
+        when(imageRepository.save(Mockito.any(Image.class))).thenAnswer(i -> i.getArguments()[0]);
+        when(imageRepository.findByName("tiny.jpg")).thenReturn(Optional.empty());
+        // Act
         ResponseEntity<?> response = imageService.uploadImage(TEST_FILE);
 
+        // Assert
+        verify(imageRepository).save(image);
         assertEquals(
                 200,
                 response.getStatusCode().value(),
                 "Test failed to upload image in assertion"
         );
+        assertTrue(response.getBody() instanceof BriefMsgResponse);
     }
 
     @Test
     @Order(2)
     void checkForImageDownload() {
-        try {
-            System.out.println(this.imageName);
-            ResponseEntity<?> response = imageService.downloadImage(this.imageName);
+        // Arrange
+        when(imageRepository.findByName("tiny.jpg")).thenReturn(Optional.of(image));
+        // Act
+        ResponseEntity<?> response = imageService.downloadImage(IMAGE_NAME);
 
-            Object body = response.getBody();
-            if(body instanceof byte[]) {
-                assertArrayEquals(
-                        TEST_FILE.getBytes(),
-                        (byte[]) body
-                );
-            } else {
-                fail("Error in ready file");
-            }
-
-        } catch (IOException e) {
-            fail("IOException occurred during assertion: " + e.getMessage());
-        }
+        // Assert
+        Object body = response.getBody();
+        if(body instanceof byte[])
+            assertArrayEquals(
+                    PICTURE,
+                    (byte[]) body
+            );
+        else
+            assertTrue(false, "body is not instance of byte[]");
     }
 
     @Test
     @Order(3)
     void checkIfImageWasRemoved() {
-        ResponseEntity<?> response = imageService.removeImage(this.imageName);
+        // Arrange
+        when(imageRepository.findByName("tiny.jpg")).thenReturn(Optional.of(image));
+        // Act
+        ResponseEntity<?> response = imageService.removeImage(IMAGE_NAME);
 
+        // Assert
         assertEquals(
                 200,
                 response.getStatusCode().value(),

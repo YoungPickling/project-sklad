@@ -1,5 +1,6 @@
 package lt.project.sklad.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -57,6 +58,7 @@ public class Supplier {
      * Company, which owns the supplier note
      */
     @ManyToOne
+    @JsonIgnoreProperties("suppliers")
     @JoinColumn(name = "owner_id", nullable = false)
     private Company owner;
 }

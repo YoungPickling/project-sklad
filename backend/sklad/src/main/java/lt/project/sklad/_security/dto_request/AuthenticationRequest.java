@@ -15,7 +15,6 @@ import lombok.NoArgsConstructor;
  * @since 1.0, 4 Aug 2023
  * @author Maksim Pavlenko
  */
-
 @Data
 @Builder
 @AllArgsConstructor

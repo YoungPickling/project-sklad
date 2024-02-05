@@ -1,5 +1,9 @@
 package lt.project.sklad._security.entities;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -35,6 +39,12 @@ import java.util.Set;
 @AllArgsConstructor
 @Entity
 @Table(name = "_user")
+// This annotation below is required for proper Json mapping.
+// The User class implements UserDetails and jackson-annotations
+// library is trying to serialize the Hibernate proxy object
+// associated with the User entity but fails and throws an error.
+// This annotation below fixes the bug.
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class User implements UserDetails {
 	/**
 	 * The unique identifier for the user.
@@ -61,13 +71,15 @@ public class User implements UserDetails {
 	/**
 	 * Avatar image for the user.
 	 */
-	@OneToOne
+	@JsonIgnoreProperties({"id", "size", "compressedSize", "ownedByCompany","imageData"})
+	@OneToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "image_id")
 	private Image image;
 	/**
 	 * Companies user belongs to.
 	 */
-	@ManyToMany(mappedBy = "user")
+	@ManyToMany(mappedBy = "user", fetch = FetchType.EAGER)
+	@JsonIgnoreProperties("user")
 	private Set<Company> company;
 	/**
 	 * The email address of the user.
@@ -77,6 +89,7 @@ public class User implements UserDetails {
 	/**
 	 * The hashed password of the user.
 	 */
+	@JsonIgnore
 	@Column(nullable = false)
 	private String password;
 	/**
@@ -88,11 +101,15 @@ public class User implements UserDetails {
 	/**
 	 * The list of tokens associated with the user.
 	 */
-	@OneToMany(mappedBy = "user")
+//	@JsonIgnoreProperties("user")
+	@JsonIgnore
+	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
 	private List<Token> tokens;
 	/**
 	 * registration date.
 	 */
+	@JsonProperty("reg_data")
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd' 'HH:mm:ss")
 	@Column(name="reg_date",nullable = false, columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
 	private LocalDateTime registrationDate;
 	/**
@@ -100,6 +117,7 @@ public class User implements UserDetails {
 	 * to the user's role.
 	 * @return the collection of granted authorities
 	 */
+	@JsonIgnore
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		return role.getAuthorities();
@@ -125,6 +143,7 @@ public class User implements UserDetails {
 	 * @return {@code true} if the account is non-expired, otherwise {@code false}
 	 */
 	@Override
+	@JsonIgnore
 	public boolean isAccountNonExpired() {
 		return true;
 	}
@@ -134,6 +153,7 @@ public class User implements UserDetails {
 	 * otherwise {@code false}
 	 */
 	@Override
+	@JsonIgnore
 	public boolean isAccountNonLocked() {
 		return true;
 	}
@@ -142,6 +162,8 @@ public class User implements UserDetails {
 	 * @return {@code true} if the credentials are non-expired,
 	 * otherwise {@code false}
 	 */
+//	@JsonProperty("credentials_non_expired")
+	@JsonIgnore
 	@Override
 	public boolean isCredentialsNonExpired() {
 		return true;
@@ -151,6 +173,7 @@ public class User implements UserDetails {
 	 * @return {@code true} if the account is enabled,
 	 * otherwise {@code false}
 	 */
+	@JsonIgnore
 	@Override
 	public boolean isEnabled() {
 		return true;

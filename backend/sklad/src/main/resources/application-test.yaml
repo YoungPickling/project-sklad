@@ -3,7 +3,7 @@
 # ===============================
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/sklad
+    url: jdbc:postgresql://localhost:5432/sklad_tests
     username: postgres
     password: maxim23
     driver-class-name: org.postgresql.Driver
@@ -11,8 +11,8 @@ spring:
     open-in-view: false
     generate-ddl: true
     hibernate:
-      ddl-auto: update
-#      ddl-auto: create-drop
+      ddl-auto: create-drop
+#      ddl-auto: update
     properties:
       hibernate:
         format_sql: true
