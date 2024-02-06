@@ -32,7 +32,6 @@ import java.util.Set;
  * @since 1.0, 3 Aug 2023
  * @author Maksim Pavlenko
  */
-
 @Data
 @Builder
 @NoArgsConstructor

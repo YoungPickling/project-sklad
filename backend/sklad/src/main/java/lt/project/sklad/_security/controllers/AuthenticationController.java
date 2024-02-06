@@ -41,7 +41,6 @@ import static org.springframework.http.HttpStatus.CREATED;
  *   <li>{@link #refreshToken   /api/v1/auth/refresh-token }</li>
  *   <li>{@link #logout         /api/v1/auth/logout        }</li>
  * </ul>
- *
  * @version 1.0, 15 Aug 2023
  * @since 1.0, 4 Aug 2023
  * @author Maksim Pavlenko
@@ -123,8 +122,8 @@ public class AuthenticationController {
     @PostMapping("/login")
     public ResponseEntity<AbstractResponse> authenticate(
             @RequestBody AuthenticationRequest request,
-            HttpServletResponse response)
-    {
+            HttpServletResponse response
+    ) {
         return ResponseEntity.ok(authService.authenticate(request, response));
     }
 
