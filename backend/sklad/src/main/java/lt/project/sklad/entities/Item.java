@@ -82,7 +82,7 @@ public class Item {
      * Company this item belongs to.
      * Part of the company's item gallery
      */
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JsonIgnoreProperties("items")
     @JoinColumn(name = "company_id", nullable = false)
     private Company company;

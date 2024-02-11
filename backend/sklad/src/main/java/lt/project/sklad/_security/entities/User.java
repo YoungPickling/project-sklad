@@ -45,68 +45,56 @@ import java.util.Set;
 // This annotation below fixes the bug.
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class User implements UserDetails {
-	/**
-	 * The unique identifier for the user.
-	 */
+	/** The unique identifier for the user. */
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "user_id", nullable = false, unique = true)
 	private Long id;
-	/**
-	 * The first name of the user.
-	 */
+
+	/** The first name of the user. */
 	@Column(nullable = false)
 	private String firstname;
-	/**
-	 * The last name of the user.
-	 */
+
+	/** The last name of the user. */
 	@Column(nullable = false)
 	private String lastname;
-	/**
-	 * The username of the user.
-	 */
+
+	/** The username of the user. */
 	@Column(nullable = false)
 	private String username;
-	/**
-	 * Avatar image for the user.
-	 */
+
+	/** Avatar image for the user. */
 	@JsonIgnoreProperties({"id", "size", "compressedSize", "ownedByCompany","imageData"})
 	@OneToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "image_id")
 	private Image image;
-	/**
-	 * Companies user belongs to.
-	 */
+
+	/** Companies user belongs to. */
 	@ManyToMany(mappedBy = "user", fetch = FetchType.EAGER)
 	@JsonIgnoreProperties("user")
 	private Set<Company> company;
-	/**
-	 * The email address of the user.
-	 */
+
+	/** The email address of the user. */
 	@Column(nullable = false)
 	private String email;
-	/**
-	 * The hashed password of the user.
-	 */
+
+	/** The hashed password of the user. */
 	@JsonIgnore
 	@Column(nullable = false)
 	private String password;
-	/**
-	 * The role of the user within the application.
-	 */
+
+	/** The role of the user within the application. */
 	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
 	private Role role;
-	/**
-	 * The list of tokens associated with the user.
-	 */
+
+	/** The list of tokens associated with the user. */
 //	@JsonIgnoreProperties("user")
 	@JsonIgnore
 	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
 	private List<Token> tokens;
-	/**
-	 * registration date.
-	 */
+
+	/** registration date. */
 	@JsonProperty("reg_data")
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd' 'HH:mm:ss")
 	@Column(name="reg_date",nullable = false, columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
@@ -149,8 +137,7 @@ public class User implements UserDetails {
 	/**
 	 * Checks whether the user's account is non-locked.
 	 * @return {@code true} if the account is non-locked,
-	 * otherwise {@code false}
-	 */
+	 * otherwise {@code false} */
 	@Override
 	@JsonIgnore
 	public boolean isAccountNonLocked() {

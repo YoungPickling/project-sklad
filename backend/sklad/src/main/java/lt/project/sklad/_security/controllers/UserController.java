@@ -23,6 +23,13 @@ public class UserController {
     private final UserService userService;
     private final TokenService tokenService;
 
+    @GetMapping("/me")
+    public ResponseEntity<?> getAuthenticatedUser(
+            final HttpServletRequest request
+    ) {
+        return userService.getAuthenticatedUser(request);
+    }
+
     @GetMapping("/hello")
     public String sayHello() {
         return "Labas!";
@@ -45,13 +52,6 @@ public class UserController {
 
         String role = user.getRole().name();
         return MessagingUtils.msg(role) ;
-    }
-
-    @GetMapping("/me")
-    public ResponseEntity<?> getAuthenticatedUser(
-            final HttpServletRequest request
-    ) {
-        return userService.getAuthenticatedUser(request);
     }
 
     @GetMapping("/users/{id}")

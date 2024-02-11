@@ -11,7 +11,6 @@ import lt.project.sklad._security.services.TokenService;
 import lt.project.sklad._security.utils.MessagingUtils;
 import lt.project.sklad.entities.Company;
 import lt.project.sklad.repositories.CompanyRepository;
-import lt.project.sklad.utils.UserUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,7 +35,7 @@ public class CompanyService {
     // TODO CompanyService methods
 
     @Transactional
-    public ResponseEntity<?> createCompany(
+        public ResponseEntity<?> createCompany(
             final Company company,
             final HttpServletRequest request
     ) {
@@ -51,31 +50,51 @@ public class CompanyService {
 //        if (token == null)
 //            return MessagingUtils.error(UNAUTHORIZED,"Token not found");
 //
-//        final Long userId = token.getUser().getId();
-        User user;
+//        final Company result = companyRepository.save(
+//                Company.builder()
+//                        .name(company.getName())
+//                        .description(company.getDescription())
+//                        .user(Set.of(token.getUser()))
+//                        .build()
+//        );
+//
+//        if(result == null)
+//            return MessagingUtils.error(HttpStatus.BAD_REQUEST, "Failed to save the Company");
+//
+//        return ResponseEntity.ok().body(result);
+        final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
 
-        try {
-            user = UserUtils.getGuthenticatedId(tokenService, request);
-        } catch (NullPointerException e) {
-            if (e.getMessage().equals("1"))
-                return MessagingUtils.error(UNAUTHORIZED,"Bad credentials");
-            else if (e.getMessage().equals("2"))
-                return MessagingUtils.error(UNAUTHORIZED,"Token not found");
-            else
-                return MessagingUtils.error(INTERNAL_SERVER_ERROR,"Something went wrong");
-        }
+        if (MessagingUtils.isBearer(authHeader))
+            return MessagingUtils.error(UNAUTHORIZED, "Bad credentials");
 
-        final Company result = companyRepository.save(
-                Company.builder()
-                        .name(company.getName())
-                        .description(company.getDescription())
-                        .user(Set.of(user))
-                        .build()
-        );
+        final String jwt = authHeader.substring(7);
+        final Token token = tokenService.findByToken(jwt).orElse(null);
+
+        if (token == null)
+            return MessagingUtils.error(UNAUTHORIZED, "Token not found");
+
+        final User user = token.getUser();
+
+        // Associate the company with the user
+        company.setUser(Set.of(user));
+
+        // Save the company
+        final Company result = companyRepository.save(company);
 
         if(result == null)
             return MessagingUtils.error(HttpStatus.BAD_REQUEST, "Failed to save the Company");
 
+        // Update the user's company set
+//        user.getCompany().add(result);
+        System.out.println(6);
+        // Save the user
+        final User savedUser = userRepository.save(user);
+
+        System.out.println(7);
+        if(savedUser == null)
+            return MessagingUtils.error(HttpStatus.BAD_REQUEST, "Failed to save the User");
+
+        System.out.println(8);
         return ResponseEntity.ok().body(result);
     }
 
@@ -87,13 +106,13 @@ public class CompanyService {
         final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
 
         if (MessagingUtils.isBearer(authHeader))
-            return MessagingUtils.error(UNAUTHORIZED,"Bad credentials");
+            return MessagingUtils.error(UNAUTHORIZED, "Bad credentials");
 
         final String jwt = authHeader.substring(7);
         final Token token = tokenService.findByToken(jwt).orElse(null);
 
         if (token == null)
-            return MessagingUtils.error(UNAUTHORIZED,"Token not found");
+            return MessagingUtils.error(UNAUTHORIZED, "Token not found");
 
         final Long userId = token.getUser().getId();
 
