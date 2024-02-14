@@ -1,7 +1,7 @@
 package lt.project.sklad;
 
 import jakarta.servlet.MultipartConfigElement;
-import org.springframework.boot.CommandLineRunner;
+import lt.project.sklad._security.utils.MessagingUtils;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.MultipartConfigFactory;
@@ -18,6 +18,12 @@ public class WarehouseApplication  {
 //	CommandLineRunner commandLineRunner() {
 //
 //	}
+
+//	@Bean
+//	public MessagingUtils messagingUtils() {
+//		return new MessagingUtils();
+//	}
+
 
 	//Fixes maximum upload size for images  and files
 	@Bean

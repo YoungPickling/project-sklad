@@ -93,11 +93,13 @@ public class CompanyService {
         return ResponseEntity.ok().body(result);
     }
 
-    @Transactional
     public ResponseEntity<?> getCompanyById(
             final Long id,
             final HttpServletRequest request
     ) {
+        if (id == null)
+            return ResponseEntity.badRequest().body("Company ID cannot be null");
+
         final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
 
         if (MessagingUtils.isBearer(authHeader))
@@ -109,16 +111,44 @@ public class CompanyService {
         if (token == null)
             return MessagingUtils.error(UNAUTHORIZED, "Token not found");
 
-        final Long userId = token.getUser().getId();
-
-        if (id == null)
-            return ResponseEntity.badRequest().body("ID cannot be null");
-
-        Company company = companyRepository.findById(id).orElse(null);
+        final Company company = companyRepository.findByIdAndUserId(id, token.getUser().getId()).orElse(null);
 
         if(company == null)
             return MessagingUtils.error(HttpStatus.BAD_REQUEST, "Failed to save the Company");
 
-        return ResponseEntity.ok().body(null);
+        return ResponseEntity.ok().body(company);
+    }
+
+    @Transactional
+    public ResponseEntity<?> deleteCompany(
+            final Long id,
+            final HttpServletRequest request
+    ) {
+        if (id == null)
+            return ResponseEntity.badRequest().body("Company ID cannot be null");
+
+        final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+
+        if (MessagingUtils.isBearer(authHeader))
+            return MessagingUtils.error(UNAUTHORIZED, "Bad credentials");
+
+        final String jwt = authHeader.substring(7);
+        final Token token = tokenService.findByToken(jwt).orElse(null);
+
+        if (token == null)
+            return MessagingUtils.error(UNAUTHORIZED, "Token not found");
+
+//        companyRepository.deleteByIdAndUserId(id, token.getUser().getId());
+
+        Company company = companyRepository.findByIdAndUserId(id, token.getUser().getId()).orElse(null);
+
+        if (company == null)
+            return ResponseEntity.notFound().build();
+
+        // Perform any necessary cleanup or validation before deleting the company
+
+        companyRepository.delete(company);
+
+        return ResponseEntity.ok().build();
     }
 }

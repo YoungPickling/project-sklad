@@ -7,12 +7,15 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lt.project.sklad._security.entities.User;
 import lt.project.sklad._security.services.JwtService;
 import lt.project.sklad._security.services.TokenService;
+import lt.project.sklad._security.services.UserService;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -82,10 +85,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         if (SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+
+            UserDetails userDetails = null;
+            try {
+                userDetails = userDetailsService.loadUserByUsername(username);
+            } catch (UsernameNotFoundException e) {
+                filterChain.doFilter(request, response);
+                return;
+            }
+
             var isTokenValid = tokenService.findByToken(jwt)
                     .map(t -> !t.isExpired() && !t.isRevoked())
                     .orElse(false);
+
             if (jwtService.isTokenValid(jwt, userDetails) && isTokenValid) {
                 var authToken = new UsernamePasswordAuthenticationToken(
                         userDetails,

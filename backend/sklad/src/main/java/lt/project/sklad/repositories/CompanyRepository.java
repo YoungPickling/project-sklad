@@ -17,5 +17,9 @@ import java.util.Optional;
 @Repository
 public interface CompanyRepository extends JpaRepository<Company, Long> {
     Optional<Company> findById(final Long id);
+    void deleteById(final Long id);
+    void deleteByIdAndUserId(final Long id, final Long userId);
     Optional<Company> findByName(final String name);
+    Optional<Company> findByIdAndUserId(final Long id, final Long userId);
+    Optional<Company> findByIdAndUser_Username(final Long id, final String username);
 }

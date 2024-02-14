@@ -42,8 +42,8 @@ public class Company {
     /** Users that have access to company's information.
      * Made for cases when more than one person manages
      * one or few warehouses. */
-    @ManyToMany(cascade = CascadeType.ALL)
-    @JsonIgnoreProperties({"company", "image"})
+    @ManyToMany(cascade = CascadeType.DETACH, fetch = FetchType.EAGER)
+    @JsonIgnoreProperties({"company", "image", "registrationDate"})
     @JoinTable(
             name = "company_user",
             joinColumns = @JoinColumn(name = "company_id"),
@@ -53,22 +53,22 @@ public class Company {
 
     /** Company's gallery */
     @JsonIgnoreProperties("ownedByCompany")
-    @OneToMany(mappedBy = "ownedByCompany", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "ownedByCompany", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<Image> imageData;
 
     /** Warehouses of the company or it's branch */
     @JsonIgnoreProperties("owner")
-    @OneToMany(mappedBy = "owner")
+    @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Set<Location> locations;
 
     /** Parts and products company uses */
     @JsonIgnoreProperties("company")
-    @OneToMany(mappedBy = "company")
+    @OneToMany(mappedBy = "company", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<Item> items;
 
     /** Company's supplier list */
     @JsonIgnoreProperties("owner")
-    @OneToMany(mappedBy = "owner")
+    @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<Supplier> suppliers;
 
     // Error occurs when adding @Lob

@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 public class CompanyController {
     private final CompanyService companyService;
 
-    // TODO CompanyController PUT, DELETE
     @PostMapping
     public ResponseEntity<?> createCompany(
             @Valid @RequestBody Company company,
@@ -26,6 +25,7 @@ public class CompanyController {
         return companyService.createCompany(company, request);
     }
 
+    // TODO CompanyController PUT
     @GetMapping("/{id}")
     @ResponseBody
     public ResponseEntity<?> readCompany(
@@ -37,7 +37,7 @@ public class CompanyController {
 
     @PutMapping("/{id}")
     public ResponseEntity<?> updateCompany(
-            @PathVariable String id,
+            @PathVariable Long id,
             @Valid @RequestBody CompanyRequest requestBody,
             HttpServletRequest request
     ) {
@@ -47,10 +47,9 @@ public class CompanyController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteCompany(
-            @PathVariable String id,
+            @PathVariable Long id,
             HttpServletRequest request
     ) {
-//        return companyService.deleteCompany(file);
-        return ResponseEntity.ok().build();
+        return companyService.deleteCompany(id, request);
     }
 }
