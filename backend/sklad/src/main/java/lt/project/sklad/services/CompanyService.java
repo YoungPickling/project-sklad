@@ -84,17 +84,12 @@ public class CompanyService {
         if(result == null)
             return MessagingUtils.error(HttpStatus.BAD_REQUEST, "Failed to save the Company");
 
-        // Update the user's company set
-//        user.getCompany().add(result);
-        System.out.println(6);
         // Save the user
         final User savedUser = userRepository.save(user);
 
-        System.out.println(7);
         if(savedUser == null)
             return MessagingUtils.error(HttpStatus.BAD_REQUEST, "Failed to save the User");
 
-        System.out.println(8);
         return ResponseEntity.ok().body(result);
     }
 

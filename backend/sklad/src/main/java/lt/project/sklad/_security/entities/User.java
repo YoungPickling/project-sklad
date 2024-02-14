@@ -64,15 +64,15 @@ public class User implements UserDetails {
 	private String username;
 
 	/** Avatar image for the user. */
-	@JsonIgnoreProperties({"id", "size", "compressedSize", "ownedByCompany","imageData"})
+	@JsonIgnoreProperties({"id", "size", "compressedSize", "ownedByCompany", "imageData"})
 	@OneToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "image_id")
 	private Image image;
 
 	/** Companies user belongs to. */
 	@ManyToMany(mappedBy = "user", fetch = FetchType.EAGER)
-	@JsonIgnoreProperties("user")
-	private Set<Company> company;
+	@JsonIgnoreProperties({"user", "locations", "items", "suppliers", "imageData"})
+	private List<Company> company;
 
 	/** The email address of the user. */
 	@Column(nullable = false)

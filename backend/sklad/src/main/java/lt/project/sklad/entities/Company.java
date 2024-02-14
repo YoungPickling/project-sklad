@@ -53,7 +53,7 @@ public class Company {
 
     /** Company's gallery */
     @JsonIgnoreProperties("ownedByCompany")
-    @OneToMany(mappedBy = "ownedByCompany")
+    @OneToMany(mappedBy = "ownedByCompany", fetch = FetchType.EAGER)
     private List<Image> imageData;
 
     /** Warehouses of the company or it's branch */
