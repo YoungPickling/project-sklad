@@ -53,14 +53,6 @@ public class Item {
     private Set<ItemColumn> columns;
 
     /**
-     * Item's parent classes.
-     * Parts that use this part.
-     */
-    @JsonIgnore
-    @OneToMany
-    private Set<Item> parents;
-
-    /**
      * Item's children classes.
      * Parts from which this one is made out of.
      */
