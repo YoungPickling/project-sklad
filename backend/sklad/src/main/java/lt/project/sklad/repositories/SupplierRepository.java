@@ -1,6 +1,5 @@
 package lt.project.sklad.repositories;
 
-import lt.project.sklad.entities.ItemColumn;
 import lt.project.sklad.entities.Supplier;
 import org.springframework.data.jpa.repository.JpaRepository;
 

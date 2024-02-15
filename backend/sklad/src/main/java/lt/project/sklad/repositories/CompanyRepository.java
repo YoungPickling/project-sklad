@@ -1,7 +1,6 @@
 package lt.project.sklad.repositories;
 
 import lt.project.sklad.entities.Company;
-import lt.project.sklad.entities.Image;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

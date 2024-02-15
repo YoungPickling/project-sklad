@@ -2,7 +2,6 @@ package lt.project.sklad._security.repositories;
 
 import java.util.List;
 import java.util.Optional;
-
 import lt.project.sklad._security.entities.Token;
 import lt.project.sklad._security.entities.User;
 import lt.project.sklad._security.services.TokenService;

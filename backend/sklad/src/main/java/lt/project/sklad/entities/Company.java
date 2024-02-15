@@ -1,7 +1,6 @@
 package lt.project.sklad.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -34,9 +33,9 @@ public class Company {
     private String name;
 
     /** Image for the company */
-    @OneToOne
-    @JsonIgnoreProperties("ownedByCompany")
+    @JsonIgnoreProperties({"ownedByCompany", "size", "compressedSize", "imageData", "id"})
     @JoinColumn(name = "image_id")
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE, orphanRemoval = true)
     private Image image;
 
     /** Users that have access to company's information.
@@ -53,22 +52,22 @@ public class Company {
 
     /** Company's gallery */
     @JsonIgnoreProperties("ownedByCompany")
-    @OneToMany(mappedBy = "ownedByCompany", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "ownedByCompany", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Image> imageData;
 
     /** Warehouses of the company or it's branch */
     @JsonIgnoreProperties("owner")
-    @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Location> locations;
 
     /** Parts and products company uses */
     @JsonIgnoreProperties("company")
-    @OneToMany(mappedBy = "company", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "company", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Item> items;
 
     /** Company's supplier list */
     @JsonIgnoreProperties("owner")
-    @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Supplier> suppliers;
 
     // Error occurs when adding @Lob

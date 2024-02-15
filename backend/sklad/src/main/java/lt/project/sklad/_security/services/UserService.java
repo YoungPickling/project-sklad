@@ -3,7 +3,6 @@ package lt.project.sklad._security.services;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import lt.project.sklad._security.dto_response.UserDto;
 import lt.project.sklad._security.entities.User;
 import lt.project.sklad._security.repositories.UserRepository;
 import lt.project.sklad._security.utils.MessagingUtils;
@@ -24,6 +23,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
+    private final MessagingUtils messagingUtils;
     private final TokenService tokenService;
 
     /**
@@ -36,43 +36,23 @@ public class UserService {
 
     @Transactional
     public ResponseEntity<?> getAuthenticatedUser(final HttpServletRequest request) {
-//        final String authHeader = request.getHeader("Authorization");
-//
-//        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-//            var token = tokenService.findByToken(authHeader.substring(7))
-//                    .orElse(null);
-//            if (token != null) {
-//                final Long userId = token.getUser().getId();
-//
-//                Optional<User> userOptional = userRepository.findById(userId);
-//
-//                if(!userOptional.isPresent())
-//                    return MessagingUtils.error(HttpStatus.NOT_FOUND, "User not found");
-//
-//                User user = userOptional.get();
-//
-//                return ResponseEntity.ok().body(
-//                        user
-//                );
-//            }
-//        }
         final String authHeader = request.getHeader("Authorization");
 
         if (authHeader == null || !authHeader.startsWith("Bearer "))
-            return MessagingUtils.error(HttpStatus.FORBIDDEN, "Please authenticate");
+            return messagingUtils.error(HttpStatus.FORBIDDEN, "Please authenticate");
 
         var token = tokenService.findByToken(authHeader.substring(7))
                 .orElse(null);
 
         if (token == null)
-            return MessagingUtils.error(HttpStatus.FORBIDDEN, "Please authenticate");
+            return messagingUtils.error(HttpStatus.FORBIDDEN, "Please authenticate");
 
         final Long userId = token.getUser().getId();
 
         Optional<User> userOptional = userRepository.findById(userId);
 
         if(!userOptional.isPresent())
-            return MessagingUtils.error(HttpStatus.NOT_FOUND, "User not found");
+            return messagingUtils.error(HttpStatus.NOT_FOUND, "User not found");
 
         User user = userOptional.get();
 

@@ -19,16 +19,16 @@ public class ImageController {
         return imageService.uploadImage(file);
     }
 
-    @GetMapping("/{fileName}")
-    public ResponseEntity<?> downloadImage(@PathVariable String fileName){
-        return imageService.downloadImage(fileName);
+    @GetMapping("/{fileHash}")
+    public ResponseEntity<?> downloadImage(@PathVariable String fileHash){
+        return imageService.downloadImage(fileHash);
     }
 
     // For tech demo, has no authentication
-    @GetMapping("demo/{fileName}")
-    public ResponseEntity<?> demoGetImage(@PathVariable String fileName){
+    @GetMapping("demo/{fileHash}")
+    public ResponseEntity<?> demoGetImage(@PathVariable String fileHash){
         // TODO create an ImageData service method for tech demos
-        return imageService.downloadImage(fileName);
+        return imageService.downloadImage(fileHash);
     }
 
 //    TODO image put endpoint, mostly for profile pictures
@@ -37,8 +37,8 @@ public class ImageController {
 //        return imageDataService.updateImage(file, id);
 //    }
 
-    @DeleteMapping("/{fileName}")
-    public ResponseEntity<?> removeImage(@PathVariable String fileName){
-        return imageService.removeImage(fileName);
+    @DeleteMapping("/{fileHash}")
+    public ResponseEntity<?> removeImage(@PathVariable String fileHash){
+        return imageService.removeImage(fileHash);
     }
 }

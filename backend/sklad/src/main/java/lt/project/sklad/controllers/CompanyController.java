@@ -1,7 +1,6 @@
 package lt.project.sklad.controllers;
 
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +9,7 @@ import lt.project.sklad.entities.Company;
 import lt.project.sklad.services.CompanyService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/secret/company")
@@ -25,9 +25,7 @@ public class CompanyController {
         return companyService.createCompany(company, request);
     }
 
-    // TODO CompanyController PUT
     @GetMapping("/{id}")
-    @ResponseBody
     public ResponseEntity<?> readCompany(
             @PathVariable @NotNull Long id,
             HttpServletRequest request
@@ -38,11 +36,27 @@ public class CompanyController {
     @PutMapping("/{id}")
     public ResponseEntity<?> updateCompany(
             @PathVariable Long id,
-            @Valid @RequestBody CompanyRequest requestBody,
+            @Valid @RequestBody CompanyRequest company,
             HttpServletRequest request
     ) {
-//        return companyService.updateCompany(file);
-        return ResponseEntity.ok().build();
+        return companyService.updateCompany(id, company, request);
+    }
+
+    @PutMapping("/{id}/image")
+    public ResponseEntity<?> updateCompanyImage(
+            @PathVariable Long id,
+            @RequestParam("image") MultipartFile file,
+            HttpServletRequest request
+    ) {
+        return companyService.updateCompanyImage(id, file, request);
+    }
+
+    @DeleteMapping("/{id}/image")
+    public ResponseEntity<?> deleteCompanyImage(
+            @PathVariable Long id,
+            HttpServletRequest request
+    ) {
+        return companyService.deleteCompanyImage(id, request);
     }
 
     @DeleteMapping("/{id}")

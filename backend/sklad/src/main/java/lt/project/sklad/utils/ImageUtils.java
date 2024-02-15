@@ -1,5 +1,7 @@
 package lt.project.sklad.utils;
 
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import java.io.ByteArrayOutputStream;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
@@ -7,11 +9,13 @@ import java.util.regex.Pattern;
 import java.util.zip.Deflater;
 import java.util.zip.Inflater;
 
+@Data
+@RequiredArgsConstructor
 public class ImageUtils {
-    private static final String FILE_NAME_PATTERN = "( \\(\\d+\\))";
-    private static final Pattern PATTERN_CONSTANT = Pattern.compile(FILE_NAME_PATTERN);
+    private final String FILE_NAME_PATTERN = "( \\(\\d+\\))";
+    private final Pattern PATTERN_CONSTANT = Pattern.compile(FILE_NAME_PATTERN);
 
-    public static byte[] compressImage(byte[] data) {
+    public byte[] compressImage(byte[] data) {
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
             Deflater deflater = new Deflater();
             deflater.setLevel(Deflater.BEST_COMPRESSION);
@@ -31,7 +35,7 @@ public class ImageUtils {
         }
     }
 
-    public static byte[] decompressImage(byte[] data) {
+    public byte[] decompressImage(byte[] data) {
         Inflater inflater = new Inflater();
         inflater.setInput(data);
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream(data.length);
@@ -50,7 +54,7 @@ public class ImageUtils {
         }
     }
 
-    public static String incrementFileName(
+    public String incrementFileName(
             final String fileName,
             final Predicate<String> isFileNamePresent)
     {
@@ -91,7 +95,8 @@ public class ImageUtils {
         return newFileName;
     }
 
-    public static byte[] convertToBlackAndWhite(byte[] imageData, int width, int height) {
+    // TODO implement effects
+    public byte[] convertToBlackAndWhite(byte[] imageData, int width, int height) {
         // Create a new byte array for the black and white image
         byte[] bwImageData = new byte[imageData.length];
 

@@ -13,11 +13,9 @@ import lt.project.sklad.entities.Company;
 import lt.project.sklad.entities.Image;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 /**
  * <p>&emsp;Entity class representing a user in the application. This class encapsulates

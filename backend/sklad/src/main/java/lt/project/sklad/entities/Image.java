@@ -13,7 +13,6 @@ import lombok.NoArgsConstructor;
  * @since 1.0, 24 Jan 2024
  * @author Maksim Pavlenko
  */
-
 @Data
 @Builder
 @NoArgsConstructor
@@ -27,6 +26,9 @@ public class Image {
 
     @Column(nullable = false)
     private String name;
+
+    @Column(nullable = false)
+    private String hash;
 
     @Column(nullable = false)
     private String type;
@@ -43,7 +45,7 @@ public class Image {
      * the company's gallery.
      */
     @JsonIgnoreProperties({"imageData","image"})
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "company_id")
     private Company ownedByCompany;
 

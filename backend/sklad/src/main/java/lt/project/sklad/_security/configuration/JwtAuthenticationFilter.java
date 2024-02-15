@@ -7,10 +7,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import lt.project.sklad._security.entities.User;
 import lt.project.sklad._security.services.JwtService;
 import lt.project.sklad._security.services.TokenService;
-import lt.project.sklad._security.services.UserService;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -37,7 +35,6 @@ import java.io.IOException;
  * @since 1.0, 3 Aug 2023
  * @author Maksim Pavlenko
  */
-
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -55,7 +52,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
      * @throws ServletException If an exception occurs during servlet processing.
      * @throws IOException      If an I/O exception occurs.
      */
-
     @Override
     protected void doFilterInternal(
             @NonNull HttpServletRequest request,
