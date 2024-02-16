@@ -49,7 +49,7 @@ public class Item {
      * Additional columns of the Item
      */
     @JsonIgnoreProperties("ofTable")
-    @OneToMany(mappedBy = "ofTable", cascade = CascadeType.ALL, orphanRemoval = true) /*, */
+    @OneToMany(mappedBy = "ofTable", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true) /*, */
     private Set<ItemColumn> columns;
 
     /**

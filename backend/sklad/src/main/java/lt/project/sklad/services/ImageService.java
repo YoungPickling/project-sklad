@@ -29,7 +29,6 @@ import java.util.*;
 import static org.springframework.http.HttpStatus.*;
 
 @Service
-//@RequiredArgsConstructor
 public class ImageService {
     @Autowired private ImageRepository imageRepository;
     @Autowired private UserRepository userRepository;
@@ -170,18 +169,6 @@ public class ImageService {
 
         if(!user.getCompany().contains(image.getOwnedByCompany()))
             return msgUtils.error(FORBIDDEN, "Access denied");
-//        System.out.println(image.getOwnedByCompany() == null);
-//        if(image.getOwnedByCompany() != null) {
-//            System.out.println(image.getOwnedByCompany().getId());
-//        }
-//        System.out.println(user.getCompany().contains(image.getOwnedByCompany()));
-
-//        long companyId;
-//        for(Company x : user.getCompany()) {
-//            if(x.getId().longValue() == image.getOwnedByCompany().getId()) {
-//                companyId
-//            }
-//        }
 
         Company company = companyRepository.findById(image.getOwnedByCompany().getId()).orElse(null);
 
@@ -191,73 +178,6 @@ public class ImageService {
         company.getImageData().remove(image);
         imageRepository.delete(image);
         return msgUtils.msg("Removed successfully");
-
-//        if (image != null) {
-//            // Check if the image is associated with the found company
-//            if (company.getImageData().contains(image)) {
-//                // Remove the image from the company's list of images
-//                company.getImageData().remove(image);
-//                companyRepository.save(company);
-//
-//                // Remove association with the company
-//                image.setOwnedByCompany(null);
-//                imageRepository.delete(image);
-//
-//                return msgUtils.msg("Image removed successfully");
-//            } else {
-//                // Image not associated with the company
-//                return msgUtils.error(HttpStatus.BAD_REQUEST, "Image not associated with the user's company");
-//            }
-//        }
-//        return msgUtils.error(NOT_FOUND, "Image not found 2");
-//        if(linkHash == null)
-//            return ResponseEntity.badRequest().build();
-//
-//        String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-//
-//        if (msgUtils.isBearer(authHeader))
-//            return msgUtils.error(UNAUTHORIZED, "Bad credentials");
-//
-//        String jwt = authHeader.substring(7);
-//        Token token = tokenService.findByToken(jwt).orElse(null);
-//
-//        if (token == null)
-//            return msgUtils.error(UNAUTHORIZED, "Token not found");
-//
-//        User user = userRepository.findById(token.getUser().getId()).orElse(null);
-//
-//        if (user == null)
-//            return msgUtils.error(UNAUTHORIZED, "User not found");
-//
-//        List<Company> companyList = user.getCompany();
-//
-//        if (companyList == null)
-//            return msgUtils.error(UNAUTHORIZED, "Company list is null");
-//
-//        if (companyList.isEmpty())
-//            return msgUtils.error(UNAUTHORIZED, "Company list is empty");
-//
-//        List<Long> imageIds = new ArrayList<>();
-//        for (Company x: companyList) {
-//            for (Image y: x.getImageData()) {
-//                imageIds.add(y.getId());
-//            }
-//        }
-//
-//        Image image = imageRepository.findByHash(linkHash).orElse(null);
-//
-//        System.out.println(companyList.size());
-//        System.out.println(companyList.get(0).getImage() == null);
-//        System.out.println(image != null);
-//        System.out.println(imageIds.contains(image.getId()));
-//        System.out.println(imageIds);
-//
-//        if(image != null && companyList.contains(image.getId())) {
-//            company.getImageData().remove(image);
-//            imageRepository.delete(image);
-//            return msgUtils.msg("Removed successfully");
-//        }
-//        return msgUtils.error(HttpStatus.NOT_FOUND, "Image not found");
     }
 
 //  TODO update image service
