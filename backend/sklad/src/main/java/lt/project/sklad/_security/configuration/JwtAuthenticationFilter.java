@@ -13,6 +13,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -34,7 +35,6 @@ import java.io.IOException;
  * @since 1.0, 3 Aug 2023
  * @author Maksim Pavlenko
  */
-
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -52,7 +52,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
      * @throws ServletException If an exception occurs during servlet processing.
      * @throws IOException      If an I/O exception occurs.
      */
-
     @Override
     protected void doFilterInternal(
             @NonNull HttpServletRequest request,
@@ -76,16 +75,25 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         try {
             username = jwtService.extractUsername(jwt);
         } catch (ExpiredJwtException e) {
-            e.printStackTrace();
+            //e.printStackTrace();
             filterChain.doFilter(request, response);
             return;
         }
 
         if (SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+
+            UserDetails userDetails = null;
+            try {
+                userDetails = userDetailsService.loadUserByUsername(username);
+            } catch (UsernameNotFoundException e) {
+                filterChain.doFilter(request, response);
+                return;
+            }
+
             var isTokenValid = tokenService.findByToken(jwt)
                     .map(t -> !t.isExpired() && !t.isRevoked())
                     .orElse(false);
+
             if (jwtService.isTokenValid(jwt, userDetails) && isTokenValid) {
                 var authToken = new UsernamePasswordAuthenticationToken(
                         userDetails,

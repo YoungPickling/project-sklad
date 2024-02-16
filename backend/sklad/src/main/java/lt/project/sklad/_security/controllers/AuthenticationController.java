@@ -36,12 +36,11 @@ import static org.springframework.http.HttpStatus.CREATED;
  * Provides endpoints for user registration, login, token refreshing, and logout.</p><br/>
  * <i>&emsp;Contains these endpoints:</i>
  * <ul style="list-style-type: square;">
- *   <li>{@link #register       /api/v1/auth/register      }</li>
- *   <li>{@link #authenticate   /api/v1/auth/login         }</li>
- *   <li>{@link #refreshToken   /api/v1/auth/refresh-token }</li>
- *   <li>{@link #logout         /api/v1/auth/logout        }</li>
+ *   <li>{@link #register       /api/secret/auth/register      }</li>
+ *   <li>{@link #authenticate   /api/secret/auth/login         }</li>
+ *   <li>{@link #refreshToken   /api/secret/auth/refresh-token }</li>
+ *   <li>{@link #logout         /api/secret/auth/logout        }</li>
  * </ul>
- *
  * @version 1.0, 15 Aug 2023
  * @since 1.0, 4 Aug 2023
  * @author Maksim Pavlenko
@@ -123,8 +122,8 @@ public class AuthenticationController {
     @PostMapping("/login")
     public ResponseEntity<AbstractResponse> authenticate(
             @RequestBody AuthenticationRequest request,
-            HttpServletResponse response)
-    {
+            HttpServletResponse response
+    ) {
         return ResponseEntity.ok(authService.authenticate(request, response));
     }
 

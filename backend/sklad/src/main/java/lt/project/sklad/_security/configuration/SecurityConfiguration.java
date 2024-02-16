@@ -12,7 +12,6 @@ import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
 import javax.sql.DataSource;
 
 import static org.springframework.http.HttpMethod.GET;
@@ -71,6 +70,7 @@ public class SecurityConfiguration {
                                 "/api/secret/image/**",
                                 "/api/secret/item/**"
                         ).authenticated()
+                        .requestMatchers(GET,"/api/secret/image/**").permitAll()
                         .anyRequest().permitAll()
                 )
                 .sessionManagement(session -> session

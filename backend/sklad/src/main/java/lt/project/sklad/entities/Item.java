@@ -7,7 +7,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import java.util.Map;
 import java.util.Set;
 
@@ -50,16 +49,8 @@ public class Item {
      * Additional columns of the Item
      */
     @JsonIgnoreProperties("ofTable")
-    @OneToMany(mappedBy = "ofTable", cascade = CascadeType.ALL, orphanRemoval = true) /*, */
+    @OneToMany(mappedBy = "ofTable", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true) /*, */
     private Set<ItemColumn> columns;
-
-    /**
-     * Item's parent classes.
-     * Parts that use this part.
-     */
-    @JsonIgnore
-    @OneToMany
-    private Set<Item> parents;
 
     /**
      * Item's children classes.
@@ -67,7 +58,7 @@ public class Item {
      */
     @JsonIgnore
     @OneToMany
-    private Set<Item> children;
+        private Set<Item> children;
 
     /**
      * Made to keeps track of which location
@@ -82,7 +73,7 @@ public class Item {
      * Company this item belongs to.
      * Part of the company's item gallery
      */
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JsonIgnoreProperties("items")
     @JoinColumn(name = "company_id", nullable = false)
     private Company company;

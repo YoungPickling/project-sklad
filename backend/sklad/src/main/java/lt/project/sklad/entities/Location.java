@@ -1,5 +1,6 @@
 package lt.project.sklad.entities;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -28,7 +29,7 @@ public class Location {
     /**
      * Company that owns this warehouse location note
      */
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "owner_id", nullable = false)
     private Company owner;
 

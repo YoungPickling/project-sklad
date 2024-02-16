@@ -1,18 +1,7 @@
 package lt.project.sklad.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.Lob;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -30,7 +19,6 @@ import java.util.Set;
  * @since 1.0, 24 Jan 2024
  * @author Maksim Pavlenko
  */
-
 @Data
 @Builder
 @NoArgsConstructor
@@ -44,21 +32,17 @@ public class Company {
 
     private String name;
 
-    /**
-     * Image for the company
-     */
-    @OneToOne
-    @JsonIgnoreProperties("ownedByCompany")
+    /** Image for the company */
+    @JsonIgnoreProperties({"ownedByCompany", "size", "compressedSize", "imageData", "id"})
     @JoinColumn(name = "image_id")
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE, orphanRemoval = true)
     private Image image;
 
-    /**
-     * Users that have access to company's information.
+    /** Users that have access to company's information.
      * Made for cases when more than one person manages
-     * one or few warehouses.
-     */
-    @ManyToMany
-    @JsonIgnoreProperties("company")
+     * one or few warehouses. */
+    @ManyToMany(cascade = CascadeType.DETACH, fetch = FetchType.EAGER)
+    @JsonIgnoreProperties({"company", "image", "registrationDate"})
     @JoinTable(
             name = "company_user",
             joinColumns = @JoinColumn(name = "company_id"),
@@ -66,34 +50,29 @@ public class Company {
     )
     private Set<User> user;
 
-    /**
-     * Company's gallery
-     */
-    @JsonIgnoreProperties("ownedByCompany")
-    @OneToMany(mappedBy = "ownedByCompany")
+    /** Company's gallery */
+    @JsonIgnoreProperties({"ownedByCompany", "size", "compressedSize", "imageData"})
+    @OneToMany(mappedBy = "ownedByCompany", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Image> imageData;
 
-    /**
-     * Warehouses of the company or it's branch
-     */
+    /** Warehouses of the company or it's branch */
     @JsonIgnoreProperties("owner")
-    @OneToMany(mappedBy = "owner")
+    @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Location> locations;
 
-    /**
-     * Parts and products company uses
-     */
+    /** Parts and products company uses */
     @JsonIgnoreProperties("company")
-    @OneToMany(mappedBy = "company")
+    @OneToMany(mappedBy = "company", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Item> items;
 
-    /**
-     * Company's supplier list
-     */
+    /** Company's supplier list */
     @JsonIgnoreProperties("owner")
-    @OneToMany(mappedBy = "owner")
+    @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Supplier> suppliers;
 
-    @Lob // Large Object a.k.a psql TEXT datatype
+    // Error occurs when adding @Lob
+    // When annotation is present, user can create
+    // only the first company and not all the rest
+    //@Lob // Large Object a.k.a psql TEXT datatype
     private String description;
 }

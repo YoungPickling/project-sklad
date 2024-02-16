@@ -22,6 +22,14 @@ import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 public class UserController {
     private final UserService userService;
     private final TokenService tokenService;
+    private final MessagingUtils messagingUtils;
+
+    @GetMapping("/me")
+    public ResponseEntity<?> getAuthenticatedUser(
+            final HttpServletRequest request
+    ) {
+        return userService.getAuthenticatedUser(request);
+    }
 
     @GetMapping("/hello")
     public String sayHello() {
@@ -29,29 +37,22 @@ public class UserController {
     }
 
     @GetMapping("/role")
-    public ResponseEntity<?> checkRole(HttpServletRequest request) {
+    public ResponseEntity<?> checkRole(final HttpServletRequest request) {
         String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-        if (MessagingUtils.isBearer(authHeader))
-            return MessagingUtils.error(UNAUTHORIZED,"Bad credentials");
+        if (messagingUtils.isBearer(authHeader))
+            return messagingUtils.error(UNAUTHORIZED,"Bad credentials");
 
         String jwt = authHeader.substring(7);
         Token token = tokenService.findByToken(jwt).orElse(null);
         if (token == null)
-            return MessagingUtils.error(UNAUTHORIZED,"Token not found");
+            return messagingUtils.error(UNAUTHORIZED,"Token not found");
 
         User user = tokenService.getUserByToken(jwt).orElse(null);
         if (user == null)
-            return MessagingUtils.error(UNAUTHORIZED,"Bad credentials");
+            return messagingUtils.error(UNAUTHORIZED,"Bad credentials");
 
         String role = user.getRole().name();
-        return MessagingUtils.msg(role) ;
-    }
-
-    @GetMapping("/me")
-    public ResponseEntity<?> getAuthenticatedUser(
-            final HttpServletRequest request
-    ) {
-        return userService.getAuthenticatedUser(request);
+        return messagingUtils.msg(role) ;
     }
 
     @GetMapping("/users/{id}")

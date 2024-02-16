@@ -3,7 +3,6 @@ package lt.project.sklad._security.services;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import lt.project.sklad._security.dto_response.UserDto;
 import lt.project.sklad._security.entities.User;
 import lt.project.sklad._security.repositories.UserRepository;
 import lt.project.sklad._security.utils.MessagingUtils;
@@ -24,6 +23,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
+    private final MessagingUtils messagingUtils;
     private final TokenService tokenService;
 
     /**
@@ -38,36 +38,25 @@ public class UserService {
     public ResponseEntity<?> getAuthenticatedUser(final HttpServletRequest request) {
         final String authHeader = request.getHeader("Authorization");
 
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            var token = tokenService.findByToken(authHeader.substring(7))
-                    .orElse(null);
-            if (token != null) {
-                final Long userId = token.getUser().getId();
+        if (authHeader == null || !authHeader.startsWith("Bearer "))
+            return messagingUtils.error(HttpStatus.FORBIDDEN, "Please authenticate");
 
-//                System.out.println(userId);
+        var token = tokenService.findByToken(authHeader.substring(7))
+                .orElse(null);
 
-                Optional<User> userOptional = userRepository.findById(userId);
+        if (token == null)
+            return messagingUtils.error(HttpStatus.FORBIDDEN, "Please authenticate");
 
-                if(!userOptional.isPresent())
-                    return MessagingUtils.error(HttpStatus.NOT_FOUND, "User not found");
+        final Long userId = token.getUser().getId();
 
-                User user = userOptional.get();
+        Optional<User> userOptional = userRepository.findById(userId);
 
-                return ResponseEntity.ok().body(
-                        user
-//                        new UserDto(
-//                                user.getFirstname(),
-//                                user.getLastname(),
-//                                user.getUsername(),
-//                                user.getEmail(),
-//                                user.getRole().toString(),
-//                                user.getRegistrationDate().toString()
-//                        )
-                );
-            }
-        }
+        if(!userOptional.isPresent())
+            return messagingUtils.error(HttpStatus.NOT_FOUND, "User not found");
 
-        return MessagingUtils.error(HttpStatus.FORBIDDEN, "Please authenticate");
+        User user = userOptional.get();
+
+        return ResponseEntity.ok().body(user);
     }
 
     /**

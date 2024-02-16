@@ -1,14 +1,7 @@
 package lt.project.sklad.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.Lob;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,7 +13,6 @@ import lombok.NoArgsConstructor;
  * @since 1.0, 24 Jan 2024
  * @author Maksim Pavlenko
  */
-
 @Data
 @Builder
 @NoArgsConstructor
@@ -34,6 +26,9 @@ public class Image {
 
     @Column(nullable = false)
     private String name;
+
+    @Column(nullable = false, unique = true)
+    private String hash;
 
     @Column(nullable = false)
     private String type;
@@ -50,7 +45,7 @@ public class Image {
      * the company's gallery.
      */
     @JsonIgnoreProperties({"imageData","image"})
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "company_id")
     private Company ownedByCompany;
 
