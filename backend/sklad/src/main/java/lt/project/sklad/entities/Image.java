@@ -27,7 +27,7 @@ public class Image {
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String hash;
 
     @Column(nullable = false)
@@ -45,7 +45,7 @@ public class Image {
      * the company's gallery.
      */
     @JsonIgnoreProperties({"imageData","image"})
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "company_id")
     private Company ownedByCompany;
 

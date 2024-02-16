@@ -1,5 +1,7 @@
 package lt.project.sklad.controllers;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lt.project.sklad.services.ImageService;
 import org.springframework.http.ResponseEntity;
@@ -14,9 +16,13 @@ import java.io.IOException;
 public class ImageController {
     private final ImageService imageService;
 
-    @PostMapping
-    public ResponseEntity<?> uploadImage(@RequestParam("image")MultipartFile file) throws IOException {
-        return imageService.uploadImage(file);
+    @PostMapping("/{id}")
+    public ResponseEntity<?> uploadImage(
+            @PathVariable @NotNull Long id,
+            @RequestParam("image")MultipartFile file,
+            HttpServletRequest request
+    ) throws IOException {
+        return imageService.uploadImage(id, file, request);
     }
 
     @GetMapping("/{fileHash}")
@@ -25,11 +31,11 @@ public class ImageController {
     }
 
     // For tech demo, has no authentication
-    @GetMapping("demo/{fileHash}")
-    public ResponseEntity<?> demoGetImage(@PathVariable String fileHash){
-        // TODO create an ImageData service method for tech demos
-        return imageService.downloadImage(fileHash);
-    }
+//    @GetMapping("demo/{fileHash}")
+//    public ResponseEntity<?> demoGetImage(@PathVariable String fileHash){
+//        // TODO create an ImageData service method for tech demos
+//        return imageService.downloadImage(fileHash);
+//    }
 
 //    TODO image put endpoint, mostly for profile pictures
 //    @PutMapping
@@ -38,7 +44,10 @@ public class ImageController {
 //    }
 
     @DeleteMapping("/{fileHash}")
-    public ResponseEntity<?> removeImage(@PathVariable String fileHash){
-        return imageService.removeImage(fileHash);
+    public ResponseEntity<?> removeImage(
+            @PathVariable @NotNull String fileHash,
+            HttpServletRequest request
+    ) {
+        return imageService.removeImage(fileHash, request);
     }
 }

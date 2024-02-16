@@ -48,7 +48,6 @@ public class CompanyService {
     private final TokenService tokenService;
     private final MessagingUtils msgUtils;
     private final HashUtils hashUtils;
-    // TODO CompanyService methods
 
     @Transactional
         public ResponseEntity<?> createCompany(
@@ -182,10 +181,16 @@ public class CompanyService {
         if (company == null)
             return ResponseEntity.notFound().build();
 
-        final String hash = hashUtils.hashString(file.getOriginalFilename());
+        String hash = hashUtils.hashString(file.getOriginalFilename());
 
         try {
             byte[] compressedImage = imgUtils.compressImage(file.getBytes());
+            int i = 0;
+
+            while(imageRepository.findByHash(hash).isPresent()) {
+                hash = hashUtils.hashString(file.getOriginalFilename() + i);
+                i++;
+            }
 
             if(company.getImage() == null) {
                 Image image = imageRepository.save(Image.builder()

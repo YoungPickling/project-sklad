@@ -58,7 +58,7 @@ public class Item {
      */
     @JsonIgnore
     @OneToMany
-    private Set<Item> children;
+        private Set<Item> children;
 
     /**
      * Made to keeps track of which location

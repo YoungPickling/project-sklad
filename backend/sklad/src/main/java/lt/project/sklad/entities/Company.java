@@ -51,7 +51,7 @@ public class Company {
     private Set<User> user;
 
     /** Company's gallery */
-    @JsonIgnoreProperties("ownedByCompany")
+    @JsonIgnoreProperties({"ownedByCompany", "size", "compressedSize", "imageData"})
     @OneToMany(mappedBy = "ownedByCompany", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Image> imageData;
 
