@@ -1,7 +1,5 @@
 package lt.project.sklad.services;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lt.project.sklad._security.entities.Token;
@@ -9,14 +7,13 @@ import lt.project.sklad._security.entities.User;
 import lt.project.sklad._security.repositories.UserRepository;
 import lt.project.sklad._security.services.TokenService;
 import lt.project.sklad._security.utils.MessagingUtils;
-import lt.project.sklad.dto_request.CompanyRequest;
+import lt.project.sklad.dto_request.CompanyDTO;
 import lt.project.sklad.entities.Company;
 import lt.project.sklad.entities.Image;
 import lt.project.sklad.repositories.CompanyRepository;
 import lt.project.sklad.repositories.ImageRepository;
 import lt.project.sklad.utils.HashUtils;
 import lt.project.sklad.utils.ImageUtils;
-import org.hibernate.Transaction;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -115,7 +112,7 @@ public class CompanyService {
     @Transactional
     public ResponseEntity<?> updateCompany(
             final Long id,
-            final CompanyRequest updatedCompany,
+            final CompanyDTO updatedCompany,
             final HttpServletRequest request
     ) {
         if (id == null)

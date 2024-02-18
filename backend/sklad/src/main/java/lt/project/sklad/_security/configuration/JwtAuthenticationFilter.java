@@ -1,6 +1,8 @@
 package lt.project.sklad._security.configuration;
 
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.MalformedJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -74,7 +76,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         // TODO: implement exception handling for ExpiredJwtException
         try {
             username = jwtService.extractUsername(jwt);
-        } catch (ExpiredJwtException e) {
+        } catch (JwtException e) { // ExpiredJwtException MalformedJwtException
             //e.printStackTrace();
             filterChain.doFilter(request, response);
             return;

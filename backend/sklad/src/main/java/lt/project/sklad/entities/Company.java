@@ -58,7 +58,7 @@ public class Company {
     /** Warehouses of the company or it's branch */
     @JsonIgnoreProperties("owner")
     @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Location> locations;
+    private List<Location> locations;
 
     /** Parts and products company uses */
     @JsonIgnoreProperties("company")

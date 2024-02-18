@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 
 @NoArgsConstructor
 public class HashUtils {
-    private static byte[] SALT = {
+    private static final byte[] SALT = {
             (byte) 0xda, (byte) 0x6e, (byte) 0xec, (byte) 0x16,
             (byte) 0x53, (byte) 0x5e, (byte) 0x97, (byte) 0x7d,
             (byte) 0x3a, (byte) 0x63, (byte) 0xa2, (byte) 0x65,

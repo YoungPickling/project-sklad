@@ -10,7 +10,7 @@ spring:
     hikari:
       auto-commit: false
   jpa:
-    show-sql: true
+#    show-sql: true
     open-in-view: false
     generate-ddl: true
     hibernate:
