@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CompanyRequest {
+public class CompanyDTO {
     private String name;
     @JsonProperty("desc")
     private String description;

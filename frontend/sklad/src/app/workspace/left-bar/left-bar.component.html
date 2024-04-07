@@ -1,8 +1,15 @@
-<!-- <div class="sklad-left-bar"> -->
+<!-- [style.--s-left-bar-width.px]="leftBarWidth" -->
+<div class="sklad-left-bar" >
   <nav class="sklad-left-bar-box">
     <div class="sklad-left-bar-content">
-      <dir-nav-element title="Шаблоны" logo="layers"></dir-nav-element>
-      <dir-nav-element title="Склад" logo="warehouse"></dir-nav-element>
+      <!-- <dir-nav-element title="Šablonai" logo="layers"></dir-nav-element> -->
+      <app-left-bar-item title="Šablonai" logo="layers"></app-left-bar-item>
+      <app-left-bar-item title="Sandėlis" logo="warehouse"></app-left-bar-item>
     </div>
   </nav>
-<!-- </div> -->
+</div>
+<div 
+  class="sklad-left-bar-resizer"
+  (mousedown)="onResizerMouseDown($event)"
+  (window:mousemove)="onWindowMouseMove($event)"
+  (window:mouseup)="onWindowMouseUp()"></div>

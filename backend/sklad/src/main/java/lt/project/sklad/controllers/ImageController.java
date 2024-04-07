@@ -18,7 +18,7 @@ public class ImageController {
 
     @PostMapping("/{id}")
     public ResponseEntity<?> uploadImage(
-            @PathVariable @NotNull Long id,
+            @PathVariable @NotNull long id,
             @RequestParam("image")MultipartFile file,
             HttpServletRequest request
     ) throws IOException {

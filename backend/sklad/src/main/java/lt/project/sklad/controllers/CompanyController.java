@@ -4,11 +4,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
-import lt.project.sklad.dto_request.CompanyRequest;
+import lt.project.sklad.dto_request.CompanyDTO;
 import lt.project.sklad.entities.Company;
 import lt.project.sklad.services.CompanyService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
@@ -36,7 +37,7 @@ public class CompanyController {
     @PutMapping("/{id}")
     public ResponseEntity<?> updateCompany(
             @PathVariable Long id,
-            @Valid @RequestBody CompanyRequest company,
+            @Valid @RequestBody CompanyDTO company,
             HttpServletRequest request
     ) {
         return companyService.updateCompany(id, company, request);
@@ -47,7 +48,7 @@ public class CompanyController {
             @PathVariable Long id,
             @RequestParam("image") MultipartFile file,
             HttpServletRequest request
-    ) {
+    ) throws MultipartException {
         return companyService.updateCompanyImage(id, file, request);
     }
 

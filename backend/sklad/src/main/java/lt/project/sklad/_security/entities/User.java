@@ -93,7 +93,7 @@ public class User implements UserDetails {
 	private List<Token> tokens;
 
 	/** registration date. */
-	@JsonProperty("reg_data")
+	@JsonProperty("reg_date")
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd' 'HH:mm:ss")
 	@Column(name="reg_date",nullable = false, columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
 	private LocalDateTime registrationDate;
