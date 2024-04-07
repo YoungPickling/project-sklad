@@ -2,33 +2,28 @@
 
   <nav class="sklad-top-bar">
     <div class="sklad-top-icon" (click)="toggleLeftBar()">
-      <div *ngIf="showLeftBar; then leftBarOn else leftBarOff"></div>
-      
-      <ng-template #leftBarOn>
-        <img src="/assets/lb-on-ico.svg" alt="Скрыть левую панель"/>
-      </ng-template>
-
-      <ng-template #leftBarOff>
-        <img src="/assets/lb-off-ico.svg" alt="Открыть левую панель"/>
-      </ng-template>
+      <!-- <div *ngIf="showLeftBar; then leftBarOn else leftBarOff"></div> -->
+      <!-- Скрыть левую панель - Paslėpti kairiąją juostą -->
+        <img src="/assets/lb-on-ico.svg" alt="Hide left strip" *ngIf="showLeftBar"/> 
+      <!-- Открыть левую панель - Rodyti kairiąją juostą -->
+        <img src="/assets/lb-off-ico.svg" alt="Show left strip" *ngIf="!showLeftBar"/>
     </div>
   </nav>
 
   <div class="sklad-workspace">
 
-    <left-bar></left-bar>
-    <div class="sklad-left-bar-resizer"></div>
+    <app-left-bar *ngIf="showLeftBar"></app-left-bar>
 
     <div class="sklad-tab-container">
       <nav class="sklad-tab-bar">
 
         <div class="sklad-tab">
-          <span>Карта</span>
+          <span>Map</span>
           <button>X</button>
         </div>
 
         <div class="sklad-tab sklad-tab-disabled">
-          <span>Таблица</span>
+          <span>Table</span>
           <button hidden>X</button>
         </div>
 

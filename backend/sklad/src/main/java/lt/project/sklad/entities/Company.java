@@ -1,5 +1,6 @@
 package lt.project.sklad.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -69,6 +70,10 @@ public class Company {
     @JsonIgnoreProperties("owner")
     @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Supplier> suppliers;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "company", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CompanyLog> log;
 
     // Error occurs when adding @Lob
     // When annotation is present, user can create

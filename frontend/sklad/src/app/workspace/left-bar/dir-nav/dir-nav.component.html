@@ -1,7 +1,0 @@
-<div class="sklad-left-bar-element" (click)="toggleOpen()">
-  <div *ngIf="isOpen; then thenBlock else elseBlock"></div>
-  <ng-template #thenBlock><mat-icon >arrow_drop_down</mat-icon></ng-template>
-  <ng-template #elseBlock><mat-icon >arrow_right</mat-icon></ng-template>
-  <mat-icon>{{ logo }}</mat-icon>
-  <span>{{ title }}</span>
-</div>
