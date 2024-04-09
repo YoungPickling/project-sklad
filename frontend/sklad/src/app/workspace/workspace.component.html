@@ -4,9 +4,11 @@
     <div class="sklad-top-icon" (click)="toggleLeftBar()">
       <!-- <div *ngIf="showLeftBar; then leftBarOn else leftBarOff"></div> -->
       <!-- Скрыть левую панель - Paslėpti kairiąją juostą -->
-        <img src="/assets/lb-on-ico.svg" alt="Hide left strip" *ngIf="showLeftBar"/> 
+        <img src="/assets/lb-on-ico.svg" alt="Hide left strip" *ngIf="showLeftBar"/>
+        <!-- <mat-icon *ngIf="showLeftBar" svgIcon="left_bar_open"></mat-icon> -->
       <!-- Открыть левую панель - Rodyti kairiąją juostą -->
         <img src="/assets/lb-off-ico.svg" alt="Show left strip" *ngIf="!showLeftBar"/>
+        <!-- <mat-icon *ngIf="!showLeftBar" svgIcon="left_bar_off"></mat-icon> -->
     </div>
   </nav>
 

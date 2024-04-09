@@ -1,9 +1,11 @@
 import { CommonModule, isPlatformBrowser,  } from '@angular/common';
 import { Component, OnInit, PLATFORM_ID, Inject } from '@angular/core';
-import { MatIconModule } from '@angular/material/icon';
+import { MatIconModule, MatIconRegistry } from '@angular/material/icon';
 import { RouterOutlet } from '@angular/router';
 import { LeftBarComponent } from './left-bar/left-bar.component';
 import { LeftBarItemComponent } from './left-bar/left-bar-item/left-bar-item.component';
+import { DomSanitizer } from '@angular/platform-browser';
+import { HttpClientModule } from '@angular/common/http';
 
 @Component({
   selector: 'app-workspace',
@@ -13,7 +15,8 @@ import { LeftBarItemComponent } from './left-bar/left-bar-item/left-bar-item.com
     RouterOutlet, 
     MatIconModule, 
     LeftBarComponent,
-    LeftBarItemComponent
+    LeftBarItemComponent,
+    HttpClientModule
   ],
   templateUrl: './workspace.component.html',
   styleUrls: ['./workspace.component.css']
@@ -21,6 +24,21 @@ import { LeftBarItemComponent } from './left-bar/left-bar-item/left-bar-item.com
 export class WorkspaceComponent implements OnInit {
   // constructor(@Inject(PLATFORM_ID) private platformId: Object) {}
   showLeftBar = true;
+
+  constructor(
+    private matIconRegistry: MatIconRegistry, 
+    private domSanitizer: DomSanitizer
+  ) {
+    this.matIconRegistry.addSvgIcon(
+      'left_bar_open',
+      this.domSanitizer.bypassSecurityTrustResourceUrl('../../assets/lb-on-ico.svg')
+    );
+
+    this.matIconRegistry.addSvgIcon(
+      'left_bar_close',
+      this.domSanitizer.bypassSecurityTrustResourceUrl('../../assets/lb-off-ico.svg')
+    );
+  }
 
   ngOnInit() {}
 

@@ -1,0 +1,79 @@
+.frontpage-banner {
+  margin-top: 120px;
+  margin-bottom: 120px;
+}
+
+.frontpage-banner-wrapper {
+  margin: 0 auto;
+  max-width: 1000px;
+  display:flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+}
+
+.frontpage-banner-row {
+  display:flex;
+  justify-content: space-between;
+}
+
+.frontpage-banner-quote {
+  max-width: 43rem;
+}
+
+.frontpage-banner-quote h1 {
+  font-size: 4rem;
+}
+
+.frontpage-banner-quote p {
+  font-size: 1.4rem; 
+}
+
+.frontpage-banner-quote p,
+.frontpage-banner-quote h1 {
+  margin: 0 0 0.8rem 0;
+}
+
+.button-52 {
+  font-size: 16px;
+  font-weight: 200;
+  letter-spacing: 1px;
+  padding: 13px 20px 13px;
+  outline: 0;
+  border: 1px solid black;
+  cursor: pointer;
+  position: relative;
+  background-color: rgba(0, 0, 0, 0);
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+}
+
+.button-52:after {
+  content: "";
+  background-color: #ffe54c;
+  width: 100%;
+  z-index: -1;
+  position: absolute;
+  height: 100%;
+  top: 7px;
+  left: 7px;
+  transition: 0.2s;
+}
+
+.button-52:hover:after {
+  top: 0px;
+  left: 0px;
+}
+
+@media (min-width: 768px) {
+  .button-52 {
+    padding: 13px 50px 13px;
+  }
+}
+
+.frontpage-banner-buttons {
+  width: 100%;
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: center;
+}
