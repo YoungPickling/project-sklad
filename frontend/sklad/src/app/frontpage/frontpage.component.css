@@ -1,20 +1,4 @@
-header {
-  background-color: #fbfafa;
-  height: 80px;
-  width: 100%;
-  -webkit-box-shadow: 0 2px 8px rgba(4,65,96,.08);
-  box-shadow: 0 2px 8px rgba(4,65,96,.08);
-  /* display: flex;
-  flex-direction: row;
-  justify-content: center */
+* {
+  color: #222;
+  font-family: "Trebuchet MS", Helvetica, sans-serif;
 }
-
-.frontpage-navigation-wrapper {
-  display: flex;
-  max-width: 1208px;
-  align-items: center;
-  -webkit-box-align: center;
-  margin: 0 auto;
-  height: 100%;
-}
-

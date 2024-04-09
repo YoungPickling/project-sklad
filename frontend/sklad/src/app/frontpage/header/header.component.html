@@ -1,0 +1,32 @@
+<header>
+  <div class="frontpage-navigation-wrapper">
+    <a [routerLink]="['/']">
+      <div>
+        <img src="/assets/cat-face.svg" alt="logo" style="height: 74px">
+        <h1>&nbsp;SKLAD</h1>
+      </div>
+    </a>
+
+    <nav>
+      <ul>
+        <li><a [routerLink]="['/about']">about</a></li>
+        <li><a href="#">join</a></li>
+        <li><a href="#">blog</a></li>
+      </ul>
+    </nav>
+
+    <li class="frontpage-navigation-buttons">
+      <a href="#" role="button" (click)="loginMenu = !loginMenu" [ngClass]="loginMenu ? 'open' : ''">
+        <mat-icon class="frontpage-login">login</mat-icon>
+        <mat-icon class="frontpage-arrow">expand_{{ loginMenu ? 'less' : 'more' }}</mat-icon>
+      </a>
+      <ul class="frontpage-dropdown-menu" id="sign-in">
+        <li><h3>sign in via</h3></li>
+        <li><a href="#"><mat-icon>mail_outlined</mat-icon>email</a></li>
+        <li><a href="#"><mat-icon>linkedin</mat-icon>B</a></li>
+        <li><a href="#"><mat-icon>github</mat-icon>C</a></li>
+      </ul>
+    </li>
+    
+  </div>
+</header>

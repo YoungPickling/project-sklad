@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { Router, RouterModule, RouterOutlet, Routes } from '@angular/router';
 import { MainComponent } from './main/main.component';
+import { HeaderComponent } from './header/header.component';
 
 @Component({
   selector: 'app-frontpage',
@@ -9,6 +10,7 @@ import { MainComponent } from './main/main.component';
   imports: [
     CommonModule, 
     RouterOutlet,
+    HeaderComponent
   ],
   templateUrl: './frontpage.component.html',
   styleUrl: './frontpage.component.css'
@@ -16,13 +18,3 @@ import { MainComponent } from './main/main.component';
 export class FrontpageComponent {
   
 }
-
-export const frontpageRoutes: Routes = [
-  { 
-    path: '', 
-    component: FrontpageComponent,
-    children: [
-      { path: '', component: MainComponent, pathMatch: 'full' },
-    ]
-  },
-];

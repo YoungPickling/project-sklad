@@ -36,7 +36,10 @@ html {
   background-color: var(--s-hover-element);
 }
 
-.sklad-tab button:focus,
+.sklad-tab button:focus {
+  background-color: var(--s-click-element);
+}
+
 .sklad-top-icon:active {
   background-color: var(--s-click-element);
 }
@@ -194,3 +197,14 @@ html {
   border-top: 1px solid var(--s-highlight);
   width: 100%;
 }
+
+/* nav mat-icon {
+  display: block;
+  border: none;
+  margin: auto 0.2em auto 0;
+  cursor: pointer;
+  width: 1.75rem;
+  padding: 0.25rem;
+  height: 1.75rem;
+  border-radius: 0.4rem;
+} */
