@@ -1,8 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
-import { Router, RouterModule, RouterOutlet, Routes } from '@angular/router';
-import { MainComponent } from './main/main.component';
+import { Component, ViewEncapsulation } from '@angular/core';
+import { RouterOutlet} from '@angular/router';
 import { HeaderComponent } from './header/header.component';
+import { ClickOutsideDirective } from '../shared/directives/clickOutside.directive';
 
 @Component({
   selector: 'app-frontpage',
@@ -10,10 +10,12 @@ import { HeaderComponent } from './header/header.component';
   imports: [
     CommonModule, 
     RouterOutlet,
-    HeaderComponent
+    HeaderComponent,
+    ClickOutsideDirective
   ],
   templateUrl: './frontpage.component.html',
-  styleUrl: './frontpage.component.css'
+  styleUrl: './frontpage.component.css',
+  encapsulation: ViewEncapsulation.None
 })
 export class FrontpageComponent {
   
