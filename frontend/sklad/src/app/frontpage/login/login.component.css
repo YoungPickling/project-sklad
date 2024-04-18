@@ -1,0 +1,25 @@
+.input {
+  width: 11.875rem;
+  padding: 0.75rem;
+  border: none;
+  border-radius: 0.25rem; 
+  box-shadow: 2px 2px 7px 0 rgb(0, 0, 0, 0.2);
+  outline: none;
+  color: dimgray;
+}
+
+.input:invalid {
+  animation: justshake 0.3s forwards;
+  color: red;
+}
+
+@keyframes justshake {
+  25% {transform: translateX(5px);}
+  50% {transform: translateX(-5px);}
+  75% {transform: translateX(5px);}
+  100% {transform: translateX-(5px);}
+}
+
+.frontpage-banner-wrapper > * {
+  margin: 0 auto 1rem;
+}
