@@ -10,23 +10,44 @@
     <nav>
       <ul>
         <li><a [routerLink]="['/about']">about</a></li>
-        <li><a href="#">join</a></li>
-        <li><a href="#">blog</a></li>
+        <li><a [routerLink]="['/join']">join</a></li>
+        <li><a [routerLink]="['/blog']">blog</a></li>
       </ul>
     </nav>
 
+    <!-- *ngIf="!isLoggedIn" -->
     <li class="frontpage-navigation-buttons" (clickOutside)="closeLoginMenu()">
       <a role="button" (click)="loginMenu = !loginMenu" [ngClass]="loginMenu ? 'open' : ''">
-        <mat-icon class="frontpage-login">login</mat-icon>
+        <mat-icon class="frontpage-login" *ngIf="!isLoggedIn">login</mat-icon>
+        <div class="frontpage-icon" *ngIf="isLoggedIn">
+          <b>{{ initials }}</b>
+        </div>
         <mat-icon class="frontpage-arrow">expand_{{ loginMenu ? 'less' : 'more' }}</mat-icon>
       </a>
-      <ul class="frontpage-dropdown-menu" id="sign-in" >
+
+      <ul class="frontpage-dropdown-menu" id="sign-in" *ngIf="!isLoggedIn">
         <li><h3>sign in via</h3></li>
         <li><a [routerLink]="['/login']" (click)="closeLoginMenu()"><mat-icon>mail_outlined</mat-icon>email</a></li>
         <!-- <li><a href="#"><mat-icon>linkedin</mat-icon>B</a></li> -->
         <!-- <li><a href="#"><mat-icon>github</mat-icon>C</a></li> -->
       </ul>
+
+      <ul class="frontpage-dropdown-menu" id="sign-in" *ngIf="isLoggedIn">
+        <li><a [routerLink]="['/profile']" (click)="closeLoginMenu()">profile</a></li>
+        <li><a [routerLink]="['/profile/settings']" (click)="closeLoginMenu()">settings</a></li>
+        <li><a [routerLink]="['/']" (click)="onLogout()">log out</a></li> 
+      </ul>
     </li>
+
+    <!-- isLoggedIn -->
+    <!-- <div class="frontpage-navigation-user"> 
+      <ul>
+        <li><a>{{username}}</a></li>
+      </ul>
+      <a (click)="onLogout()">
+        <mat-icon class="frontpage-login">logout</mat-icon>
+      </a>
+    </div> -->
     
   </div>
 </header>

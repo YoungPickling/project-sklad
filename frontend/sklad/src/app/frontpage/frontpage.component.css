@@ -16,7 +16,6 @@
   flex-direction: column;
 }
 
-
 .frontpage-button {
   padding: 0.8rem 2rem;
   border-radius: 0.62rem;
@@ -40,4 +39,11 @@
   box-shadow: rgb(201, 46, 70) 0px 0px 0px 0px;
   transform: translateY(5px);
   transition: 200ms;
+}
+
+.frontpage-button:disabled {
+  background-color: #777;
+  box-shadow: #666 0px 10px 0px 0px;
+  transform: none;
+  transition: none;
 }

@@ -9,7 +9,7 @@
 }
 
 .input:invalid {
-  animation: justshake 0.3s forwards;
+  /* animation: justshake 0.3s forwards; */
   color: red;
 }
 
