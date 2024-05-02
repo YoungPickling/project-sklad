@@ -1,12 +1,32 @@
 <div class="frontpage-banner">
   <div class="frontpage-banner-wrapper">
     <p>Hello!</p>
-    <form>
-      <input type="text" name="text" class="input" placeholder="Username">
+    <form #authForm="ngForm" (ngSubmit)="onSubmit(authForm)">
+      <input 
+        type="text" 
+        class="input" 
+        placeholder="Username"
+        ngModel
+        name="username"
+        required
+        minlength="2"
+        >
       <br><br>
-      <input type="password" name="text" class="input" placeholder="Password"> <!-- pattern="\d+" -->
+      <input 
+        type="password" 
+        class="input" 
+        placeholder="Password"
+        ngModel
+        name="password"
+        required
+        minlength="6"
+        > <!-- pattern="\d+" -->
       <br><br>
-      <button type="button" class="frontpage-button">SIGN IN</button>
+      <button 
+        type="submit"
+        class="frontpage-button"
+        [disabled]="!authForm.valid"
+        >SIGN IN</button>
     </form>
   </div>
 </div>

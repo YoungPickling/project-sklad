@@ -1,0 +1,59 @@
+.light-button {
+  text-decoration: none;
+  padding: 11px 48px;
+  border: 0;
+  margin-right: 2rem;
+  background: #ff0a0a;
+  color: #fff;
+  border-radius: 0;
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 500;
+  letter-spacing: 0;
+  line-height: 26px;
+  text-align: center;
+  text-transform: none;
+  cursor: pointer;
+}
+
+.bright-button {
+  text-decoration: none;
+  padding: 11px 48px;
+  border: 1px solid #222;
+  border-radius: 0;
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 500;
+  letter-spacing: 0;
+  line-height: 26px;
+  text-align: center;
+  text-transform: none;
+  cursor: pointer;
+}
+
+.light-button *,
+.bright-button * {
+  text-decoration: none;
+}
+
+.frontpage-banner-wrapper {
+  text-align: center;
+}
+
+.frontpage-banner-wrapper h1{
+  text-align: center;
+  font-size: 10rem;
+  margin: 0 0 1.5rem;
+}
+
+.frontpage-banner-wrapper h2{
+  text-align: center;
+  font-size: 4rem;
+  margin: 0 0 2.8rem;
+}
+
+.frontpage-banner-wrapper h3{
+  text-align: center;
+  font-size: 1.4rem;
+  margin: 0 0 3rem;
+}
