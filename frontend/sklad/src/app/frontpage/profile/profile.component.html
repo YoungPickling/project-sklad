@@ -1,1 +1,81 @@
-<p>profile works!</p>
+ <!-- *ngIf="error"-->
+<app-alert
+  [isLoadig]="isLoading"
+  [preset]="alertPreset"
+  [message]="error"
+  [title]="alertTitle"
+  *ngIf="alertOpen"
+  (close)="onHandleError()"
+  (addCompany)="onAddCompany($event)"
+></app-alert>
+<div class="frontpage-body">
+  <div class="frontpage-window-top">
+    <div class="frontpage-window-top-pfp" style="margin-right:1rem;"></div>
+    <div class="frontpage-info-box">
+      <b>{{ user?.firstname }}</b>
+      <b>{{ user?.lastname }}</b>
+      <p>{{ user?.email }}</p>
+    </div>
+    <div class="frontpage-info-box">
+      <p></p><br>
+      <p></p><br>
+      <p>{{ user?.username }}</p>
+    </div>
+  </div>
+  <!-- <div class="frontpage-window-body"></div> -->
+</div>
+<div class="frontpage-body">
+  <div class="frontpage-window-top frontpage-window-top-header" style="justify-content:space-between;align-items: stretch">
+    <h1>Companies</h1>
+    <button class="icon-display" style="margin:0;" (click)="onOpenAddCompanyMenu()">
+      <mat-icon class="mat-icon-display">add</mat-icon>
+    </button>
+  </div>
+  <div class="frontpage-window-body">
+    <h1 *ngIf="user?.company.length < 1" class="frontpage-empty">No companies created yet</h1>
+
+    <div *ngFor="let company of user?.company; index as i; even as isEven">
+      <div 
+        [ngStyle]="{'background-color': isEven ? '#f4f4f4' : '#e6e6e6'}"
+        class="frontpage-company-row"
+      >
+        <div class="frontpage-bar-box" style="justify-content: flex-start">
+          <button class="icon-display" (click)="companyButtonState[i] = !companyButtonState[i]">
+            <mat-icon class="mat-icon-display">expand_{{ companyButtonState[i] ? 'less' : 'more' }}</mat-icon>
+          </button>
+          <div class="frontpage-window-top-pfp" style="margin-right:1rem;background-color: black;"></div>
+          <div class="frontpage-info-box">
+            <b>{{ company.name }}</b>
+            <p>{{ company.description | shorten: 32 }}</p>
+          </div>
+        </div>
+        <div class="frontpage-bar-box">
+          <button class="icon-display">
+            <mat-icon class="mat-icon-display">login</mat-icon>
+          </button>
+          <button class="icon-display">
+            <mat-icon class="mat-icon-display">edit</mat-icon>
+          </button>
+        </div>
+      </div>
+      <div class="frontpage-company-statistics" [ngStyle]="{'display': companyButtonState[i] ? 'flex' : 'none'}">
+        <div>
+          <h2><mat-icon>group</mat-icon> Users</h2>
+        </div>
+        <div>
+          <h2><mat-icon>inventory_2</mat-icon> Items</h2>
+        </div>
+        <div>
+          <h2><mat-icon>warehouse</mat-icon> Locations</h2>
+        </div>  
+        <div>
+          <h2><mat-icon>local_shipping</mat-icon> Suppliers</h2>
+        </div>
+        <div>
+          <h2><mat-icon>photo_library</mat-icon> Image library</h2>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

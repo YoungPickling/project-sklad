@@ -1,0 +1,72 @@
+.frontpage-info-box {
+  display: flex;
+  flex-direction: column;
+  margin-right: 1rem;
+  resize: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.frontpage-info-box:last-of-type {
+  margin-right: 0;
+}
+
+.front-info-box-bottom {
+  margin-top: calc(2rem + 2px);
+}
+
+.frontpage-info-box p,
+.frontpage-info-box b {
+  margin: 1px 0;  
+}
+
+.frontpage-window-top .frontpage-info-box p {
+  color:gainsboro;
+}
+
+.frontpage-empty {
+  color:#aaa; 
+  margin: 2rem auto 0;
+}
+
+.frontpage-company-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 1rem 1rem;
+  width: calc(100% - 2rem);
+  height: 4rem;
+  background-color: #fffacd;
+}
+
+.frontpage-company-statistics {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  padding: 1rem 1rem;
+  width: calc(100% - 2rem);
+  min-height: 1rem;
+  background-color: #abecab;
+}
+
+.frontpage-company-statistics div {
+  margin-right: 1rem;
+}
+
+.icon-display {
+  margin: 0 0 0 1rem;
+}
+
+.frontpage-bar-box:first-of-type > .icon-display {
+  margin: 0 1rem 0 0;
+}
+
+.mat-icon-display {
+  color: initial;
+  margin: auto 0 auto 0;
+  transform: scale(1.3);
+}
+
+.frontpage-bar-box {
+  display: flex;
+  justify-content: flex-end;
+}

@@ -1,0 +1,72 @@
+.backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.75);
+  z-index: 50;
+}
+
+.alert-box {
+  position: fixed;
+  top: 30vh;
+  left: 20vw;
+  width: 60vw;
+  padding: 16px;
+  z-index: 100;
+  background: white;
+  box-shadow: 0 2px 8px rbga(0, 0, 0, 0.26);
+}
+
+.alert-box-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 1rem;
+  /* text-align: right; */
+}
+
+.alert-box-actions > button {
+  margin-right: 1rem;
+}
+
+.alert-box-actions > button:last-child {
+  margin-right: 0rem;
+}
+
+.alert-box > .box-title {
+  display:flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.box-title > h1 {
+  margin-top: 0;
+}
+
+.error-box {
+  padding: 20px;
+  background-color: #f44336;
+  color: #fff;
+  margin-bottom: 15px;
+}
+
+.button {
+  background-color: #0d1580;
+  border: none;
+  color: #fff;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.button:hover {
+  background-color: #333ed8;
+}
+
+span {
+  color:#f44336;
+}

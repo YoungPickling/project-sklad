@@ -47,3 +47,156 @@
   transform: none;
   transition: none;
 }
+
+.frontpage-body {
+  max-width: 1100px;
+  margin: 1rem auto 1rem;
+  box-shadow: 0px 0px 3px 5px #00000022;
+}
+
+.frontpage-window-top {
+  background: url(/assets/gradient.svg), linear-gradient(36deg, #042225, #042225 53%, #08484e 69%, #383153), #303240;
+  background-position: 100%;
+  background-size: cover;
+  display: flex;
+  width: auto;
+  height: 4rem;
+  padding: 1rem;
+}
+
+.frontpage-window-top * {
+  color: #fff;
+}
+
+.frontpage-window-body {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #222;
+  background-position: 100%;
+  background-size: cover;
+  display: flex;
+  width: auto;
+  min-height: 4rem;
+}
+
+.frontpage-window-top-pfp {
+  min-width: 4rem;
+  height: 4rem;
+  background-color: aliceblue;
+}
+
+.frontpage-window-top h1 {
+  font-size: x-large;
+  margin: auto 0;
+}
+
+.frontpage-window-top-header {
+  height: 3rem;
+}
+
+/* <span class="frontpage-loader"></span> */
+
+.frontpage-loader {
+  position: relative;
+  width: 130px;
+  height: 100px;
+  background-repeat: no-repeat;
+  background-image: linear-gradient(#bd0202, #bd0202),
+  linear-gradient(#f62929, #f74f4f), linear-gradient(#f62929, #f74f4f);
+  background-size: 80px 70px, 30px 50px, 30px 30px;
+  background-position: 0 0, 80px 20px, 100px 40px;
+}
+
+.frontpage-loader:after {
+  content: "";
+  position: absolute;
+  bottom: 10px;
+  left: 12px;
+  width: 10px;
+  height: 10px;
+  background: #fff;
+  border-radius: 50%;
+  box-sizing: content-box;
+  border: 10px solid #000;
+  box-shadow: 78px 0 0 -10px #fff, 78px 0 #000;
+  animation: wheelSk 0.75s ease-in infinite alternate;
+}
+
+.frontpage-loader:before {
+  content: "";
+  position: absolute;
+  right: 100%;
+  top: 0px;
+  height: 70px;
+  width: 70px;
+  background-image: linear-gradient(#888 45px, transparent 0),
+    linear-gradient(#888 45px, transparent 0),
+    linear-gradient(#888 45px, transparent 0);
+  background-repeat: no-repeat;
+  background-size: 30px 4px;
+  background-position: 0px 11px, 8px 35px, 0px 60px;
+  animation: lineDropping 0.75s linear infinite;
+}
+
+@keyframes wheelSk {
+  0%, 50%, 100% { transform: translatey(0) }
+  30%, 90% { transform: translatey(-3px) }
+}
+
+@keyframes lineDropping {
+  0% {
+    background-position: 100px 11px, 115px 35px, 105px 60px;
+    opacity: 1;
+  }
+  50% { background-position: 0px 11px, 20px 35px, 5px 60px }
+  60% { background-position: -30px 11px, 0px 35px, -10px 60px }
+  75%, 100% {
+    background-position: -30px 11px, -30px 35px, -30px 60px;
+    opacity: 0;
+  }
+}
+
+.frontpage-loader-container {
+  /* max-width: 300px; */
+  /* max-height: 300px; */
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.loader {
+  width: 100%;
+  height: 4.8px;
+  display: inline-block;
+  position: relative;
+  overflow: hidden;
+}
+.loader::after {
+  content: '';  
+  width: 96px;
+  height: 4.8px;
+  background: #000;
+  position: absolute;
+  top: 0;
+  left: 0;
+  box-sizing: border-box;
+  animation: hitZak 0.6s ease-in-out infinite alternate;
+}
+
+@keyframes hitZak {
+  0% {
+    left: 0;
+    transform: translateX(-1%);
+  }
+  100% {
+    left: 100%;
+    transform: translateX(-99%);
+  }
+}
+
+.loader-container {
+  margin: 0 auto;
+  width: 50px;
+  height: 50px;
+}

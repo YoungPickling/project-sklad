@@ -16,7 +16,7 @@
     </nav>
 
     <!-- *ngIf="!isLoggedIn" -->
-    <li class="frontpage-navigation-buttons" (clickOutside)="closeLoginMenu()">
+    <li class="frontpage-navigation-buttons" (clickOutside)="closeLoginMenu()" style="min-width:4rem">
       <a role="button" (click)="loginMenu = !loginMenu" [ngClass]="loginMenu ? 'open' : ''">
         <mat-icon class="frontpage-login" *ngIf="!isLoggedIn">login</mat-icon>
         <div class="frontpage-icon" *ngIf="isLoggedIn">

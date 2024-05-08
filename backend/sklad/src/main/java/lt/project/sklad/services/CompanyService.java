@@ -16,6 +16,7 @@ import lt.project.sklad.utils.HashUtils;
 import lt.project.sklad.utils.ImageUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -299,5 +300,32 @@ public class CompanyService {
         companyRepository.delete(company);
 
         return ResponseEntity.ok().build();
+    }
+
+    // TODO check
+    @Transactional
+    public ResponseEntity<?> getCompanyImageById(
+            final Long id,
+            final HttpServletRequest request
+    ) {
+        final Company company = companyRepository.findById(id).orElse(null);
+
+        if(company == null) {
+            return msgUtils.error(NOT_FOUND, "Image not found");
+        }
+
+        final Image image = imageRepository.findByHash(company.getImage().getHash()).orElse(null);
+
+        if(image == null) {
+            return msgUtils.error(NOT_FOUND, "Image not found");
+        }
+
+        if (image != null) {
+            byte[] result = imgUtils.decompressImage(image.getImageData());
+            return ResponseEntity.status(HttpStatus.OK)
+                    .contentType(MediaType.valueOf(image.getType()))
+                    .body(result);
+        }
+        return msgUtils.error(NOT_FOUND, "Image not found");
     }
 }

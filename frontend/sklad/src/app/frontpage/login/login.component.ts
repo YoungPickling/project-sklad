@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
-import { Observable, Subscription } from 'rxjs';
+import { Observable } from 'rxjs';
 import { LoginResponseData, AuthService } from './auth.service';
 
 @Component({
@@ -27,12 +27,12 @@ export class LoginComponent {
     if (!form.valid) {
       return;
     }
+    this.isLoading = true;
+
     const username = form.value.username;
     const password = form.value.password;
 
     let authObs: Observable<LoginResponseData>;
-
-    this.isLoading = true;
 
     // if (this.isLoginMode) {
     authObs = this.loginService.login(username, password);
@@ -40,19 +40,19 @@ export class LoginComponent {
     //   authObs = this.loginService.signup(email, password);
     // }
 
-    authObs.subscribe(
-      resData => {
+    authObs.subscribe({
+      next: (resData) => {
         // console.log(resData);
         this.isLoading = false;
         this.router.navigate(['/']);
       },
-      errorMessage => {
+      error: errorMessage => {
         console.log(errorMessage);
         this.error = errorMessage;
         // this.showErrorAlert(errorMessage);
         this.isLoading = false;
       }
-    );
+    });
 
     form.reset();
   }

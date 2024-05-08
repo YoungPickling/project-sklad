@@ -34,6 +34,15 @@ public class CompanyController {
         return companyService.getCompanyById(id, request);
     }
 
+    // TODO check
+    @GetMapping("/{id}/image")
+    public ResponseEntity<?> readCompanyImage(
+            @PathVariable @NotNull Long id,
+            HttpServletRequest request
+    ) {
+        return companyService.getCompanyImageById(id, request);
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<?> updateCompany(
             @PathVariable Long id,
@@ -45,7 +54,7 @@ public class CompanyController {
 
     @PutMapping("/{id}/image")
     public ResponseEntity<?> updateCompanyImage(
-            @PathVariable Long id,
+            @PathVariable @NotNull Long id,
             @RequestParam("image") MultipartFile file,
             HttpServletRequest request
     ) throws MultipartException {

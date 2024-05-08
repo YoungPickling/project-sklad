@@ -1,32 +1,38 @@
 <div class="frontpage-banner">
   <div class="frontpage-banner-wrapper">
-    <p>Hello!</p>
-    <form #authForm="ngForm" (ngSubmit)="onSubmit(authForm)">
-      <input 
-        type="text" 
-        class="input" 
-        placeholder="Username"
-        ngModel
-        name="username"
-        required
-        minlength="2"
-        >
-      <br><br>
-      <input 
-        type="password" 
-        class="input" 
-        placeholder="Password"
-        ngModel
-        name="password"
-        required
-        minlength="6"
-        > <!-- pattern="\d+" -->
-      <br><br>
-      <button 
-        type="submit"
-        class="frontpage-button"
-        [disabled]="!authForm.valid"
-        >SIGN IN</button>
-    </form>
+    <div style="margin:0 auto;display: flex;align-items: center;justify-content: center; width:300px;height:300px" *ngIf="isLoading else loginTemplate">
+      <span class="frontpage-loader"></span>
+    </div>
+
+    <ng-template #loginTemplate>
+      <p>Hello!</p>
+      <form #authForm="ngForm" (ngSubmit)="onSubmit(authForm)">
+        <input 
+          type="text" 
+          class="input" 
+          placeholder="Username"
+          ngModel
+          name="username"
+          required
+          minlength="2"
+          >
+        <br><br>
+        <input 
+          type="password" 
+          class="input" 
+          placeholder="Password"
+          ngModel
+          name="password"
+          required
+          minlength="6"
+          > <!-- pattern="\d+" -->
+        <br><br>
+        <button 
+          type="submit"
+          class="frontpage-button"
+          [disabled]="!authForm.valid"
+          >SIGN IN</button>
+      </form>
+    </ng-template>
   </div>
 </div>

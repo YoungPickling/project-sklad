@@ -1,6 +1,6 @@
 import { HttpClient, HttpErrorResponse } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { Router } from "@angular/router";
+// import { Router } from "@angular/router";
 import { catchError, switchMap, tap } from "rxjs/operators";
 import { BehaviorSubject, throwError } from "rxjs";
 import { environment } from "../../../environments/environment";
@@ -20,7 +20,7 @@ export class AuthService {
 
   constructor(
     private http: HttpClient,
-    private router: Router
+    // private router: Router
   ) {}
 
   login(username: string, password: string) {
@@ -113,11 +113,7 @@ export class AuthService {
       return;
     }
 
-    const userBriefData: {
-      username: string;
-      role: string;
-      token: string;
-    } = JSON.parse(localStorage.getItem('userBriefData'));
+    const userBriefData: BriefUserModel = JSON.parse(localStorage.getItem('userBriefData'));
 
     if (!userBriefData) {
       return;
@@ -133,16 +129,16 @@ export class AuthService {
       this.user.next(loadedUser);
       // const userDetails: Observable<User> = this.getUserDetails(loadedUser.token)
 
-      this.getUserDetails(loadedUser.token).subscribe(
-        (user: User) => {
+      this.getUserDetails(loadedUser.token).subscribe({
+        next: (user: User) => {
           this.handleAuthenticationDetails(user);
         },
-        (error) => {
+        error: (error) => {
           // Handle error, maybe logout user or show a message
           console.error("Error fetching user details:", error);
           this.logout();
         }
-      );
+      });
 
       // this.http.post<LoginResponseData>(
       //   environment.API_SERVER + "/api/secret/auth/login",
@@ -158,4 +154,6 @@ export class AuthService {
       // this.autoLogout(expirationDuration);
     }
   }
+
+  
 }
