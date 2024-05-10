@@ -2,11 +2,11 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { AuthService } from '../login/auth.service';
 // import { Router } from '@angular/router';
 import { User } from '../../shared/models/user.model';
-import { /* Observable, */ Subscription } from 'rxjs';
+import { /* Observable, */ Observable, Subscription } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { ShortenPipe } from '../../shared/pipes/shorten.pipe';
 import { MatIconModule } from '@angular/material/icon';
-import { AlertComponent } from '../../shared/alert/alert.component';
+import { AlertComponent, AlertPresets } from '../../shared/alert/alert.component';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { Company } from '../../shared/models/company.model';
@@ -28,7 +28,8 @@ export class ProfileComponent implements OnInit, OnDestroy {
   isLoading = false;
   alertOpen = false;
   alertTitle: string = null;
-  alertPreset: string = null;
+  alertPreset: AlertPresets = null;
+  companyForEdit: {id?: number, name: string, description: string};
 
   private userDetailsSubscription: Subscription | undefined;
 
@@ -54,12 +55,6 @@ export class ProfileComponent implements OnInit, OnDestroy {
     }
   }
 
-  onOpenAddCompanyMenu() {
-    this.alertTitle = 'Add Company';
-    this.alertPreset = 'addCompany'
-    this.alertOpen = true;
-  }
-
   onHandleError() {
     this.alertOpen = false;
     this.error = null;
@@ -67,6 +62,19 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
   onCloseAlert() {
     this.alertOpen = false;
+  }
+
+  onOpenAddCompanyMenu() {
+    this.alertTitle = 'Add Company';
+    this.alertPreset = AlertPresets.addCompany
+    this.alertOpen = true;
+  }
+
+  onOpenEditCompanyMenu(id: number, name: string, description: string) {
+    this.companyForEdit = {id: id, name: name, description: description};
+    this.alertTitle = 'Edit Company: ' + name;
+    this.alertPreset = AlertPresets.editCompany
+    this.alertOpen = true;
   }
 
   onAddCompany($event: {name: string, description: string}) {
@@ -81,6 +89,39 @@ export class ProfileComponent implements OnInit, OnDestroy {
     this.http.post<Company>(
       environment.API_SERVER + '/api/secret/company',
       $event,
+      {
+        headers: {
+          "Authorization": `Bearer ${userBriefData.token}`
+        }
+      }
+    ).subscribe({
+      next: () => {
+        this.alertOpen = false;
+        this.authService.autoLogin(); // updates company list
+      },
+      error: error => {
+        console.error('Error creating a company:', error);
+        this.error = error.error.error;
+      },
+      complete: () => {
+        this.isLoading = false;
+      }
+    });
+  }
+
+  onEditCompany($event: {name: string, description: string}) {
+    this.isLoading = true;
+    const userBriefData: BriefUserModel = JSON.parse(localStorage.getItem('userBriefData'));
+
+    if (!userBriefData) {
+      return;
+    }
+
+    const body = {name: $event.name, description: $event.description};
+
+    this.http.put<Company>(
+      environment.API_SERVER + '/api/secret/company/' + this.companyForEdit.id,
+      body,
       {
         headers: {
           "Authorization": `Bearer ${userBriefData.token}`

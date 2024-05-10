@@ -1,6 +1,6 @@
 <div class="backdrop" ></div><!-- (click)="onClose()"-->
 <div class="alert-box">
-  <ng-template [ngIf]="preset === 'addCompany'">
+  <ng-template [ngIf]="isAddCompay() || isEditCompay()">
     <div class="box-title"><h1>{{ title }}</h1></div>
     <span class="loader" *ngIf="isLoading else regForm"></span>
     <ng-template #regForm>
@@ -39,14 +39,14 @@
         </div>
         <!-- </div> -->
         <div class="alert-box-actions">
-          <button type="submit" class="button" [disabled]="!formGroup.valid">Create</button>
+          <button type="submit" class="button" [disabled]="!formGroup.valid">{{isAddCompay() ? 'Create' : 'Edit'}}</button>
           <button class="button" (click)="onClose()">Cancel</button>
         </div>
       </form>
     </ng-template>
   </ng-template>
 
-  <ng-template [ngIf]="preset === 'error'">
+  <ng-template [ngIf]="isAddCompay()">
     <p>{{ message }}</p>
     <div class="alert-box-actions">
       <button class="btn btn-primary" (click)="onClose()">Close</button>

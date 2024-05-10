@@ -1,12 +1,14 @@
  <!-- *ngIf="error"-->
 <app-alert
-  [isLoadig]="isLoading"
+  *ngIf="alertOpen"
+  [(isLoadig)]="isLoading"
   [preset]="alertPreset"
   [message]="error"
   [title]="alertTitle"
-  *ngIf="alertOpen"
+  [forEdit]="companyForEdit"
   (close)="onHandleError()"
   (addCompany)="onAddCompany($event)"
+  (editCompany)="onEditCompany($event)"
 ></app-alert>
 <div class="frontpage-body">
   <div class="frontpage-window-top">
@@ -53,7 +55,7 @@
           <button class="icon-display">
             <mat-icon class="mat-icon-display">login</mat-icon>
           </button>
-          <button class="icon-display">
+          <button class="icon-display" (click)="onOpenEditCompanyMenu(company.id, company.name, company.description)">
             <mat-icon class="mat-icon-display">edit</mat-icon>
           </button>
         </div>
