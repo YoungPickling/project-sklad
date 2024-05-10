@@ -5,6 +5,7 @@ import { AboutComponent } from "./about/about.component";
 import { LoginComponent } from "./login/login.component";
 import { NotFoundComponent } from "./not-found/not-found.component";
 import { ProfileComponent } from "./profile/profile.component";
+import { AuthGuard } from "./login/auth.guard";
 
 // export const frontpageRoutes: Routes = [
 export default [
@@ -15,7 +16,11 @@ export default [
       { path: '', component: MainComponent, pathMatch: 'full'},
       { path: 'about', component: AboutComponent },
       { path: 'login', component: LoginComponent },
-      { path: 'profile', component: ProfileComponent },
+      { 
+        path: 'profile', 
+        component: ProfileComponent,
+        canActivate: [AuthGuard],
+      },
       { path: '**', component: NotFoundComponent },
     ]
   },

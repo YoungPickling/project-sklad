@@ -31,9 +31,13 @@
   cursor: pointer;
 }
 
-.light-button *,
-.bright-button * {
+.frontpage-button-box > a {
   text-decoration: none;
+}
+
+.frontpage-button-box {
+  display: flex;
+  justify-content: center
 }
 
 .frontpage-banner-wrapper {
