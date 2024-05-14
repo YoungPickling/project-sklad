@@ -12,6 +12,14 @@ export interface LoginResponseData {
   access_token: string
 }
 
+export interface RegisterData {
+  firstname: string;
+  lastname: string;
+  username: string;
+  email: string;
+  password: string;
+}
+
 @Injectable({providedIn: 'root'})
 export class AuthService {
   user = new BehaviorSubject<BriefUserModel>(null); // BehaviorSubject
@@ -40,6 +48,26 @@ export class AuthService {
           resData.access_token
         );
         // this.getUserDetails(resData.access_token);
+      }),
+      switchMap(resData =>
+        this.getUserDetails(resData.access_token)
+      )
+    );
+  }
+
+  signup(regData: RegisterData) {
+    return this.http.post<LoginResponseData>(
+      environment.API_SERVER + "/api/secret/auth/register",
+      regData
+    )
+    .pipe(
+      catchError(this.handleError),
+      tap(resData => {
+        this.handleAuthentication(
+          regData.username,
+          resData.role, 
+          resData.access_token
+        );
       }),
       switchMap(resData =>
         this.getUserDetails(resData.access_token)

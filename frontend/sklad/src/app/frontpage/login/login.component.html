@@ -5,7 +5,8 @@
     </div>
 
     <ng-template #loginTemplate>
-      <p>Hello!</p>
+      <div class="error-box" *ngIf="error">Wrong username or password</div>
+      <p>login</p>
       <form #authForm="ngForm" (ngSubmit)="onSubmit(authForm)">
         <input 
           type="text" 

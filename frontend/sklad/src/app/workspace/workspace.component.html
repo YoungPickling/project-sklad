@@ -1,3 +1,4 @@
+<ng-template>
 <div class="sklad">
 
   <nav class="sklad-top-bar">
@@ -59,4 +60,31 @@
   </div>
 
 </div>
-<router-outlet></router-outlet>
+</ng-template>
+
+<ng-template *ngIf="isLoading else workspacePage">
+
+</ng-template>
+
+<ng-template #workspacePage>
+  <div class="workspace-page">
+    <header class="w-header">
+
+    </header>
+
+    <div class="w-body">
+      <nav class="w-side-bar">
+
+        <div class="w-side-bar-element">
+          <mat-icon>menu</mat-icon>
+        </div>
+      
+      </nav>
+      <div class="w-main-window">
+        <router-outlet></router-outlet>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+

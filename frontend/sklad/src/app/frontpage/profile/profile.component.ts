@@ -11,6 +11,7 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { Company } from '../../shared/models/company.model';
 import { BriefUserModel } from '../login/briefUser.model';
+import { Router, RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-profile',
@@ -35,8 +36,8 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
   constructor(
     private authService: AuthService,
-    private http: HttpClient
-    // private route: Router 
+    private http: HttpClient,
+    private router: Router
   ) {}
 
   ngOnInit() {
@@ -140,6 +141,11 @@ export class ProfileComponent implements OnInit, OnDestroy {
         this.isLoading = false;
       }
     });
+  }
+
+  onOpenWorkspace(companyId: string) {
+    this.isLoading = true;
+    this.router.navigate(['/workspace', companyId]);
   }
 
   // getCompanyImage() {

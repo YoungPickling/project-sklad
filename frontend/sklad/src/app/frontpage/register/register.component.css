@@ -1,0 +1,8 @@
+.frontpage-banner-wrapper > * {
+  margin: 0 auto 1rem;
+}
+
+.w-reg-form {
+  display: flex;
+  flex-direction: column;
+}

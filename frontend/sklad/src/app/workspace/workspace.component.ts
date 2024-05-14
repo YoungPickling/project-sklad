@@ -1,11 +1,9 @@
-import { CommonModule, isPlatformBrowser,  } from '@angular/common';
-import { Component, OnInit, PLATFORM_ID, Inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatIconModule, MatIconRegistry } from '@angular/material/icon';
-import { RouterOutlet } from '@angular/router';
-import { LeftBarComponent } from './left-bar/left-bar.component';
-import { LeftBarItemComponent } from './left-bar/left-bar-item/left-bar-item.component';
+import { ActivatedRoute, Params, RouterOutlet } from '@angular/router';
 import { DomSanitizer } from '@angular/platform-browser';
-import { HttpClientModule } from '@angular/common/http';
+import { Observable, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-workspace',
@@ -13,37 +11,54 @@ import { HttpClientModule } from '@angular/common/http';
   imports: [
     CommonModule, 
     RouterOutlet, 
-    MatIconModule, 
-    LeftBarComponent,
-    LeftBarItemComponent,
-    HttpClientModule
+    MatIconModule
   ],
   templateUrl: './workspace.component.html',
   styleUrls: ['./workspace.component.css']
 })
-export class WorkspaceComponent implements OnInit {
-  // constructor(@Inject(PLATFORM_ID) private platformId: Object) {}
+export class WorkspaceComponent implements OnInit, OnDestroy {
+  companyId: string | number;
+  isLoading = false
   showLeftBar = true;
 
-  constructor(
-    private matIconRegistry: MatIconRegistry, 
-    private domSanitizer: DomSanitizer
-  ) {
-    this.matIconRegistry.addSvgIcon(
-      'left_bar_open',
-      this.domSanitizer.bypassSecurityTrustResourceUrl('../../assets/lb-on-ico.svg')
-    );
+  routeHandler: Subscription;
 
-    this.matIconRegistry.addSvgIcon(
-      'left_bar_close',
-      this.domSanitizer.bypassSecurityTrustResourceUrl('../../assets/lb-off-ico.svg')
-    );
+  constructor(
+    private route: ActivatedRoute
+    // private matIconRegistry: MatIconRegistry, 
+    // private domSanitizer: DomSanitizer
+  ) {
+
+    // this.matIconRegistry.addSvgIcon(
+    //   'left_bar_open',
+    //   this.domSanitizer.bypassSecurityTrustResourceUrl('../../assets/lb-on-ico.svg')
+    // );
+    // this.matIconRegistry.addSvgIcon(
+    //   'left_bar_close',
+    //   this.domSanitizer.bypassSecurityTrustResourceUrl('../../assets/lb-off-ico.svg')
+    // );
+
   }
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.companyId = this.route.snapshot.params['companyId'];
+    this.routeHandler = this.route.params
+      .subscribe({
+        next: (params: Params) => {
+          this.companyId = params['companyId'];
+        },
+        error: (error) => {
+          console.log(error);
+        },
+      });
+  }
 
   toggleLeftBar() {
     this.showLeftBar = !this.showLeftBar;
+  }
+
+  ngOnDestroy() {
+    this.routeHandler.unsubscribe();
   }
 
   // ngAfterViewInit() {
