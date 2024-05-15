@@ -49,10 +49,12 @@
           <div class="frontpage-info-box">
             <b>{{ company.name }}</b>
             <p>{{ company.description | shorten: 32 }}</p>
+            {{ company.id }}
           </div>
         </div>
         <div class="frontpage-bar-box">
           <button class="icon-display" (click)="onOpenWorkspace(company.id)">
+          <!-- <button class="icon-display" (click)="this.router.navigate(['/workspace', company.id]);"> -->
             <mat-icon class="mat-icon-display">login</mat-icon>
           </button>
           <button class="icon-display" (click)="onOpenEditCompanyMenu(company.id, company.name, company.description)">

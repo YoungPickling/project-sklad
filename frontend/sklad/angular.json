@@ -16,6 +16,7 @@
             "outputPath": "dist/sklad",
             "index": "src/index.html",
             "browser": "src/main.ts",
+            "externalDependencies":[""],
             "polyfills": [
               "zone.js"
             ],

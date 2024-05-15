@@ -73,13 +73,17 @@
     </header>
 
     <div class="w-body">
-      <nav class="w-side-bar">
 
-        <div class="w-side-bar-element">
+      <nav class="w-side-bar" *ngIf="!sideBarMaximized">
+        <div class="w-side-bar-element" >
           <mat-icon>menu</mat-icon>
         </div>
-      
       </nav>
+
+      <nav class="w-max" *ngIf="sideBarMaximized">
+
+      </nav>
+
       <div class="w-main-window">
         <router-outlet></router-outlet>
       </div>

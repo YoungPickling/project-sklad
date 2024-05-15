@@ -30,7 +30,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
   alertOpen = false;
   alertTitle: string = null;
   alertPreset: AlertPresets = null;
-  companyForEdit: {id?: number, name: string, description: string};
+  companyForEdit: {id: string, name: string, description: string};
 
   private userDetailsSubscription: Subscription | undefined;
 
@@ -71,7 +71,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
     this.alertOpen = true;
   }
 
-  onOpenEditCompanyMenu(id: number, name: string, description: string) {
+  onOpenEditCompanyMenu(id: string, name: string, description: string) {
     this.companyForEdit = {id: id, name: name, description: description};
     this.alertTitle = 'Edit Company: ' + name;
     this.alertPreset = AlertPresets.editCompany
@@ -95,19 +95,21 @@ export class ProfileComponent implements OnInit, OnDestroy {
           "Authorization": `Bearer ${userBriefData.token}`
         }
       }
-    ).subscribe({
-      next: () => {
-        this.alertOpen = false;
-        this.authService.autoLogin(); // updates company list
-      },
-      error: error => {
-        console.error('Error creating a company:', error);
-        this.error = error.error.error;
-      },
-      complete: () => {
-        this.isLoading = false;
+    ).subscribe(
+      {
+        next: () => {
+          this.alertOpen = false;
+          this.authService.autoLogin(); // updates company list
+        },
+        error: error => {
+          console.error('Error creating a company:', error);
+          this.error = error.error.error;
+        },
+        complete: () => {
+          this.isLoading = false;
+        }
       }
-    });
+    );
   }
 
   onEditCompany($event: {name: string, description: string}) {

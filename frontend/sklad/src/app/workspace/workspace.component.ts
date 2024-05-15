@@ -1,9 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
 import { MatIconModule, MatIconRegistry } from '@angular/material/icon';
 import { ActivatedRoute, Params, RouterOutlet } from '@angular/router';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Observable, Subscription } from 'rxjs';
+import { WorkspaceService } from './workspace.service';
 
 @Component({
   selector: 'app-workspace',
@@ -11,20 +12,23 @@ import { Observable, Subscription } from 'rxjs';
   imports: [
     CommonModule, 
     RouterOutlet, 
-    MatIconModule
+    MatIconModule,
   ],
+  providers: [WorkspaceService],
   templateUrl: './workspace.component.html',
   styleUrls: ['./workspace.component.css']
 })
 export class WorkspaceComponent implements OnInit, OnDestroy {
-  companyId: string | number;
-  isLoading = false
+  companyId: number;
+  isLoading = false;
   showLeftBar = true;
+  sideBarMaximized = true;
 
   routeHandler: Subscription;
 
   constructor(
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private workspaceService: WorkspaceService
     // private matIconRegistry: MatIconRegistry, 
     // private domSanitizer: DomSanitizer
   ) {
@@ -41,16 +45,19 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.companyId = this.route.snapshot.params['companyId'];
-    this.routeHandler = this.route.params
-      .subscribe({
-        next: (params: Params) => {
-          this.companyId = params['companyId'];
-        },
-        error: (error) => {
-          console.log(error);
-        },
-      });
+    this.companyId = +this.route.snapshot.params['companyId'];
+    this.routeHandler = this.route.params.subscribe({
+      next: (params: Params) => {
+        this.companyId = params['companyId'];
+        this.workspaceService.getCompany(this.companyId);
+      },
+      error: (error) => {
+        console.log(error);
+      },
+      complete: () => {
+        this.isLoading = false;
+      }
+    });
   }
 
   toggleLeftBar() {
