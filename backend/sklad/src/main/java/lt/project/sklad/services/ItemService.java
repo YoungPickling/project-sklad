@@ -3,8 +3,11 @@ package lt.project.sklad.services;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lt.project.sklad._security.entities.Token;
+import lt.project.sklad._security.entities.User;
+import lt.project.sklad._security.repositories.UserRepository;
 import lt.project.sklad._security.services.HttpResponseService;
 import lt.project.sklad._security.services.TokenService;
+import lt.project.sklad._security.services.UserService;
 import lt.project.sklad._security.utils.MessagingUtils;
 import lt.project.sklad.entities.Company;
 import lt.project.sklad.entities.Item;
@@ -21,8 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.springframework.http.HttpStatus.FORBIDDEN;
-import static org.springframework.http.HttpStatus.UNAUTHORIZED;
+import static org.springframework.http.HttpStatus.*;
 
 /**
  * {@link Item} and {@link ItemColumn} service
@@ -36,6 +38,7 @@ public class ItemService {
     private final ItemColumnRepository itemColumnRepository;
     private final HttpResponseService responseService;
     private final CompanyRepository companyRepository;
+    private final UserRepository userRepository;
     private final TokenService tokenService;
     private final MessagingUtils msgUtils;
     // TODO ItemService methods
@@ -102,7 +105,34 @@ public class ItemService {
             final Long itemId,
             final HttpServletRequest request
     ) {
-        return ResponseEntity.noContent().build();
+        if (itemId == null)
+            return ResponseEntity.badRequest().body("Item ID cannot be null");
+
+        String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+
+        if (msgUtils.isBearer(authHeader))
+            return msgUtils.error(UNAUTHORIZED, "Bad credentials");
+
+        String jwt = authHeader.substring(7);
+        Token token = tokenService.findByToken(jwt).orElse(null);
+
+        if (token == null)
+            return msgUtils.error(UNAUTHORIZED, "Token not found");
+
+        final Item item = itemRepository.findById(itemId).orElse(null);
+
+        if(item == null)
+            return msgUtils.error(NOT_FOUND, "Item not found");
+
+        final User user = userRepository.findById(token.getUser().getId()).orElse(null);
+
+        if(user == null)
+            return msgUtils.error(NOT_FOUND, "User not found");
+
+        if(!user.getCompany().contains(item.getCompany()))
+            return msgUtils.error(NOT_FOUND, "You don't have access to the company");
+
+        return ResponseEntity.ok().body(item);
     }
 
     public ResponseEntity<?> updateItem(

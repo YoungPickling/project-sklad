@@ -1,10 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
-import { MatIconModule, MatIconRegistry } from '@angular/material/icon';
-import { ActivatedRoute, Params, RouterModule, RouterOutlet } from '@angular/router';
-import { DomSanitizer } from '@angular/platform-browser';
-import { Observable, Subscription } from 'rxjs';
+import { Component, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
+import { MatIconModule} from '@angular/material/icon';
+import { ActivatedRoute, NavigationEnd, Params, Router, RouterModule, RouterOutlet } from '@angular/router';
+import { Subscription, filter } from 'rxjs';
 import { WorkspaceService } from './workspace.service';
+import { Company } from '../shared/models/company.model';
 
 @Component({
   selector: 'app-workspace',
@@ -17,17 +17,25 @@ import { WorkspaceService } from './workspace.service';
   ],
   providers: [WorkspaceService],
   templateUrl: './workspace.component.html',
-  styleUrls: ['./workspace.component.css']
+  styleUrls: ['./workspace.component.css'],
+  encapsulation: ViewEncapsulation.None
 })
 export class WorkspaceComponent implements OnInit, OnDestroy {
   companyId: number;
   isLoading = false;
   showLeftBar = true;
   sideBarMaximized = true;
+  
+  company: Company;
+  currentRoute: string;
+  // breadcrum: {name: string, url: string[]}[];
 
-  routeHandler: Subscription;
+  private routeParamsSub: Subscription;
+  private routerEventsSub: Subscription;
+  private companyDetailSub: Subscription;
 
   constructor(
+    private router: Router,
     private route: ActivatedRoute,
     private workspaceService: WorkspaceService
     // private matIconRegistry: MatIconRegistry, 
@@ -46,8 +54,11 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.currentRoute = this.onBreadcrumbUpdate(this.router.url);
+
     this.companyId = +this.route.snapshot.params['companyId'];
-    this.routeHandler = this.route.params.subscribe({
+
+    this.routeParamsSub = this.route.params.subscribe({
       next: (params: Params) => {
         this.companyId = params['companyId'];
         this.workspaceService.getCompany(this.companyId);
@@ -59,14 +70,50 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
         this.isLoading = false;
       }
     });
+
+    this.companyDetailSub = this.workspaceService.companyDetails.subscribe(
+      company => this.company = company
+    );
+
+    this.routerEventsSub = this.router.events
+      .pipe(filter(event => event instanceof NavigationEnd))
+      .subscribe((event: NavigationEnd) => {
+        this.currentRoute = this.onBreadcrumbUpdate(event.urlAfterRedirects);
+      }
+    );
   }
 
-  toggleLeftBar() {
-    this.showLeftBar = !this.showLeftBar;
-  }
+  // toggleLeftBar() {
+  //   this.showLeftBar = !this.showLeftBar;
+  // }
 
   ngOnDestroy() {
-    this.routeHandler.unsubscribe();
+    this.routeParamsSub.unsubscribe();
+    this.routerEventsSub.unsubscribe();
+    this.companyDetailSub.unsubscribe();
+  }
+  
+  isActive(route: string): boolean {
+    return this.currentRoute === route;
+  }
+
+  // onBreadcrumbUpdate(route: string) {
+  //   const splitRoute: string[] = route.slice(1).split("/");
+  //   splitRoute.shift();
+  //   splitRoute.shift();
+  //   splitRoute.unshift("Home");
+  //   console.log(splitRoute)
+  //   return splitRoute.toString();
+  // }
+
+  onBreadcrumbUpdate(route: string): string {
+    const pathSegments = route.split("/");
+    // Remove the first two segments
+    const relevantSegments = pathSegments.slice(3);
+    // Add "Home" at the beginning
+    const breadcrumb = ["Home", ...relevantSegments];
+    // Join segments with a delimiter of your choice, e.g., ' > '
+    return breadcrumb.join(" > ");
   }
 
   // ngAfterViewInit() {

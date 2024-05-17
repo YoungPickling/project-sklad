@@ -66,10 +66,19 @@
 }
 
 .frontpage-loader-container {
-  /* max-width: 300px; */
-  /* max-height: 300px; */
   margin: 0 auto;
   display: flex;
   align-items: center;
+  justify-content: center;
+}
+
+.w-title {
+  margin-bottom: 0;
+}
+
+.w-empty {
+  margin: auto;
+  color: #666;
+  display: flex;
   justify-content: center;
 }

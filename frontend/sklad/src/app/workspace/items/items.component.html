@@ -1,0 +1,54 @@
+<h1 class="w-title">Items</h1>
+<button 
+  class="button-42" 
+  [ngClass]="{'button-42-active': addButtonActive}"
+  (click)="onClickAddBtn()"
+>Add</button>
+
+<ng-template [ngIf]="addButtonActive">
+  <hr/>
+  <form [formGroup]="addItemForm" (ngSubmit)="onSubmitAddItem()">
+    <div>
+      <label for="code">Code:</label>
+      <input id="code" formControlName="code">
+    </div>
+    <div>
+      <label for="name">Name:</label>
+      <input id="name" formControlName="name">
+    </div>
+    <div>
+      <label for="color">Color:</label>
+      <input id="color" formControlName="color">
+    </div>
+    <div>
+      <label for="description">Description:</label>
+      <input id="description" formControlName="description">
+    </div>
+
+    <div formArrayName="columns">
+      <div *ngFor="let columnControl of columns.controls; let i = index" [formGroupName]="i">
+        <label for="name-{{i}}">Column Name:</label>
+        <input id="name-{{i}}" formControlName="name">
+        
+        <label for="value-{{i}}">Column Value:</label>
+        <input id="value-{{i}}" formControlName="value">
+        
+        <label for="color-{{i}}">Column Color:</label>
+        <input id="color-{{i}}" formControlName="color" type="number">
+        
+        <label for="width-{{i}}">Column Width:</label>
+        <input id="width-{{i}}" formControlName="width">
+      </div>
+    </div>
+  
+    <button class="button-42" type="button" (click)="addColumn()">Add Column</button>
+    <button class="button-42" type="submit">Submit</button>
+  </form>
+  <hr/>
+</ng-template>
+
+<h1 class="w-empty" *ngIf="company?.items?.length === 0 else view">No items created yet</h1>
+
+<ng-template #view>
+
+</ng-template>

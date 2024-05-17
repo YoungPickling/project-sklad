@@ -45,6 +45,10 @@ export class WorkspaceService {
     );
   }
 
+  addCompany() {
+    
+  }
+
   reset() {
     this.companyDetails.next(null);
   }

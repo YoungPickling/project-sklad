@@ -1,7 +1,12 @@
 import { Route } from "@angular/router";
 import { WorkspaceComponent } from "./workspace.component";
 import { AuthGuard } from "../frontpage/login/auth.guard";
-import { LandingPageComponent } from "./window-templates/landing-page/landing.component";
+import { LandingPageComponent } from "./landing-page/landing.component";
+import { GalleryComponent } from "./gallery/gallery.component";
+import { UsersComponent } from "./users/users.component";
+import { LocationsComponent } from "./locations/locations.component";
+import { SuppliersComponent } from "./suppliers/suppliers.component";
+import { ItemsComponent } from "./items/items.component";
 
 export default [
   {
@@ -19,44 +24,31 @@ export default [
         path: '',
         pathMatch: 'full',
         loadComponent: () => 
-          import('./window-templates/landing-page/landing.component')
+          import('./landing-page/landing.component')
           .then((mod) => mod.LandingPageComponent),
-        // component: LandingPageComponent, 
       },
       {
         path: 'items',
-        component: LandingPageComponent,
+        component: ItemsComponent,
         // loadComponent: () => 
         //   import('./window-templates/landing-page/landing.component')
         //   .then((mod) => mod.LandingPageComponent),
       },
       {
         path: 'suppliers',
-        component: LandingPageComponent,
-        // loadComponent: () => 
-        //   import('./window-templates/landing-page/landing.component')
-        //   .then((mod) => mod.LandingPageComponent),
+        component: SuppliersComponent,
       },
       {
         path: 'locations',
-        component: LandingPageComponent,
-        // loadComponent: () => 
-        //   import('./window-templates/landing-page/landing.component')
-        //   .then((mod) => mod.LandingPageComponent),
+        component: LocationsComponent,
       },
       {
         path: 'users',
-        component: LandingPageComponent,
-        // loadComponent: () => 
-        //   import('./window-templates/landing-page/landing.component')
-        //   .then((mod) => mod.LandingPageComponent),
+        component: UsersComponent,
       },
       {
         path: 'gallery',
-        component: LandingPageComponent,
-        // loadComponent: () => 
-        //   import('./window-templates/landing-page/landing.component')
-        //   .then((mod) => mod.LandingPageComponent),
+        component: GalleryComponent,
       },
     ]
   }

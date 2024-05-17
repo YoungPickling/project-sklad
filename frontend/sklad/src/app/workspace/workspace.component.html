@@ -1,67 +1,3 @@
-<ng-template>
-<div class="sklad">
-
-  <nav class="sklad-top-bar">
-    <div class="sklad-top-icon" (click)="toggleLeftBar()">
-      <!-- <div *ngIf="showLeftBar; then leftBarOn else leftBarOff"></div> -->
-      <!-- Скрыть левую панель - Paslėpti kairiąją juostą -->
-        <img src="/assets/lb-on-ico.svg" alt="Hide left strip" *ngIf="showLeftBar"/>
-        <!-- <mat-icon *ngIf="showLeftBar" svgIcon="left_bar_open"></mat-icon> -->
-      <!-- Открыть левую панель - Rodyti kairiąją juostą -->
-        <img src="/assets/lb-off-ico.svg" alt="Show left strip" *ngIf="!showLeftBar"/>
-        <!-- <mat-icon *ngIf="!showLeftBar" svgIcon="left_bar_off"></mat-icon> -->
-    </div>
-  </nav>
-
-  <div class="sklad-workspace">
-
-    <app-left-bar *ngIf="showLeftBar"></app-left-bar>
-
-    <div class="sklad-tab-container">
-      <nav class="sklad-tab-bar">
-
-        <div class="sklad-tab">
-          <span>Map</span>
-          <button>X</button>
-        </div>
-
-        <div class="sklad-tab sklad-tab-disabled">
-          <span>Table</span>
-          <button hidden>X</button>
-        </div>
-
-      </nav>
-      <main class="sklad-window">
-        <div class="sklad-window-table-head">
-          <div class="sklad-window-table-head-image">
-            <div class="sklad-head-image-circle">?</div>
-          </div>
-          <div class="sklad-head-contents">
-            <h1>Pavadinimas</h1>
-            <hr/>
-          </div>
-        </div>
-
-        <table mat-table>
-          <!-- <tr>
-            <th>1</th>
-            <th>2</th>
-            <th>3</th>
-          </tr>
-          <tr>
-            <td>1</td>
-            <td>2</td>
-            <td>3</td>
-          </tr> -->
-        </table>
-
-      </main>
-    </div>
-  </div>
-
-</div>
-</ng-template>
-
 <ng-template *ngIf="isLoading else workspacePage">
 
 </ng-template>
@@ -94,45 +30,52 @@
             <h1>Home</h1>
           </div>
         </div>
+        
         <hr/>
         <div 
           class="w-max-element"
           routerLinkActive="w-max-element-selected"
           [routerLink]="['/workspace', companyId, 'items']"
         >
-          <mat-icon>inventory_2</mat-icon><p>items</p>
+          <mat-icon>inventory_2</mat-icon>
+          <p>items({{ company?.items?.length }})</p>
         </div>
         <div 
           class="w-max-element"
           routerLinkActive="w-max-element-selected"
           [routerLink]="['/workspace', companyId, 'suppliers']"
         >
-          <mat-icon>local_shipping</mat-icon><p>suppliers</p>
+          <mat-icon>local_shipping</mat-icon>
+          <p>suppliers({{ company?.suppliers?.length }})</p>
         </div>
         <div 
           class="w-max-element"
           routerLinkActive="w-max-element-selected"
           [routerLink]="['/workspace', companyId, 'locations']"
         >
-          <mat-icon>warehouse</mat-icon><p>locations</p>
+          <mat-icon>warehouse</mat-icon>
+          <p>locations({{ company?.locations?.length }})</p>
         </div>
         <div 
           [routerLink]="['/workspace', companyId, 'users']"
           class="w-max-element" 
           routerLinkActive="w-max-element-selected"
         >
-          <mat-icon>group</mat-icon><p>users</p>
+          <mat-icon>group</mat-icon>
+          <p>users({{ company?.user?.length }})</p>
         </div>
         <div 
           class="w-max-element" 
           routerLinkActive="w-max-element-selected"
           [routerLink]="['/workspace', companyId, 'gallery']" 
         >
-          <mat-icon>photo_library</mat-icon><p>gallery</p>
+          <mat-icon>photo_library</mat-icon>
+          <p>gallery({{ company?.imageData?.length }})</p>
         </div>
       </nav>
 
       <div class="w-main-window">
+        <b>{{ currentRoute }}</b>
         <router-outlet></router-outlet>
       </div>
     </div>
