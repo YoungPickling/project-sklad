@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
 import { MatIconModule, MatIconRegistry } from '@angular/material/icon';
-import { ActivatedRoute, Params, RouterOutlet } from '@angular/router';
+import { ActivatedRoute, Params, RouterModule, RouterOutlet } from '@angular/router';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Observable, Subscription } from 'rxjs';
 import { WorkspaceService } from './workspace.service';
@@ -10,7 +10,8 @@ import { WorkspaceService } from './workspace.service';
   selector: 'app-workspace',
   standalone: true,
   imports: [
-    CommonModule, 
+    CommonModule,
+    RouterModule,
     RouterOutlet, 
     MatIconModule,
   ],

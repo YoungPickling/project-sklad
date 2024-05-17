@@ -254,12 +254,87 @@ html {
   background-color:#fff;
   display: block;
   /* flex-direction: column; */
-  padding-top: 0.5rem;
+  padding: 0 1rem;
   flex: 0 0 300px;
-  width: 300px;
-  height: auto; 
+  width: calc(300px - 2rem);
+  height: auto;
   box-shadow: rgba(0, 0, 0, 0.1) 0px 5px 5px 0px, rgba(0, 0, 0, 0.1) 0px 0px 1px 0px;
 }
+
+.w-max > div,
+.w-max .w-max-element {
+  /* background-color: #888; */
+  padding: 0 1rem;
+  height: 2rem;
+  width: calc(100% - 2rem);
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  border-bottom: 1px solid #0000;
+}
+
+.w-max .w-max-element {
+  cursor: pointer;
+}
+
+.w-max > div > a { 
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.w-max .w-max-element p {
+  display: block;
+  margin: 0 0 0 0.7rem;
+  font-size: 1.2rem;
+}
+
+.w-max .w-max-element:hover,
+.w-max-heading-right-button:hover,
+.w-max-heading .w-max-heading-left-button:hover {
+  background-color: #f1f1f1;
+}
+
+.w-max div h1 {
+  margin: 0 0 0 0.7rem;
+  width: auto;
+}
+
+.w-max > hr {
+  background-color: #999; 
+  height: 1px; 
+  border: 0;
+}
+
+.w-max-heading {
+  display: flex;
+  flex-direction: row;
+  flex-grow: 1;
+}
+
+.w-max-heading-left-button {
+  cursor: pointer;
+}
+
+.w-max-heading-right-button {
+  cursor: pointer;
+  width: 100%;
+}
+
+.w-max-element-selected p {
+  color: #f44336;
+}
+
+.w-max-element-selected {
+  border-bottom: 1px solid #f44336 !important;
+  font-style: italic;
+  color: #f44336;
+}
+
+/* .w-max > div > mat-icon {
+  display: block;
+} */
 
 .w-main-window {
   padding: 1rem 0 0 1rem;
@@ -276,6 +351,11 @@ html {
   justify-content: center;
   align-items: center;
   cursor: pointer;
+}
+
+.w-max-heading-selected h1 {
+  font-style: italic;
+  color: #f44336;
 }
 
 .w-side-bar-element:hover {
@@ -305,3 +385,4 @@ html {
 .w-side-bar::-webkit-scrollbar-thumb:hover {
   background: #555; 
 }
+

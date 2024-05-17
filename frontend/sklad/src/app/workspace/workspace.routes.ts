@@ -18,8 +18,45 @@ export default [
       {
         path: '',
         pathMatch: 'full',
-        // loadComponent: () => import('./window-templates/landing-page/landing.component').then((mod) => mod.LandingPageComponent),
-        component: LandingPageComponent, 
+        loadComponent: () => 
+          import('./window-templates/landing-page/landing.component')
+          .then((mod) => mod.LandingPageComponent),
+        // component: LandingPageComponent, 
+      },
+      {
+        path: 'items',
+        component: LandingPageComponent,
+        // loadComponent: () => 
+        //   import('./window-templates/landing-page/landing.component')
+        //   .then((mod) => mod.LandingPageComponent),
+      },
+      {
+        path: 'suppliers',
+        component: LandingPageComponent,
+        // loadComponent: () => 
+        //   import('./window-templates/landing-page/landing.component')
+        //   .then((mod) => mod.LandingPageComponent),
+      },
+      {
+        path: 'locations',
+        component: LandingPageComponent,
+        // loadComponent: () => 
+        //   import('./window-templates/landing-page/landing.component')
+        //   .then((mod) => mod.LandingPageComponent),
+      },
+      {
+        path: 'users',
+        component: LandingPageComponent,
+        // loadComponent: () => 
+        //   import('./window-templates/landing-page/landing.component')
+        //   .then((mod) => mod.LandingPageComponent),
+      },
+      {
+        path: 'gallery',
+        component: LandingPageComponent,
+        // loadComponent: () => 
+        //   import('./window-templates/landing-page/landing.component')
+        //   .then((mod) => mod.LandingPageComponent),
       },
     ]
   }

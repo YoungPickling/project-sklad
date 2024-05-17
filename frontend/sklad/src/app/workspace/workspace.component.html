@@ -75,13 +75,61 @@
     <div class="w-body">
 
       <nav class="w-side-bar" *ngIf="!sideBarMaximized">
-        <div class="w-side-bar-element" >
+        <div class="w-side-bar-element" (click)="sideBarMaximized = true">
           <mat-icon>menu</mat-icon>
         </div>
       </nav>
 
       <nav class="w-max" *ngIf="sideBarMaximized">
-
+        <div class="w-max-heading">
+          <div class="w-max-heading-left-button" (click)="sideBarMaximized = false">
+            <mat-icon>menu</mat-icon>
+          </div>
+          <div
+            class="w-max-heading-right-button"
+            routerLinkActive="w-max-heading-selected"
+            [routerLink]="['/workspace', companyId]"
+            [routerLinkActiveOptions]="{exact: true}"
+          >
+            <h1>Home</h1>
+          </div>
+        </div>
+        <hr/>
+        <div 
+          class="w-max-element"
+          routerLinkActive="w-max-element-selected"
+          [routerLink]="['/workspace', companyId, 'items']"
+        >
+          <mat-icon>inventory_2</mat-icon><p>items</p>
+        </div>
+        <div 
+          class="w-max-element"
+          routerLinkActive="w-max-element-selected"
+          [routerLink]="['/workspace', companyId, 'suppliers']"
+        >
+          <mat-icon>local_shipping</mat-icon><p>suppliers</p>
+        </div>
+        <div 
+          class="w-max-element"
+          routerLinkActive="w-max-element-selected"
+          [routerLink]="['/workspace', companyId, 'locations']"
+        >
+          <mat-icon>warehouse</mat-icon><p>locations</p>
+        </div>
+        <div 
+          [routerLink]="['/workspace', companyId, 'users']"
+          class="w-max-element" 
+          routerLinkActive="w-max-element-selected"
+        >
+          <mat-icon>group</mat-icon><p>users</p>
+        </div>
+        <div 
+          class="w-max-element" 
+          routerLinkActive="w-max-element-selected"
+          [routerLink]="['/workspace', companyId, 'gallery']" 
+        >
+          <mat-icon>photo_library</mat-icon><p>gallery</p>
+        </div>
       </nav>
 
       <div class="w-main-window">

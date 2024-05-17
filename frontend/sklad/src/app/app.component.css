@@ -1,5 +1,10 @@
 /* <span class="frontpage-loader"></span> */
 
+* {
+  color: #222;
+  font-family: "Trebuchet MS", Helvetica, sans-serif;
+}
+
 .frontpage-loader {
   position: relative;
   width: 130px;
