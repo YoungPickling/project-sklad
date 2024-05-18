@@ -6,7 +6,6 @@
     <ng-template #regForm>
       <div class="error-box" *ngIf="message && lastMessage !== message">{{ message }}</div>
       <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
-        <!-- <div formGroup="companyData"> -->
         <div style="display:flex;flex-direction:column;">
           <label for="name">Company name</label>
           <input
@@ -37,9 +36,8 @@
             <br #break2 />
           </span>
         </div>
-        <!-- </div> -->
         <div class="alert-box-actions">
-          <button type="submit" class="button" [disabled]="!formGroup.valid">{{isAddCompay() ? 'Create' : 'Edit'}}</button>
+          <button type="submit" class="button" [disabled]="!formGroup.valid">{{ isAddCompay() ? 'Create' : 'Edit' }}</button>
           <button class="button" (click)="onClose()">Cancel</button>
         </div>
       </form>

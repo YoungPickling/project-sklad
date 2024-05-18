@@ -3,52 +3,122 @@
   class="button-42" 
   [ngClass]="{'button-42-active': addButtonActive}"
   (click)="onClickAddBtn()"
->Add</button>
+>Add Row</button>
 
-<ng-template [ngIf]="addButtonActive">
+<div *ngIf="!isLoading && addButtonActive">
   <hr/>
   <form [formGroup]="addItemForm" (ngSubmit)="onSubmitAddItem()">
-    <div>
-      <label for="code">Code:</label>
-      <input id="code" formControlName="code">
-    </div>
-    <div>
-      <label for="name">Name:</label>
-      <input id="name" formControlName="name">
-    </div>
-    <div>
-      <label for="color">Color:</label>
-      <input id="color" formControlName="color">
-    </div>
-    <div>
-      <label for="description">Description:</label>
-      <input id="description" formControlName="description">
+    <div class="w-form-container">
+      <div class="input-container">
+        <input placeholder="code" formControlName="code" class="input-field" type="text" autocomplete="false" />
+        <label for="code" class="input-label">code</label>
+        <span class="input-highlight"></span>
+      </div>
+
+      <div class="input-container">
+        <input placeholder="name" formControlName="name" class="input-field" type="text" autocomplete="false" />
+        <label for="name" class="input-label">name</label>
+        <span class="input-highlight"></span>
+      </div>
+
+      <div class="input-container" style="margin-right:0;">
+        <input type="color" value="#ffffff" formControlName="color" class="input-color" />
+        <label for="color" class="input-label">color</label>
+      </div>
+      
+      <div class="input-container">
+        <input placeholder="description" formControlName="description" class="input-field" type="text" autocomplete="false" />
+        <label for="description" class="input-label">description</label>
+        <span class="input-highlight"></span>
+      </div>
     </div>
 
     <div formArrayName="columns">
-      <div *ngFor="let columnControl of columns.controls; let i = index" [formGroupName]="i">
-        <label for="name-{{i}}">Column Name:</label>
-        <input id="name-{{i}}" formControlName="name">
+      <p *ngIf="columns?.controls?.length > 0">Rows:</p>
+      <div 
+        *ngFor="let columnControl of columns.controls; let i = index; let even = even" 
+        class="w-form-container"
+        [ngStyle]="{'background-color': even ? '#fff' : '#e3e9f2'}"
+        [formGroupName]="i"
+        >
+        <div class="input-container">
+          <input id="name-{{i}}" placeholder="column name" formControlName="name" class="input-field" type="text" autocomplete="false" />
+          <label for="name-{{i}}" class="input-label">column name</label>
+          <span class="input-highlight"></span>
+        </div>
+  
+        <div class="input-container">
+          <input id="value-{{i}}" placeholder="value" formControlName="value" class="input-field" type="text" autocomplete="false" />
+          <label for="value-{{i}}" class="input-label">value</label>
+          <span class="input-highlight"></span>
+        </div>
+  
+        <div class="input-container" style="margin-right:0;">
+          <input id="color-{{i}}" formControlName="color" class="input-color" type="color" value="#ffffff" />
+          <!-- <label for="color-{{i}}" class="input-label">Color</label> -->
+        </div>
         
-        <label for="value-{{i}}">Column Value:</label>
-        <input id="value-{{i}}" formControlName="value">
-        
-        <label for="color-{{i}}">Column Color:</label>
-        <input id="color-{{i}}" formControlName="color" type="number">
-        
-        <label for="width-{{i}}">Column Width:</label>
-        <input id="width-{{i}}" formControlName="width">
+        <div class="input-container">
+          <input id="width-{{i}}" placeholder="column width" formControlName="width" class="input-field" type="text" autocomplete="false" />
+          <label for="width-{{i}}" class="input-label">column width</label>
+          <span class="input-highlight"></span>
+        </div>
+
+        <div class="input-container" style="align-content:center; margin-right:0">
+          <div class="w-form-button" (click)="removeColumn(i)"> 
+            <!-- (click)="columns.controls.splice(i, 1)" - with this approach, once you add a column with empty fields and delete it right after, you can't submit the form -->
+            <mat-icon>close</mat-icon>
+          </div>
+        </div>
       </div>
     </div>
-  
-    <button class="button-42" type="button" (click)="addColumn()">Add Column</button>
-    <button class="button-42" type="submit">Submit</button>
+    
+    <div class="w-form-submit-box">
+      <button class="button-42" type="button" (click)="addColumn()">Add Column</button>
+      <button class="button-42" type="submit" [disabled]="addItemForm.invalid && !isLoading">Submit</button>
+    </div>
   </form>
   <hr/>
-</ng-template>
+</div>
 
-<h1 class="w-empty" *ngIf="company?.items?.length === 0 else view">No items created yet</h1>
+<span class="loader" *ngIf="isLoading"></span>
 
-<ng-template #view>
+<h1 class="w-empty" *ngIf="company?.items?.length < 1">No items created yet</h1>
 
-</ng-template>
+<div style="overflow: scroll;" *ngIf="company?.items?.length > 0">
+  <table class="workspace-table">
+    <thead>
+      <tr>
+        <th>code</th>
+        <th>name</th>
+        <th>description</th>
+        <th 
+          *ngFor="let el of customColumns | keyvalue"
+          [ngStyle]="{
+            'background-color': el.value?.color, 
+            'color': onFontColor(el.value?.color),
+            'min-width': el.value?.width + 'px'
+            }"
+        >{{ el.key }}</th>
+        <th
+          class="w-suppliers"
+          *ngFor="let location of company?.locations"
+        ><mat-icon>warehouse</mat-icon><div>{{ location?.name }}</div></th>
+
+        <!-- *ngFor="let location of company?.locations" -->
+        <!-- ><mat-icon>warehouse</mat-icon>{{ location }}</th> -->
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of company?.items">
+        <td>{{ item?.code }}</td>
+        <td>{{ item?.name }}</td>
+        <td>{{ item?.description }}</td>
+        <td 
+          *ngFor="let el of customColumns | keyvalue"
+        >{{ getItemColumnValue(item, el.key) }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+

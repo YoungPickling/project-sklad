@@ -24,31 +24,17 @@ header {
   flex-direction: row;
 }
 
-.frontpage-navigation-buttons {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  justify-content: space-between;
-  height: 100%;
-  /* width: 48vw; */
-  /* max-width: 670px; */
-}
-
-.frontpage-navigation-buttons > a {
-  min-height: 80px;
-}
-
-.frontpage-navigation-user {
+/* .frontpage-navigation-user {
   -webkit-box-pack: justify;
   justify-content: space-between;
-}
+} */
 
 nav {
   -webkit-box-pack: justify;
   justify-content: space-between;
 }
 
-.frontpage-navigation-user ul,
+/* .frontpage-navigation-user ul, */
 nav ul {  
   display: flex;
   height: 100%;
@@ -57,7 +43,7 @@ nav ul {
   list-style: none;
 }
 
-.frontpage-navigation-user ul li,
+/* .frontpage-navigation-user ul li, */
 nav ul li {
   position: relative;
   display: flex;
@@ -69,13 +55,12 @@ nav ul li {
   line-height: 22px;
 }
 
-.frontpage-navigation-user ul li a,
+/* .frontpage-navigation-user ul li a, */
 nav ul li a {
   height: auto;
   -webkit-box-align: center;
   -ms-flex-align: center;
   align-items: center;
-  /* color: inherit; */
   -webkit-tap-highlight-color: transparent;
   padding: 0;
   margin: 0 16px;
@@ -92,83 +77,4 @@ a {
 
 a:hover {
   color: #2963c0;
-}
-
-.frontpage-navigation-buttons a {
-  display: flex;
-  align-items: center;
-}
-
-mat-icon .frontpage-login {
-  font-size: 3rem; 
-  width: 3rem;
-  height: 3rem;
-}
-
-mat-icon .frontpage-arrow {
-  font-size: 3rem; 
-  width: 3rem;
-  height: 3rem;
-}
-
-.open + .frontpage-dropdown-menu {
-  display: block;
-}
-
-.frontpage-dropdown-menu {
-  position: absolute;
-  top: 60px;
-  right: auto;
-  z-index: 2;
-  display: none;
-  float: left;
-  min-width: 160px;
-  padding: 35px;
-  margin: 0;
-  text-align: left;
-  list-style: none;
-  background-color: #fff;
-  background-clip: padding-box;
-  /* border: 1px solid #ccc; */
-  border: 1px solid rgba(0, 0, 0, .15);
-  -webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, .11);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, .11);
-}
-
-.frontpage-dropdown-menu > li {
-  margin: 0.7rem 0;
-}
-
-.frontpage-dropdown-menu > li:first-child {
-  margin: 0 0 0.7rem;
-}
-
-.frontpage-dropdown-menu > li:last-of-type {
-  margin: 0.7rem 0 0;
-}
-
-.frontpage-dropdown-menu h3 {
-  font-size: 1rem;
-  color: #999;
-  margin: 0 0 0.5rem;
-}
-
-.frontpage-dropdown-menu mat-icon {
-  margin-right: 0.7rem;
-}
-
-.frontpage-icon {
-  display: flex;
-  width: 40px;
-  height: 40px;
-  align-items: center;
-  justify-content: center;
-  /* padding: 8px; */
-  background-color: #222;
-  border-radius: 50%;
-}
-
-.frontpage-icon b {
-  color: #ff0;
-  padding: 0;
 }

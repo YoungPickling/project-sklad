@@ -5,6 +5,8 @@ import { ActivatedRoute, NavigationEnd, Params, Router, RouterModule, RouterOutl
 import { Subscription, filter } from 'rxjs';
 import { WorkspaceService } from './workspace.service';
 import { Company } from '../shared/models/company.model';
+import { AuthService } from '../frontpage/login/auth.service';
+import { ClickOutsideDirective } from '../shared/directives/clickOutside.directive';
 
 @Component({
   selector: 'app-workspace',
@@ -14,6 +16,7 @@ import { Company } from '../shared/models/company.model';
     RouterModule,
     RouterOutlet, 
     MatIconModule,
+    ClickOutsideDirective
   ],
   providers: [WorkspaceService],
   templateUrl: './workspace.component.html',
@@ -22,9 +25,16 @@ import { Company } from '../shared/models/company.model';
 })
 export class WorkspaceComponent implements OnInit, OnDestroy {
   companyId: number;
-  isLoading = false;
+  isLoading = false; // not implemented
   showLeftBar = true;
   sideBarMaximized = true;
+
+  loginMenu = false;
+  isLoggedIn = false;
+  username = "";
+  initials = "";
+
+  private userDetailsSubscription: Subscription;
   
   company: Company;
   currentRoute: string;
@@ -34,14 +44,16 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
   private routerEventsSub: Subscription;
   private companyDetailSub: Subscription;
 
+  leftBarMenu: {name: string, logo: string, number: string, link: string[]}[]
+
   constructor(
+    private authService: AuthService,
     private router: Router,
     private route: ActivatedRoute,
     private workspaceService: WorkspaceService
-    // private matIconRegistry: MatIconRegistry, 
+    // private matIconRegistry: MatIconRegistry,
     // private domSanitizer: DomSanitizer
   ) {
-
     // this.matIconRegistry.addSvgIcon(
     //   'left_bar_open',
     //   this.domSanitizer.bypassSecurityTrustResourceUrl('../../assets/lb-on-ico.svg')
@@ -50,10 +62,18 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
     //   'left_bar_close',
     //   this.domSanitizer.bypassSecurityTrustResourceUrl('../../assets/lb-off-ico.svg')
     // );
-
   }
 
   ngOnInit() {
+    this.userDetailsSubscription = this.authService.userDetails.subscribe(
+      user => {
+        this.isLoggedIn = !!user;
+        console.log(this.isLoggedIn);
+        this.username = user?.username || "";
+        this.initials = user?.firstname.toUpperCase().at(0) + user?.lastname.toUpperCase().at(0)
+      }
+    );
+
     this.currentRoute = this.onBreadcrumbUpdate(this.router.url);
 
     this.companyId = +this.route.snapshot.params['companyId'];
@@ -81,30 +101,65 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
         this.currentRoute = this.onBreadcrumbUpdate(event.urlAfterRedirects);
       }
     );
+
+    // this.leftBarMenu = [
+    //   {
+    //     name: "items", 
+    //     logo: "inventory_2", 
+    //     number: this.company?.items?.length.toString(), 
+    //     link: ['/workspace', this.companyId.toString(), 'items']
+    //   },
+    //   {
+    //     name: "suppliers", 
+    //     logo: "local_shipping", 
+    //     number: this.company?.suppliers?.length.toString(), 
+    //     link: ['/workspace', this.companyId.toString(), 'suppliers']
+    //   },
+    //   {
+    //     name: "locations", 
+    //     logo: "warehouse", 
+    //     number: this.company?.locations?.length.toString(), 
+    //     link: ['/workspace', this.companyId.toString(), 'locations']
+    //   },
+    //   {
+    //     name: "users", 
+    //     logo: "group", 
+    //     number: this.company?.user?.length.toString(), 
+    //     link: ['/workspace', this.companyId.toString(), 'users']
+    //   },
+    //   {
+    //     name: "gallery", 
+    //     logo: "photo_library", 
+    //     number: this.company?.imageData?.length.toString(), 
+    //     link: ['/workspace', this.companyId.toString(), 'gallery']
+    //   }
+    // ]
+  }
+
+  ngOnDestroy() {
+    this.routeParamsSub.unsubscribe();
+    this.routerEventsSub.unsubscribe();
+    this.companyDetailSub.unsubscribe();
+    this.userDetailsSubscription.unsubscribe();
   }
 
   // toggleLeftBar() {
   //   this.showLeftBar = !this.showLeftBar;
   // }
 
-  ngOnDestroy() {
-    this.routeParamsSub.unsubscribe();
-    this.routerEventsSub.unsubscribe();
-    this.companyDetailSub.unsubscribe();
-  }
-  
   isActive(route: string): boolean {
     return this.currentRoute === route;
   }
 
-  // onBreadcrumbUpdate(route: string) {
-  //   const splitRoute: string[] = route.slice(1).split("/");
-  //   splitRoute.shift();
-  //   splitRoute.shift();
-  //   splitRoute.unshift("Home");
-  //   console.log(splitRoute)
-  //   return splitRoute.toString();
-  // }
+  closeLoginMenu() {
+    this.loginMenu = false;
+  }
+
+  onLogout() {
+    this.loginMenu = false;
+    this.authService.logout();
+    this.router.navigate(['']);
+  }
 
   onBreadcrumbUpdate(route: string): string {
     const pathSegments = route.split("/");

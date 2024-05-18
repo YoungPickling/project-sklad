@@ -6,6 +6,43 @@
   <div class="workspace-page">
     <header class="w-header">
 
+      <div class="w-header-mobile-box">
+        <!-- <div class="w-header-button">
+          <mat-icon>menu</mat-icon>
+        </div> -->
+        <div class="w-side-bar-element" (click)="sideBarMaximized = !sideBarMaximized">
+          <mat-icon>menu</mat-icon>
+        </div>
+      </div>
+
+      <li class="frontpage-navigation-buttons" style="flex: 0 1;width:4rem">
+        <a 
+          role="button" 
+          (click)="loginMenu = !loginMenu"
+          (clickOutside)="closeLoginMenu()"
+          [ngClass]="loginMenu ? 'open' : ''"
+          >
+          <mat-icon class="frontpage-login" *ngIf="!isLoggedIn">login</mat-icon>
+          <div class="frontpage-icon" *ngIf="isLoggedIn">
+            <b>{{ initials }}</b>
+          </div>
+          <mat-icon class="frontpage-arrow">expand_{{ loginMenu ? 'less' : 'more' }}</mat-icon>
+        </a>
+  
+        <ul class="frontpage-dropdown-menu" id="sign-in" *ngIf="!isLoggedIn">
+          <li><h3>sign in via</h3></li>
+          <li><a [routerLink]="['/login']" (click)="closeLoginMenu()"><mat-icon>mail_outlined</mat-icon>email</a></li>
+          <!-- <li><a href="#"><mat-icon>linkedin</mat-icon>B</a></li> -->
+          <!-- <li><a href="#"><mat-icon>github</mat-icon>C</a></li> -->
+        </ul>
+  
+        <ul class="frontpage-dropdown-menu" id="sign-in" *ngIf="isLoggedIn">
+          <li><a [routerLink]="['/profile']" (click)="closeLoginMenu()">profile</a></li>
+          <li><a [routerLink]="['/profile/settings']" (click)="closeLoginMenu()">settings</a></li>
+          <li><a [routerLink]="['/']" (click)="onLogout()">log out</a></li> 
+        </ul>
+      </li>
+
     </header>
 
     <div class="w-body">
@@ -32,6 +69,15 @@
         </div>
         
         <hr/>
+        <!-- <div
+          *ngFor="let menu of leftBarMenu"
+          class="w-max-element" 
+          routerLinkActive="w-max-element-selected"
+          [routerLink]="menu.link" 
+        >
+          <mat-icon>{{ menu.logo }}</mat-icon>
+          <p>{{ menu.name }}({{ menu.number }})</p>
+        </div> -->
         <div 
           class="w-max-element"
           routerLinkActive="w-max-element-selected"
