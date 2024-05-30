@@ -354,7 +354,7 @@ html {
   padding: 1rem 0 0 1rem;
   width: 100%;
   height: 100%;
-  overflow-y: scroll;
+  overflow-y: auto;
 }
 
 .w-side-bar-element {
@@ -614,8 +614,17 @@ header a {
   border-collapse: collapse;
 }
 
+.workspace-table * input[type=text],
+.workspace-table * input[type=text]:focus {
+  /* border: none; */
+}
+
 .workspace-table thead {
   background-color: black;
+}
+
+.workspace-table thead th {
+  height: 28px;
 }
 
 .workspace-table thead * {
@@ -642,6 +651,23 @@ header a {
 
 .workspace-table .w-suppliers > mat-icon {
   margin-right: 0.4rem;
+}
+
+.w-table-container {
+  display: block;
+  margin: 1rem 1rem 1rem 0;
+  max-width: fit-content;
+  /* overflow: scroll; */
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 5px 5px, rgba(0, 0, 0, 0.1) 0px 0px 1px 0px;
+}
+
+.w-title-bar {
+  display:flex;
+  align-items: flex-end
+}
+
+.w-title-bar .loader-round {
+  margin-left: 1rem;
 }
 
 @media screen and (min-width: 1024px) {

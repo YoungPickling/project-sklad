@@ -14,8 +14,8 @@ spring:
     open-in-view: false
     generate-ddl: true
     hibernate:
-#      ddl-auto: update
-      ddl-auto: create-drop
+      ddl-auto: update
+#      ddl-auto: create-drop
     properties:
       hibernate:
         format_sql: true
@@ -39,3 +39,13 @@ application:
       expiration: 86400000
       refresh-token:
         expiration: 604800000
+
+#logging:
+#  level:
+#    org:
+#      hibernate:
+#        SQL: DEBUG
+#        type:
+#          descriptor:
+#            sql:
+#              BasicBinder: TRACE

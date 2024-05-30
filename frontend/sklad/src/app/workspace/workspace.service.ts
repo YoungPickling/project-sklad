@@ -9,6 +9,7 @@ import { Item } from "../shared/models/item.model";
 @Injectable()
 export class WorkspaceService {
   companyDetails = new BehaviorSubject<Company>(null);
+  isLoading = new BehaviorSubject<boolean>(false);
 
   constructor(
     private http: HttpClient
@@ -32,21 +33,22 @@ export class WorkspaceService {
       }
     ).subscribe(
       {
-        next: result => {
-          console.log(result)
+        next: (result: Company) => {
+          console.log(result);
+          result.items?.sort((a, b) => a.id - b.id);
           this.companyDetails.next(result);
         },
         error: error => {
-          console.error('Error creating a company:', error);
+          console.error('Error getting a company:', error);
         },
         complete: () => {
-          // this.isLoading = false;
+          this.isLoading.next(false);
         }
       }
     );
   }
 
-  addItem(item: Item, companyId: number) {
+  addItem(item: Item) {
     if (typeof localStorage === 'undefined')
       return;
 
@@ -56,7 +58,7 @@ export class WorkspaceService {
       return;
 
     this.http.post<Item>(
-      environment.API_SERVER + "/api/secret/item/" + companyId,
+      environment.API_SERVER + "/api/secret/item/" + this.companyDetails.value.id,
       item,
       {
         headers: {
@@ -67,10 +69,81 @@ export class WorkspaceService {
       {
         next: result => {
           console.log(result)
-          this.getCompany(companyId);
+          this.getCompany(this.companyDetails.value.id);
         },
         error: error => {
           console.error('Error inserting new item:', error);
+        },
+        complete: () => {
+          this.isLoading.next(false);
+        }
+      }
+    );
+  }
+
+  updateItem(item: Item) {
+    if (typeof localStorage === 'undefined')
+      return;
+
+    const userBriefData: BriefUserModel = JSON.parse(localStorage.getItem('userBriefData'));
+
+    if (!userBriefData)
+      return;
+
+    this.http.put<Item>(
+      environment.API_SERVER + "/api/secret/item/" + item.id,
+      item,
+      {
+        headers: {
+          "Authorization": `Bearer ${userBriefData.token}`
+        }
+      }
+    ).subscribe(
+      {
+        next: result => {
+          console.log(result)
+          this.getCompany(this.companyDetails.value.id);
+        },
+        error: error => {
+          console.error('Error updating existing item:', error);
+        },
+        complete: () => {
+          this.isLoading.next(false);
+        }
+      }
+    );
+  }
+
+  removeItems(items: number[]) {
+    if (typeof localStorage === 'undefined')
+      return;
+
+    const userBriefData: BriefUserModel = JSON.parse(localStorage.getItem('userBriefData'));
+
+    if (!userBriefData)
+      return;
+
+    this.http.delete<number[]>(
+      environment.API_SERVER + "/api/secret/item",
+      {
+        headers: {
+          "Authorization": `Bearer ${userBriefData.token}`
+        },
+        params : {
+          "delete": items
+        }
+      }
+    ).subscribe(
+      {
+        next: result => {
+          console.log(result)
+          this.getCompany(this.companyDetails.value.id);
+        },
+        error: error => {
+          console.error('Error removing items:', error);
+        },
+        complete: () => {
+          this.isLoading.next(false);
         }
       }
     );

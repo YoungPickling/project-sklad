@@ -3,23 +3,34 @@ import { Company } from '../../shared/models/company.model';
 import { WorkspaceService } from '../workspace.service';
 import { Subscription } from 'rxjs';
 import { CommonModule } from '@angular/common';
-import { FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormArray, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { Item } from '../../shared/models/item.model';
 import Utils from '../../shared/utils.service';
+import { ClickOutsideDirective } from '../../shared/directives/clickOutside.directive';
 
 @Component({
   selector: 'app-items',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, MatIconModule],
+  imports: [CommonModule, ReactiveFormsModule, MatIconModule, ClickOutsideDirective, FormsModule],
   templateUrl: './items.component.html',
   styleUrl: './items.component.css'
 })
 export class ItemsComponent implements OnInit {
   company: Company;
-  customColumns: { [key:string]: {value: string, color: string, width: string}; } = {};
   addButtonActive = false;
+  removeButtonActive = false;
   isLoading = false;
+
+  itemsToDelete: Set<number> = new Set();
+
+  customColumns: { [key: string]: {value: string, color: string, width: string}; } = {};
+  cellEditMode: { [key: string]: boolean } = {};
+  tempCellValue: string = '';
+  
+  lastCellClickedX: number;
+  lastCellClickedY: number;
+  isCellFirstClicked = false;
 
   addItemForm: FormGroup;
 
@@ -28,6 +39,7 @@ export class ItemsComponent implements OnInit {
   ) {}
 
   private companyDetailSub: Subscription;
+  private loadingSubscription: Subscription;
 
   ngOnInit() {
     this.companyDetailSub = this.workspaceService.companyDetails.subscribe(
@@ -46,21 +58,39 @@ export class ItemsComponent implements OnInit {
       }
     );
 
+    this.loadingSubscription = this.workspaceService.isLoading.subscribe(
+      state => {
+        this.isLoading = state;
+      }
+    )
+
     this.resetForm()
   }
 
   ngOnDestroy() {
-    if(this.companyDetailSub) {
-      this.companyDetailSub.unsubscribe()
-    }
+    this.companyDetailSub.unsubscribe();
+    this.loadingSubscription.unsubscribe();
   }
 
   onClickAddBtn() {
+    this.itemsToDelete = new Set();
     this.addButtonActive = !this.addButtonActive;
+    this.removeButtonActive = false;
+  }
+
+  onClickRemoveBtn() {
+    if(this.removeButtonActive) {
+      this.itemsToDelete = new Set();
+    }
+    this.removeButtonActive = !this.removeButtonActive;
+    this.addButtonActive = false;
+    this.resetForm();
   }
 
   onSubmitAddItem() {
     this.isLoading = true;
+    this.addButtonActive = false;
+    this.removeButtonActive = false;
     
     let body: Item = this.addItemForm.value;
     body.color = Utils.hexToInteger(body.color + '');
@@ -69,10 +99,17 @@ export class ItemsComponent implements OnInit {
       body.columns[i].color = Utils.hexToInteger(body.columns[i].color + '');
     }
 
-    this.workspaceService.addItem(body, this.company.id);
+    this.workspaceService.addItem(body);
     // this.addItemForm.reset();
-    this.resetForm()
-    this.isLoading = false;
+    this.resetForm();
+  }
+  
+  onRemoveRows() {
+    this.isLoading = true;
+    this.addButtonActive = false;
+    this.removeButtonActive = false;
+
+    this.workspaceService.removeItems(Array.from(this.itemsToDelete.values()));
   }
 
   get columns() {
@@ -102,6 +139,17 @@ export class ItemsComponent implements OnInit {
     this.columns.removeAt(index);
   }
 
+  onCheckboxChange(event: Event, index: number): void {
+    const checkbox = event.target as HTMLInputElement;
+    if (checkbox.checked) {
+      this.itemsToDelete.add(index);
+      // console.log("Added: " + index);
+    } else {
+      this.itemsToDelete.delete(index);
+      // console.log("Removed: " + index);
+    }
+  }
+
   resetForm() {
     this.addItemForm = new FormGroup({
       code: new FormControl(null),
@@ -115,5 +163,54 @@ export class ItemsComponent implements OnInit {
   getItemColumnValue(item: Item, columnName: string): string {
     const column = item.columns.find(col => col.name === columnName);
     return column ? column.value : '';
+  }
+
+  doubleClickCell(x: number, y: number) {
+    const cellKey = x + '-' + y;
+    if (this.isCellFirstClicked && this.lastCellClickedX === x && this.lastCellClickedY === y) {
+      console.log('double clicked!' + cellKey)
+      this.tempCellValue = (<HTMLInputElement>document.getElementById(cellKey)).textContent || '';
+      this.cellEditMode[cellKey] = true;
+    } else {
+      this.isCellFirstClicked = true;
+      if(this.lastCellClickedX !== x || this.lastCellClickedY !== y) {
+        this.cellEditMode = {};
+      }
+      this.lastCellClickedX = x;
+      this.lastCellClickedY = y;
+
+      new Promise((resolve, reject) => {
+        setTimeout(() => {
+          this.isCellFirstClicked = false;
+        }, 300);
+      })
+    }
+  }
+
+  onClickOutsideCell(key: string) {
+    if(!this.isCellFirstClicked)
+      this.cellEditMode[key] = false
+  }
+
+  updateCellValue(x: number, y: number) {
+    this.isLoading = true;
+    this.cellEditMode[x + '-' + y] = false;
+
+    let tempItem: Item = { ...this.company.items[x - 1] };
+
+    if (y === 1) {
+      tempItem.code = this.tempCellValue;
+    } else if (y === 2) {
+      tempItem.name = this.tempCellValue;
+    } else if (y === 3) {
+      tempItem.description = this.tempCellValue;
+    } 
+    // else {
+    //   const customColumnKey = Object.keys(this.customColumns)[y - 4];
+    //   this.company.items[x - 1].columns.find(col => col.name === customColumnKey).value = this.tempCellValue;
+    // }
+
+    this.workspaceService.updateItem(tempItem);
+    console.log(this.tempCellValue, x + '-' + y);
   }
 }

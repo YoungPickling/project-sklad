@@ -10,7 +10,7 @@ import org.springframework.util.unit.DataSize;
 
 @Configuration
 public class AppConfiguration {
-    /** Fixes maximum upload size for images  and files */
+    /** Fixes maximum upload size for images and files */
     @Bean
     public MultipartConfigElement multipartConfigElement() {
         MultipartConfigFactory factory = new MultipartConfigFactory();

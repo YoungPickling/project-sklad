@@ -177,3 +177,23 @@ mat-icon .frontpage-arrow {
 .frontpage-dropdown-menu mat-icon {
   margin-right: 0.7rem;
 }
+
+.loader-round {
+  width: 3rem;
+  height: 3rem;
+  border: 0.5rem dotted #000;
+  border-radius: 50%;
+  display: inline-block;
+  position: relative;
+  box-sizing: border-box;
+  animation: rotation-s 1.5s linear infinite;
+}
+
+@keyframes rotation-s {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+} 
