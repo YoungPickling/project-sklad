@@ -12,7 +12,8 @@
 ></app-alert>
 <div class="frontpage-body">
   <div class="frontpage-window-top">
-    <div class="frontpage-window-top-pfp" style="margin-right:1rem;"></div>
+    <div *ngIf="userImageHash.length < 1" class="frontpage-window-top-pfp" style="margin-right:1rem;"></div>
+    <img *ngIf="userImageHash.length > 0" class="frontpage-window-top-pfp" style="margin-right:1rem;" [src]="link + userImageHash" [alt]="username">
     <div class="frontpage-info-box">
       <b>{{ user?.firstname }}</b>
       <b>{{ user?.lastname }}</b>
@@ -45,7 +46,9 @@
           <button class="icon-display" (click)="companyButtonState[i] = !companyButtonState[i]">
             <mat-icon class="mat-icon-display">expand_{{ companyButtonState[i] ? 'less' : 'more' }}</mat-icon>
           </button>
-          <div class="frontpage-window-top-pfp" style="margin-right:1rem;background-color: black;"></div>
+          <div class="frontpage-window-top-pfp" style="margin-right:1rem;background-color:black">
+            <mat-icon style="scale: 200%;">package_2</mat-icon>
+          </div>
           <div class="frontpage-info-box">
             <b>{{ company.name }}</b>
             <p>{{ company.description | shorten: 32 }}</p>

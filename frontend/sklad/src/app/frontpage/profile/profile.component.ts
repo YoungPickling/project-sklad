@@ -24,6 +24,8 @@ export class ProfileComponent implements OnInit, OnDestroy {
   user: User = null;
   companyButtonState: boolean[];
   initials = "";
+  userImageHash = "";
+  link = environment.API_SERVER + "/api/secret/image/";
 
   error: string = "null";
   isLoading = false;
@@ -45,6 +47,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
       user => {
         this.user = user;
         this.initials = user?.firstname.toUpperCase().at(0) + user?.lastname.toUpperCase().at(0);
+        this.userImageHash = user?.image?.hash || "";
         this.companyButtonState = new Array<boolean>(this.user?.company?.length || 0).fill(false);
       }
     );
@@ -149,38 +152,4 @@ export class ProfileComponent implements OnInit, OnDestroy {
     this.isLoading = true;
     this.router.navigate(['/workspace', companyId]);
   }
-
-  // getCompanyImage() {
-  //   const userBriefData: {
-  //     username: string;
-  //     role: string;
-  //     token: string;
-  //   } = JSON.parse(localStorage.getItem('userBriefData'));
-
-  //   if (!userBriefData || !this.user?.image?.hash) {
-  //     return;
-  //   }
-
-  //   let authObs = this.http.get(
-  //     environment.API_SERVER + `/api/secret/image/${this.user.image.hash}`,
-  //     {
-  //       headers: {
-  //         "Authorization": `Bearer ${userBriefData.token}`
-  //       },
-  //       responseType: 'blob'
-  //     }
-  //   ).subscribe(
-  //     (imageBlob: Blob) => {
-  //       // Handle the image blob here
-  //       // For example, you can create a URL for the blob and assign it to an image element
-  //       const imageUrl = URL.createObjectURL(imageBlob);
-  //       // Assign the URL to an image element in the HTML
-  //       // For example:
-  //       // document.getElementById('companyImage').src = imageUrl;
-  //     },
-  //     error => {
-  //       console.error('Error fetching company image:', error);
-  //     }
-  //   );
-  // }
 }

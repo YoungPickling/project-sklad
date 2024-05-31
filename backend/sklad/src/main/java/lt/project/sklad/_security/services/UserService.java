@@ -1,17 +1,32 @@
 package lt.project.sklad._security.services;
 
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lt.project.sklad._security.entities.Token;
 import lt.project.sklad._security.entities.User;
 import lt.project.sklad._security.repositories.UserRepository;
 import lt.project.sklad._security.utils.MessagingUtils;
+import lt.project.sklad.entities.Company;
+import lt.project.sklad.entities.Image;
+import lt.project.sklad.repositories.CompanyRepository;
+import lt.project.sklad.repositories.ImageRepository;
+import lt.project.sklad.utils.HashUtils;
+import lt.project.sklad.utils.ImageUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+
+import static org.springframework.http.HttpStatus.*;
+import static org.springframework.http.HttpStatus.FORBIDDEN;
 
 /**
  * Service class responsible for handling operations related to users.
@@ -25,6 +40,11 @@ public class UserService {
     private final UserRepository userRepository;
     private final MessagingUtils messagingUtils;
     private final TokenService tokenService;
+    private final MessagingUtils msgUtils;
+    private final ImageUtils imgUtils;
+    private final ImageRepository imageRepository;
+    private final CompanyRepository companyRepository;
+    private final HashUtils hashUtils;
 
     /**
      * Retrieves a user by their ID.
@@ -57,6 +77,111 @@ public class UserService {
         User user = userOptional.get();
 
         return ResponseEntity.ok().body(user);
+    }
+
+    @Transactional
+    public ResponseEntity<?> uploadUserImage(
+            final MultipartFile file,
+            final HttpServletRequest request
+    ) {
+        if (file == null || file.isEmpty())
+            return msgUtils.error(HttpStatus.BAD_REQUEST, "File is empty");
+
+        if (!file.getContentType().startsWith("image/"))
+            return msgUtils.error(HttpStatus.BAD_REQUEST, "Not an Image!");
+
+        String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+
+        if (msgUtils.isBearer(authHeader))
+            return msgUtils.error(UNAUTHORIZED, "Bad credentials");
+
+        final String jwt = authHeader.substring(7);
+        final Token token = tokenService.findByToken(jwt).orElse(null);
+
+        if (token == null)
+            return msgUtils.error(UNAUTHORIZED, "Token not found");
+
+        User user = userRepository.findById(token.getUser().getId()).orElse(null);
+
+        if (user == null)
+            return msgUtils.error(UNAUTHORIZED, "User not found");
+
+        String hash = hashUtils.hashString(file.getOriginalFilename());
+        int i = 0;
+
+        if(hash == null)
+            return msgUtils.error(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to hash file name");
+
+        while(imageRepository.findByHash(hash).isPresent()) {
+            hash = hashUtils.hashString(file.getOriginalFilename() + i);
+            i++;
+        }
+
+        try {
+            final byte[] compressedImage = imgUtils.compressImage(file.getBytes());
+
+            Image image = imageRepository.save(Image.builder()
+                    .name(file.getOriginalFilename())
+                    .hash(hash)
+                    .type(file.getContentType())
+                    .size(file.getSize())
+                    .imageData(compressedImage)
+                    .compressedSize(compressedImage.length)
+                    .build()
+            );
+
+            if (image == null)
+                return msgUtils.error(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to save the file");
+
+            user.setImage(image);
+
+            Map<String, String> response = new HashMap<>();
+            response.put("msg", "Upload successful");
+            response.put("name", file.getOriginalFilename());
+            response.put("hash", hash);
+            return ResponseEntity.ok().body(response);
+        } catch (Exception e) {
+            return msgUtils.error(HttpStatus.INTERNAL_SERVER_ERROR, "Error during file upload", e.getMessage());
+        }
+    }
+
+    @Transactional
+    public ResponseEntity<?> removeUserImage(
+            final HttpServletRequest request
+    ) {
+        String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+
+        if (msgUtils.isBearer(authHeader))
+            return msgUtils.error(UNAUTHORIZED, "Bad credentials");
+
+        String jwt = authHeader.substring(7);
+        Token token = tokenService.findByToken(jwt).orElse(null);
+
+        if (token == null)
+            return msgUtils.error(UNAUTHORIZED, "Token not found");
+
+        User user = userRepository.findById(token.getUser().getId()).orElse(null);
+
+        if (user == null)
+            return msgUtils.error(UNAUTHORIZED, "User not found");
+
+//        Image image = imageRepository.findByHash(linkHash).orElse(null);
+
+        Image image = user.getImage();
+
+        if (image == null)
+            return msgUtils.msg("Removed successfully!");
+
+        Image imageTwo = imageRepository.findByHash(image.getHash()).orElse(null);
+
+        user.setImage(null);
+
+        if (imageTwo == null)
+            return msgUtils.msg("Removed successfully!!");
+
+        imageRepository.deleteById(imageTwo.getId());
+
+        return msgUtils.msg("Removed successfully");
     }
 
     /**

@@ -16,10 +16,7 @@ import lt.project.sklad.utils.ImageUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -126,16 +123,43 @@ public class ImageService {
         }
     }
 
-    public ResponseEntity<?> downloadImage(final String fileHash) {
+    public ResponseEntity<?> downloadImage(
+            final String fileHash,
+            final HttpServletRequest request
+    ) {
         Image image = imageRepository.findByHash(fileHash).orElse(null);
 
-        if (image != null) {
-            byte[] result = imgUtils.decompressImage(image.getImageData());
-            return ResponseEntity.status(HttpStatus.OK)
-                    .contentType(MediaType.valueOf(image.getType()))
-                    .body(result);
+        if (image == null)
+            return msgUtils.error(NOT_FOUND, "Image not found");
+
+        Company company = image.getOwnedByCompany();
+
+        if (company != null) {
+            String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+
+            if (msgUtils.isBearer(authHeader))
+                return msgUtils.error(UNAUTHORIZED, "Bad credentials");
+
+            String jwt = authHeader.substring(7);
+            Token token = tokenService.findByToken(jwt).orElse(null);
+
+            if (token == null)
+                return msgUtils.error(UNAUTHORIZED, "Token not found");
+
+            final User user = userRepository.findById(token.getUser().getId()).orElse(null);
+
+            if (user == null) {
+                return msgUtils.error(NOT_FOUND, "User not found");
+            }
+
+            if (!user.getCompany().contains(company))
+                return msgUtils.error(UNAUTHORIZED, "Access denied");
         }
-        return msgUtils.error(NOT_FOUND, "Image not found");
+
+        byte[] result = imgUtils.decompressImage(image.getImageData());
+        return ResponseEntity.status(HttpStatus.OK)
+                .contentType(MediaType.valueOf(image.getType()))
+                .body(result);
     }
 
     @Transactional

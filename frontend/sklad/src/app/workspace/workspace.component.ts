@@ -7,6 +7,7 @@ import { WorkspaceService } from './workspace.service';
 import { Company } from '../shared/models/company.model';
 import { AuthService } from '../frontpage/login/auth.service';
 import { ClickOutsideDirective } from '../shared/directives/clickOutside.directive';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-workspace',
@@ -33,6 +34,8 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
   isLoggedIn = false;
   username = "";
   initials = "";
+  userImageHash = "";
+  link = environment.API_SERVER + "/api/secret/image/";
 
   private userDetailsSubscription: Subscription;
   
@@ -70,7 +73,8 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
         this.isLoggedIn = !!user;
         console.log(this.isLoggedIn);
         this.username = user?.username || "";
-        this.initials = user?.firstname.toUpperCase().at(0) + user?.lastname.toUpperCase().at(0)
+        this.initials = user?.firstname.toUpperCase().at(0) + user?.lastname.toUpperCase().at(0);
+        this.userImageHash = user?.image?.hash || "";
       }
     );
 

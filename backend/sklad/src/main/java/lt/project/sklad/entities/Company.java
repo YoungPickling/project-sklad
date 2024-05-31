@@ -53,12 +53,12 @@ public class Company {
 
     /** Company's gallery */
     @JsonIgnoreProperties({"ownedByCompany", "size", "compressedSize", "imageData"})
-    @OneToMany(mappedBy = "ownedByCompany", fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.REMOVE}, orphanRemoval = true)
+    @OneToMany(mappedBy = "ownedByCompany", fetch = FetchType.EAGER, cascade = {CascadeType.ALL}, orphanRemoval = true)
     private List<Image> imageData;
 
     /** Warehouses of the company or it's branch */
     @JsonIgnoreProperties("owner")
-    @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.REMOVE}, orphanRemoval = true)
+    @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER, cascade = {CascadeType.ALL}, orphanRemoval = true)
     private List<Location> locations;
 
     /** Parts and products company uses */
@@ -68,11 +68,11 @@ public class Company {
 
     /** Company's supplier list */
     @JsonIgnoreProperties("owner")
-    @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.REMOVE}, orphanRemoval = true)
+    @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER, cascade = {CascadeType.ALL}, orphanRemoval = true)
     private List<Supplier> suppliers;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "company", fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.REMOVE}, orphanRemoval = true)
+    @OneToMany(mappedBy = "company", fetch = FetchType.EAGER, cascade = {CascadeType.ALL}, orphanRemoval = true)
     private List<CompanyLog> log;
 
     // Error occurs when adding @Lob

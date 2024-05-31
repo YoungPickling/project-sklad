@@ -26,8 +26,11 @@ public class ImageController {
     }
 
     @GetMapping("/{fileHash}")
-    public ResponseEntity<?> downloadImage(@PathVariable String fileHash){
-        return imageService.downloadImage(fileHash);
+    public ResponseEntity<?> downloadImage(
+            @PathVariable String fileHash,
+            HttpServletRequest request
+    ) {
+        return imageService.downloadImage(fileHash, request);
     }
 
     // For tech demo, has no authentication

@@ -75,9 +75,20 @@
 }
 
 .frontpage-window-top-pfp {
-  min-width: 4rem;
+  width: 4rem;
   height: 4rem;
   background-color: aliceblue;
+  object-fit: cover; /* to crop an image */
+  object-position: center;
+  image-rendering: smooth;
+  display: block;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.frontpage-window-top-pfp * {
+  color: white;
 }
 
 .frontpage-window-top h1 {
