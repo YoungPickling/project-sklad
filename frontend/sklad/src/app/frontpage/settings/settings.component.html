@@ -1,0 +1,71 @@
+<div class="frontpage-body">
+  <div class="frontpage-window-top frontpage-window-top-header" style="justify-content:space-between;align-items: stretch">
+    <h1>Settings</h1>
+  </div>
+  <div 
+    class="frontpage-window-body" 
+    style="padding: 0 1rem;"    
+    >
+    <!-- <h2>Personal info</h2> -->
+    <div class="settings-menu">
+      <button 
+        [ngClass]="{'settings-menu-selected': menuSelector === 1}"
+        (click)="menuSelector = 1" 
+      >Personal information</button>
+
+      <button 
+        [ngClass]="{'settings-menu-selected': menuSelector === 2}"
+        (click)="menuSelector = 2"
+      >Account and privacy</button>
+
+    </div>
+
+    <ng-container [ngSwitch]="menuSelector">     
+      <ng-template [ngSwitchDefault]>
+        <p style="margin-top: 0;">See more information about your account and privacy settings</p>
+      </ng-template>
+
+      <ng-template [ngSwitchCase]="1">
+        <h2>Personal information</h2>
+
+        <div class="settings-bar">
+          <div class="settings-bar-column">
+            <b>firstname</b>
+            <p>{{user?.firstname}}</p>
+          </div>
+          <button>edit</button>
+        </div>
+
+        <div class="settings-bar">
+          <div class="settings-bar-column">
+            <b>lastname</b>
+            <p>{{user?.lastname}}</p>
+          </div>
+          <button>edit</button>
+        </div>
+        
+        <div class="settings-bar">
+          <div class="settings-bar-column">
+            <b>username</b>
+            <p>{{user?.username}}</p>
+          </div>
+          <button>edit</button>
+        </div>
+
+        <div class="settings-bar">
+          <div class="settings-bar-column">
+            <b>email</b>
+            <p>{{user?.email}}</p>
+          </div>
+          <button>edit</button>
+        </div>
+      </ng-template>
+
+      <ng-template [ngSwitchCase]="2">
+        <h2>Account and privacy</h2>
+
+      </ng-template>
+    </ng-container>
+
+  </div>
+</div>

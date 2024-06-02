@@ -10,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/secret/location")
+@RequestMapping("/api/rest/v1/secret/location")
 @RequiredArgsConstructor
 public class LocationController {
     private final LocationService locationService;
@@ -24,8 +24,6 @@ public class LocationController {
     ) {
         return locationService.createLocation(companyId, location, request);
     }
-
-
 
     @GetMapping("/{itemId}")
     public ResponseEntity<?> readLocation(

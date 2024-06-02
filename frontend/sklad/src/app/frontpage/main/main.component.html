@@ -1,17 +1,36 @@
-<div class="frontpage-banner">
-  <div class="frontpage-banner-wrapper">
-    <div class="frontpage-banner-row">
-      <div class="frontpage-banner-quote">
-        <h1>{{ bannerHeader }}</h1>
-        <p>{{ bannerSubheading }}</p>
+<div class="space-wrap">
+
+  <div class="frontpage-banner" style="margin-bottom:1rem">
+    <div class="frontpage-banner-wrapper">
+      <div class="frontpage-banner-row">
+        <div class="frontpage-banner-quote">
+          <h1>{{ bannerHeader }}</h1>
+          <p>{{ bannerSubheading }}</p>
+        </div>
+        <img src="/assets/boxes.svg" alt="logo" style="height:200px">
       </div>
-      <img src="/assets/cat-face.svg" alt="logo" style="height:200px">
-    </div>
-    <div class="frontpage-banner-row">
-      <div class="frontpage-banner-buttons">
-        <button class="light-button" (click)="onSignIn()" role="button" >Sign in</button>
-        <button class="light-button" (click)="onTryOut()" style="margin-right:2rem">Try out for free!</button>
+      <div class="frontpage-banner-row">
+        <div class="frontpage-banner-buttons">
+          <button class="light-button" (click)="onTryOut()" style="margin-right:2rem">Try out for free!</button>
+          <button class="lighter-button" (click)="onSignIn()" role="button" >Sign in</button>
+        </div>
       </div>
     </div>
   </div>
+
+  <div>
+    <svg class="waves" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+    viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto">
+    <defs>
+    <path id="gentle-wave" d="M-160 44c30 0 58-18 88-18s 58 18 88 18 58-18 88-18 58 18 88 18 v44h-352z" />
+    </defs>
+    <g class="parallax">
+    <use xlink:href="#gentle-wave" x="48" y="0" fill="rgba(255,255,255,0.7" />
+    <use xlink:href="#gentle-wave" x="48" y="3" fill="rgba(255,255,255,0.5)" />
+    <use xlink:href="#gentle-wave" x="48" y="5" fill="rgba(255,255,255,0.3)" />
+    <use xlink:href="#gentle-wave" x="48" y="7" fill="#fff" />
+    </g>
+    </svg>
+  </div>
+
 </div>

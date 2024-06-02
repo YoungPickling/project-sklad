@@ -5,7 +5,7 @@
 
 .frontpage-banner-wrapper {
   margin: 0 auto;
-  max-width: 1000px;
+  max-width: 1300px;
   display: flex;
   flex-wrap: wrap;
   flex-direction: column;
@@ -163,4 +163,53 @@
   background-color: #f44336;
   color: #fff;
   margin-bottom: 15px;
+}
+
+.settings-menu {
+  display: flex;
+  width: 100%;
+  flex-direction: row;
+  flex-basis: 0 1;
+  margin: 1rem 0;
+}
+
+.settings-menu button {
+  border: 1px solid #0003;
+  background-color: #0000;
+  border-radius: 0.4rem;
+  padding: 1rem 0.6rem;
+  font-weight: bolder;
+  font-size: large;
+  margin-right: 1rem;
+}
+
+.settings-menu button:last-child {
+  margin-right: 0;
+}
+
+.settings-menu button:hover {
+  background-color: #153f4733;
+}
+
+.settings-menu-selected {
+  background-color: #00c2e93a !important;
+}
+
+.settings-bar button{
+  border: 1px solid #00000000;
+  background-color: #00000000;
+  border-radius: 0.4rem;
+  padding: 1rem 0.6rem;
+  font-weight: bolder;
+  font-size: large;
+}
+
+.settings-bar button:hover{
+  border: 1px solid #0004;
+  background-color: #00000011;
+}
+
+.settings-bar button:active{
+  border: 1px solid #0009;
+  background-color: #00000044;
 }

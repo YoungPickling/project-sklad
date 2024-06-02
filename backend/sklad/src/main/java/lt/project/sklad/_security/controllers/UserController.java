@@ -1,14 +1,12 @@
 package lt.project.sklad._security.controllers;
 
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lt.project.sklad._security.entities.Token;
 import lt.project.sklad._security.entities.User;
 import lt.project.sklad._security.services.TokenService;
 import lt.project.sklad._security.services.UserService;
 import lt.project.sklad._security.utils.MessagingUtils;
-import lt.project.sklad.services.ImageService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,23 +17,23 @@ import java.io.IOException;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 @RestController
-@RequestMapping("/api/secret/user")
+@RequestMapping("/api/rest/v1/secret/user")
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
     private final TokenService tokenService;
     private final MessagingUtils messagingUtils;
 
+//    @GetMapping("/hello")
+//    public String sayHello() {
+//        return "Labas!";
+//    }
+
     @GetMapping("/me")
     public ResponseEntity<?> getAuthenticatedUser(
             final HttpServletRequest request
     ) {
         return userService.getAuthenticatedUser(request);
-    }
-
-    @GetMapping("/hello")
-    public String sayHello() {
-        return "Labas!";
     }
 
     @PostMapping("/image")

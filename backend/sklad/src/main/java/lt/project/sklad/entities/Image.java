@@ -1,5 +1,6 @@
 package lt.project.sklad.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -50,6 +51,7 @@ public class Image {
     private Company ownedByCompany;
 
     @Lob
+    @JsonIgnore
     @Column(name = "image_data", length = 2097152)
     private byte[] imageData;
 }

@@ -13,7 +13,6 @@
   (click)="onClickRemoveBtn()"
 >Delete Row</button>
 </div>
-
 <div *ngIf="!isLoading && addButtonActive">
   <hr/>
   <form [formGroup]="addItemForm" (ngSubmit)="onSubmitAddItem()">
@@ -101,17 +100,20 @@
         <th *ngIf="removeButtonActive">
           <mat-icon>delete</mat-icon>
         </th>
+        <th></th>
         <th>code</th>
         <th>name</th>
         <th>description</th>
         <th 
           *ngFor="let el of customColumns | keyvalue"
           [ngStyle]="{
-            'background-color': el.value?.color, 
-            'color': onFontColor(el.value?.color),
+            'background-color': 'darkgrey', 
+            'color': 'black',
             'min-width': el.value?.width + 'px'
             }"
         >{{ el.key }}</th>
+        <!-- 'background-color': el.value?.color, 
+            'color': onFontColor(el.value?.color), -->
         <th
           class="w-suppliers"
           *ngFor="let location of company?.locations"
@@ -125,49 +127,85 @@
         <td *ngIf="removeButtonActive">
           <input type="checkbox" id="r{{i}}" name="remove" (change)="onCheckboxChange($event, item?.id)"/>
         </td>
-        <td (click)="doubleClickCell(i+1,1)">
+        <td style="padding:0;">
+          <div class="cell-image-wrap">
+            <div *ngIf="!item?.image?.hash" class="cell-empty-image">
+              <mat-icon>add_a_photo</mat-icon>
+            </div>
+
+            <div class="cell-image-hover-button" title="Change image">
+              <mat-icon>expand_more</mat-icon>
+            </div>
+          </div>
+        </td>
+        <td 
+          [ngClass]="{'cell-edit-border': cellEditMode[(i+1) + '-' + 1]}"
+          (click)="doubleClickCell(i+1,1)"
+        >
           <div
-            id="{{ (i+1) + '-' + 1 }}"
+            [id]="(i+1) + '-' + 1"
             *ngIf="!cellEditMode[(i+1) + '-' + 1]"
             >{{ item?.code }}</div>
-          <input
+          <span
+            [id]="(i+1) + '-' + 1 + 'f'"
             *ngIf="cellEditMode[(i+1) + '-' + 1]" 
-            [(ngModel)]="tempCellValue"
+            [(inputValue)]="tempCellValue"
             (clickOutside)="onClickOutsideCell((i+1) + '-' + 1)"
             (keydown.enter)="updateCellValue((i+1), 1, item?.id)"
-            type="text"
-             />
+            contenteditable
+          ></span>
         </td>
-        <td (click)="doubleClickCell(i+1,2)">
+        <td 
+          [ngClass]="{'cell-edit-border': cellEditMode[(i+1) + '-' + 2]}"
+          (click)="doubleClickCell(i+1,2)"
+        >
           <div
-            id="{{ (i+1) + '-' + 2 }}"
+            [id]="(i+1) + '-' + 2"
             *ngIf="!cellEditMode[(i+1) + '-' + 2]"
             >{{ item?.name }}</div>
-          <input
+          <span
+            [id]="(i+1) + '-' + 2 + 'f'"
             *ngIf="cellEditMode[(i+1) + '-' + 2]" 
-            [(ngModel)]="tempCellValue"
+            [(inputValue)]="tempCellValue"
             (clickOutside)="onClickOutsideCell((i+1) + '-' + 2)"
             (keydown.enter)="updateCellValue((i+1), 2, item?.id)"
-            type="text"
-             />
+            contenteditable
+          ></span>
         </td>
-        <td (click)="doubleClickCell(i+1,3)">
+        <td 
+          [ngClass]="{'cell-edit-border': cellEditMode[(i+1) + '-' + 3]}"
+          (click)="doubleClickCell(i+1,3)"
+        >
           <div
-            id="{{ (i+1) + '-' + 3 }}"
+            [id]="(i+1) + '-' + 3"
             *ngIf="!cellEditMode[(i+1) + '-' + 3]"
             >{{ item?.description }}</div>
-          <input
+          <span
+            [id]="(i+1) + '-' + 3 + 'f'"
             *ngIf="cellEditMode[(i+1) + '-' + 3]" 
-            [(ngModel)]="tempCellValue"
+            [(inputValue)]="tempCellValue"
             (clickOutside)="onClickOutsideCell((i+1) + '-' + 3)"
             (keydown.enter)="updateCellValue((i+1), 3, item?.id)"
-            type="text"
-             />
+            contenteditable
+          ></span>
         </td>
         <td 
           *ngFor="let el of customColumns | keyvalue; let ii = index"
           (click)="doubleClickCell(i+1,ii+4)"
-        >{{ getItemColumnValue(item, el.key) }}</td>
+          [ngClass]="{'cell-edit-border':cellEditMode[(i+1) + '-' + (ii+4)]}"
+        >
+          <div
+            [id]="(i+1) + '-' + (ii+4)"
+            *ngIf="!cellEditMode[(i+1) + '-' + (ii+4)]"
+          >{{ getItemColumnValue(item, el.key) }}</div>
+          <span
+            [id]="(i+1) + '-' + (ii+4) + 'f'"
+            *ngIf="cellEditMode[(i+1) + '-' + (ii+4)]" 
+            [(inputValue)]="tempCellValue"
+            (clickOutside)="onClickOutsideCell((i+1) + '-' + (ii+4))"
+            contenteditable
+          ></span>
+        </td>
       </tr>
     </tbody>
   </table>

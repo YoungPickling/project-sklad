@@ -1,5 +1,5 @@
 import { CommonModule } from "@angular/common";
-import { Component, OnInit, inject } from "@angular/core";
+import { Component, OnDestroy, OnInit, inject } from "@angular/core";
 import { WorkspaceService } from "../workspace.service";
 import { Company } from "../../shared/models/company.model";
 import { Subscription } from "rxjs";
@@ -11,7 +11,7 @@ import { Subscription } from "rxjs";
   templateUrl: './landing.component.html',
   styleUrl: './landing.component.css',
 })
-export class LandingPageComponent implements OnInit {
+export class LandingPageComponent implements OnInit, OnDestroy {
   company: Company;
 
   constructor(

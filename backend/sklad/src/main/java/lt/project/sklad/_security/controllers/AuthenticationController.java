@@ -46,7 +46,7 @@ import static org.springframework.http.HttpStatus.CREATED;
  * @author Maksim Pavlenko
  */
 @RestController
-@RequestMapping("/api/secret/auth")
+@RequestMapping("/api/rest/v1/secret/auth")
 @RequiredArgsConstructor
 public class AuthenticationController {
     private final AuthenticationService authService;

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { AfterViewChecked, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { Company } from '../../shared/models/company.model';
 import { WorkspaceService } from '../workspace.service';
 import { Subscription } from 'rxjs';
@@ -6,17 +6,26 @@ import { CommonModule } from '@angular/common';
 import { FormArray, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { Item } from '../../shared/models/item.model';
+import { ClickOutsideDirective } from '../../shared/directives/clickOutside.directive'
 import Utils from '../../shared/utils.service';
-import { ClickOutsideDirective } from '../../shared/directives/clickOutside.directive';
+import { ContentEditableModel } from '../../shared/directives/contenteditable.directive';
 
 @Component({
   selector: 'app-items',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, MatIconModule, ClickOutsideDirective, FormsModule],
+  imports: [
+    CommonModule, 
+    ReactiveFormsModule, 
+    MatIconModule, 
+    ClickOutsideDirective, 
+    FormsModule,
+    ContentEditableModel
+  ],
   templateUrl: './items.component.html',
   styleUrl: './items.component.css'
 })
-export class ItemsComponent implements OnInit {
+export class ItemsComponent implements OnInit, OnDestroy, AfterViewChecked {
+  private focusCellKey: string | null = null;
   company: Company;
   addButtonActive = false;
   removeButtonActive = false;
@@ -25,7 +34,9 @@ export class ItemsComponent implements OnInit {
   itemsToDelete: Set<number> = new Set();
 
   customColumns: { [key: string]: {value: string, color: string, width: string}; } = {};
-  cellEditMode: { [key: string]: boolean } = {};
+  cellEditMode: { [key: string]: boolean } = {}; // to be edited
+  cellSelected: { [key: string]: boolean } = {};
+  editCellMode: boolean = false;
   tempCellValue: string = '';
   
   lastCellClickedX: number;
@@ -35,7 +46,8 @@ export class ItemsComponent implements OnInit {
   addItemForm: FormGroup;
 
   constructor(
-    private workspaceService: WorkspaceService
+    private workspaceService: WorkspaceService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   private companyDetailSub: Subscription;
@@ -70,6 +82,17 @@ export class ItemsComponent implements OnInit {
   ngOnDestroy() {
     this.companyDetailSub.unsubscribe();
     this.loadingSubscription.unsubscribe();
+  }
+
+  ngAfterViewChecked() {
+    if (this.focusCellKey) {
+      const inputElement = <HTMLInputElement>document.getElementById(this.focusCellKey);
+      if (inputElement) {
+        inputElement.focus();
+        window.getSelection().selectAllChildren(inputElement);
+        this.focusCellKey = null;
+      }
+    }
   }
 
   onClickAddBtn() {
@@ -167,11 +190,17 @@ export class ItemsComponent implements OnInit {
 
   doubleClickCell(x: number, y: number) {
     const cellKey = x + '-' + y;
-    if (this.isCellFirstClicked && this.lastCellClickedX === x && this.lastCellClickedY === y) {
-      console.log('double clicked!' + cellKey)
-      this.tempCellValue = (<HTMLInputElement>document.getElementById(cellKey)).textContent || '';
+    if (
+      this.isCellFirstClicked && 
+      this.lastCellClickedX === x && 
+      this.lastCellClickedY === y
+    ) {
+      console.log('double clicked!' + cellKey) // HTMLInputElement
+      this.tempCellValue = (<HTMLElement>document.getElementById(cellKey)).textContent || '';
       this.cellEditMode[cellKey] = true;
-    } else {
+      this.focusCellKey = cellKey + 'f';
+      this.cdr.detectChanges();
+    } else if (this.focusCellKey !== cellKey + 'f') {
       this.isCellFirstClicked = true;
       if(this.lastCellClickedX !== x || this.lastCellClickedY !== y) {
         this.cellEditMode = {};
@@ -200,17 +229,26 @@ export class ItemsComponent implements OnInit {
 
     if (y === 1) {
       tempItem.code = this.tempCellValue;
+      this.workspaceService.updateItem(tempItem);
     } else if (y === 2) {
       tempItem.name = this.tempCellValue;
+      this.workspaceService.updateItem(tempItem);
     } else if (y === 3) {
       tempItem.description = this.tempCellValue;
+      this.workspaceService.updateItem(tempItem);
     } 
-    // else {
-    //   const customColumnKey = Object.keys(this.customColumns)[y - 4];
-    //   this.company.items[x - 1].columns.find(col => col.name === customColumnKey).value = this.tempCellValue;
-    // }
+    else if (y >= 4 && y <= (Object.keys(this.customColumns).length + 4)) {
+      const customColumnKey = Object.keys(this.customColumns)[y - 4];
+      const itemObject = this.company.items[x - 1].columns.find(col => col.name === customColumnKey).value;
 
-    this.workspaceService.updateItem(tempItem);
+      if (itemObject === undefined) {
+        // this.workspaceService.updateItemColumn(tempItem);
+        // this.company.items[x - 1].columns.push(new ItemColumn(null,"",))
+      }
+
+      // find(col => col.name === customColumnKey).value = this.tempCellValue;
+    }
+
     console.log(this.tempCellValue, x + '-' + y);
   }
 }

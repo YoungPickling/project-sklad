@@ -20,7 +20,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   username = "";
   initials = "";
   userImageHash = "";
-  link = environment.API_SERVER + "/api/secret/image/";
+  link = environment.API_SERVER + "/api/rest/v1/secret/image/";
 
   private userDetailsSubscription: Subscription | undefined;
 

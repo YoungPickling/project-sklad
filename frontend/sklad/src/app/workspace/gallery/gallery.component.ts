@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Company } from '../../shared/models/company.model';
 import { WorkspaceService } from '../workspace.service';
 import { Subscription } from 'rxjs';
 import { CommonModule } from '@angular/common';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-gallery',
@@ -11,8 +12,9 @@ import { CommonModule } from '@angular/common';
   templateUrl: './gallery.component.html',
   styleUrl: './gallery.component.css'
 })
-export class GalleryComponent implements OnInit {
+export class GalleryComponent implements OnInit, OnDestroy {
   company: Company;
+  link = environment.API_SERVER + "/api/rest/v1/secret/image/";
 
   constructor(
     private workspaceService: WorkspaceService

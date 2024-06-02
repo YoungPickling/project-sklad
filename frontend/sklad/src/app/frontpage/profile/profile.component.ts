@@ -25,7 +25,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
   companyButtonState: boolean[];
   initials = "";
   userImageHash = "";
-  link = environment.API_SERVER + "/api/secret/image/";
+  link = environment.API_SERVER + "/api/rest/v1/secret/image/";
 
   error: string = "null";
   isLoading = false;
@@ -91,7 +91,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
     }
 
     this.http.post<Company>(
-      environment.API_SERVER + '/api/secret/company',
+      environment.API_SERVER + '/api/rest/v1/secret/company',
       $event,
       {
         headers: {
@@ -126,7 +126,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
     const body = {name: $event.name, description: $event.description};
 
     this.http.put<Company>(
-      environment.API_SERVER + '/api/secret/company/' + this.companyForEdit.id,
+      environment.API_SERVER + '/api/rest/v1/secret/company/' + this.companyForEdit.id,
       body,
       {
         headers: {

@@ -13,7 +13,7 @@ import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
-@RequestMapping("/api/secret/company")
+@RequestMapping("/api/rest/v1/secret/company")
 @RequiredArgsConstructor
 public class CompanyController {
     private final CompanyService companyService;

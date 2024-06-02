@@ -33,7 +33,7 @@ export class AuthService {
 
   login(username: string, password: string) {
     return this.http.post<LoginResponseData>(
-      environment.API_SERVER + "/api/secret/auth/login",
+      environment.API_SERVER + "/api/rest/v1/secret/auth/login",
       {
         username: username,
         password: password
@@ -57,7 +57,7 @@ export class AuthService {
 
   signup(regData: RegisterData) {
     return this.http.post<LoginResponseData>(
-      environment.API_SERVER + "/api/secret/auth/register",
+      environment.API_SERVER + "/api/rest/v1/secret/auth/register",
       regData
     )
     .pipe(
@@ -77,7 +77,7 @@ export class AuthService {
 
   getUserDetails(token: string) {
     return this.http.get<any>(
-      environment.API_SERVER + "/api/secret/user/me",
+      environment.API_SERVER + "/api/rest/v1/secret/user/me",
       {
         headers: {
           "Authorization": `Bearer ${token}`
@@ -169,7 +169,7 @@ export class AuthService {
       });
 
       // this.http.post<LoginResponseData>(
-      //   environment.API_SERVER + "/api/secret/auth/login",
+      //   environment.API_SERVER + "/api/rest/v1/secret/auth/login",
       //   {
       //     email: email,
       //     password: password,

@@ -25,7 +25,7 @@ export class WorkspaceService {
       return;
 
     this.http.get<any>(
-      environment.API_SERVER + "/api/secret/company/" + id,
+      environment.API_SERVER + "/api/rest/v1/secret/company/" + id,
       {
         headers: {
           "Authorization": `Bearer ${userBriefData.token}`
@@ -58,7 +58,7 @@ export class WorkspaceService {
       return;
 
     this.http.post<Item>(
-      environment.API_SERVER + "/api/secret/item/" + this.companyDetails.value.id,
+      environment.API_SERVER + "/api/rest/v1/secret/item/" + this.companyDetails.value.id,
       item,
       {
         headers: {
@@ -91,7 +91,7 @@ export class WorkspaceService {
       return;
 
     this.http.put<Item>(
-      environment.API_SERVER + "/api/secret/item/" + item.id,
+      environment.API_SERVER + "/api/rest/v1/secret/item/" + item.id,
       item,
       {
         headers: {
@@ -124,7 +124,7 @@ export class WorkspaceService {
       return;
 
     this.http.delete<number[]>(
-      environment.API_SERVER + "/api/secret/item",
+      environment.API_SERVER + "/api/rest/v1/secret/item",
       {
         headers: {
           "Authorization": `Bearer ${userBriefData.token}`
