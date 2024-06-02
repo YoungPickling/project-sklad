@@ -9,20 +9,25 @@ import lt.project.sklad._security.services.UserService;
 import lt.project.sklad._security.utils.MessagingUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 @RestController
-@RequestMapping("/api/secret/user")
+@RequestMapping("/api/rest/v1/secret/user")
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
     private final TokenService tokenService;
     private final MessagingUtils messagingUtils;
+
+//    @GetMapping("/hello")
+//    public String sayHello() {
+//        return "Labas!";
+//    }
 
     @GetMapping("/me")
     public ResponseEntity<?> getAuthenticatedUser(
@@ -31,9 +36,19 @@ public class UserController {
         return userService.getAuthenticatedUser(request);
     }
 
-    @GetMapping("/hello")
-    public String sayHello() {
-        return "Labas!";
+    @PostMapping("/image")
+    public ResponseEntity<?> uploadUserImage(
+            @RequestParam("image") MultipartFile file,
+            HttpServletRequest request
+    ) throws IOException {
+        return userService.uploadUserImage(file, request);
+    }
+
+    @DeleteMapping("/image")
+    public ResponseEntity<?> removeImage(
+            HttpServletRequest request
+    ) {
+        return userService.removeUserImage(request);
     }
 
     @GetMapping("/role")

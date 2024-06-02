@@ -6,8 +6,10 @@ export const routes: Routes = [
   { 
     path: "workspace", 
     // component: WorkspaceComponent,
-    loadComponent: () =>
-      import('./workspace/workspace.component').then((mod) => mod.WorkspaceComponent)
+    // loadComponent: () =>
+    //   import('./workspace/workspace.component').then((mod) => mod.WorkspaceComponent)
+    loadChildren: () =>
+      import('./workspace/workspace.routes')
   }, 
   { 
     path: "", 

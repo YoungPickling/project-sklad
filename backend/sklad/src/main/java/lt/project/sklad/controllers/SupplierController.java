@@ -10,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/secret/supplier")
+@RequestMapping("/api/rest/v1/secret/supplier")
 @RequiredArgsConstructor
 public class SupplierController {
     private final SupplierService supplierService;

@@ -10,7 +10,7 @@ import { Router } from '@angular/router';
   // encapsulation: ViewEncapsulation.None
 })
 export class MainComponent implements OnInit {
-  bannerHeader: string = 'Streamline Your Warehouse Operations';
+  bannerHeader: string = 'Insights to Stay Ahead of Demand';
   bannerSubheading: string = 'Visualise, reduce costs, maximize productivity';
 
   constructor(private router: Router) {}
@@ -23,8 +23,11 @@ export class MainComponent implements OnInit {
       'Take Control of Your Inventory',
       'Revolutionize Your Supply Chain Management',
       'Customizable Solutions Tailored to Your Needs',
-      'Stay Ahead of Demand with Predictive Insights',
-      'Boost Productivity, Minimize Errors'
+      'Insights to Stay Ahead of Demand',
+      'Boost Productivity, Minimize Errors',
+
+      'Insights for Success',
+      'Analyze Stock'
     ];
     const bannerSubheadings = [
       'Optimize efficiency, reduce costs, maximize productivity',

@@ -1,0 +1,77 @@
+<div class="frontpage-banner">
+  <div class="frontpage-banner-wrapper">
+    <div class="frontpage-loader-container" *ngIf="isLoading else regTemplate">
+      <span class="frontpage-loader"></span>
+    </div>
+
+    <ng-template #regTemplate>
+      <div class="error-box" *ngIf="error">{{ error }}</div>
+      <p>registration form</p>
+      <form class="w-reg-form" #authForm="ngForm" (ngSubmit)="onSubmit(authForm)">
+        <input 
+          type="text" 
+          class="input" 
+          placeholder="Firstname"
+          ngModel
+          name="firstname"
+          required
+          >
+        <br>
+        <input 
+          type="text" 
+          class="input" 
+          placeholder="Lastname"
+          ngModel
+          name="lastname"
+          required
+          >
+        <br>
+        <input 
+          type="text" 
+          class="input" 
+          placeholder="Username"
+          ngModel
+          name="username"
+          required
+          minlength="2"
+          >
+        <br>
+        <input 
+          type="text" 
+          class="input" 
+          placeholder="Email"
+          ngModel
+          name="email"
+          required
+          minlength="2"
+          >
+        <br>
+        <input 
+          type="password" 
+          class="input" 
+          placeholder="Password"
+          ngModel
+          name="password"
+          required
+          minlength="6"
+          >
+        <br>
+        <input 
+          type="password" 
+          class="input" 
+          placeholder="Repeat password"
+          ngModel
+          name="repeatPassword"
+          autocomplete="off"
+          required
+          >
+        <br>
+        <button 
+          type="submit"
+          class="frontpage-button"
+          [disabled]="!authForm.valid"
+          >REGISTER</button>
+      </form>
+    </ng-template>
+  </div>
+</div>

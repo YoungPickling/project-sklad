@@ -5,6 +5,7 @@ import { Router, RouterModule } from '@angular/router';
 import { ClickOutsideDirective } from '../../shared/directives/clickOutside.directive';
 import { AuthService } from '../login/auth.service';
 import { Subscription } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-header',
@@ -18,6 +19,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
   isLoggedIn = false;
   username = "";
   initials = "";
+  userImageHash = "";
+  link = environment.API_SERVER + "/api/rest/v1/secret/image/";
 
   private userDetailsSubscription: Subscription | undefined;
 
@@ -31,7 +34,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
       user => {
         this.isLoggedIn = !!user;
         this.username = user?.username || "";
-        this.initials = user?.firstname.toUpperCase().at(0) + user?.lastname.toUpperCase().at(0)
+        this.initials = user?.firstname.toUpperCase().at(0) + user?.lastname.toUpperCase().at(0);
+        this.userImageHash = user?.image?.hash || "";
       }
     );
   }

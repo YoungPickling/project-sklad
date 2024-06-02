@@ -16,6 +16,7 @@
             "outputPath": "dist/sklad",
             "index": "src/index.html",
             "browser": "src/main.ts",
+            "externalDependencies":[""],
             "polyfills": [
               "zone.js"
             ],
@@ -25,7 +26,8 @@
               "src/assets"
             ],
             "styles": [
-              "src/styles.css"
+              "src/styles.css",
+              "./node_modules/@angular/material/prebuilt-themes/indigo-pink.css"
             ],
             "scripts": [],
             "server": "src/main.server.ts",
@@ -89,7 +91,8 @@
               "src/assets"
             ],
             "styles": [
-              "src/styles.css"
+              "src/styles.css",
+              "./node_modules/@angular/material/prebuilt-themes/indigo-pink.css"
             ],
             "scripts": []
           }

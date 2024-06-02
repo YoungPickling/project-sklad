@@ -1,0 +1,20 @@
+<h1 class="w-title">Gallery</h1>
+
+<h1 class="w-empty" *ngIf="company?.imageData?.length === 0 else view">No images are found</h1>
+
+<ng-template #view>
+  <div 
+    class="w-gallery-table"
+    *ngFor="let image of company?.imageData"
+    >
+    <div 
+      class="w-gallery-cell" 
+      [ngStyle]="{'background-image': 'url(' + link + image?.hash + ')'}"
+      loading="lazy"
+    >
+      <div class="w-gallery-cell-overlay">
+        <div class="w-gallery-cell-overlay-text">{{image?.name}}</div>
+      </div>
+    </div>
+  </div>
+</ng-template>

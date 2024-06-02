@@ -6,12 +6,15 @@
   --s-hover-element: #cef;
   --s-click-element: #8ab;
 
-  --s-top-tool-bar: 3em;
+  /* --s-top-tool-bar: 3em;
   --s-left-bar-width: 300px;
-  --s-left-bar-edge: 0.4rem;
+  --s-left-bar-edge: 0.4rem; */
+
+  --header-height: 80px;
 }
 
 html {
+  /* overflow: hidden; */
   margin: 0;  
 }
 
@@ -28,7 +31,7 @@ p {
 }
 
 .material-icons {
-  font-family: 'Material Icons';
+  font-family: 'Material Symbols Outlined';
   font-weight: normal;
   font-style: normal;
   font-size: 24px;  /* Preferred icon size */

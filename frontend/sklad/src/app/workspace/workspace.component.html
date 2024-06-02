@@ -1,62 +1,136 @@
-<div class="sklad">
+<ng-template *ngIf="isLoading else workspacePage">
 
-  <nav class="sklad-top-bar">
-    <div class="sklad-top-icon" (click)="toggleLeftBar()">
-      <!-- <div *ngIf="showLeftBar; then leftBarOn else leftBarOff"></div> -->
-      <!-- Скрыть левую панель - Paslėpti kairiąją juostą -->
-        <img src="/assets/lb-on-ico.svg" alt="Hide left strip" *ngIf="showLeftBar"/>
-        <!-- <mat-icon *ngIf="showLeftBar" svgIcon="left_bar_open"></mat-icon> -->
-      <!-- Открыть левую панель - Rodyti kairiąją juostą -->
-        <img src="/assets/lb-off-ico.svg" alt="Show left strip" *ngIf="!showLeftBar"/>
-        <!-- <mat-icon *ngIf="!showLeftBar" svgIcon="left_bar_off"></mat-icon> -->
-    </div>
-  </nav>
+</ng-template>
 
-  <div class="sklad-workspace">
+<ng-template #workspacePage>
+  <div class="workspace-page">
+    <header class="w-header">
 
-    <app-left-bar *ngIf="showLeftBar"></app-left-bar>
-
-    <div class="sklad-tab-container">
-      <nav class="sklad-tab-bar">
-
-        <div class="sklad-tab">
-          <span>Map</span>
-          <button>X</button>
+      <div class="w-header-mobile-box">
+        <div class="w-side-bar-element" (click)="sideBarMaximized = !sideBarMaximized">
+          <mat-icon>menu</mat-icon>
         </div>
+      </div>
 
-        <div class="sklad-tab sklad-tab-disabled">
-          <span>Table</span>
-          <button hidden>X</button>
+      <li class="frontpage-navigation-buttons" style="flex: 0 1;width:4rem">
+        <a 
+          role="button" 
+          (click)="loginMenu = !loginMenu"
+          (clickOutside)="closeLoginMenu()"
+          [ngClass]="loginMenu ? 'open' : ''"
+          >
+          <mat-icon class="frontpage-login" *ngIf="!isLoggedIn">login</mat-icon>
+
+          <ng-template [ngIf]="isLoggedIn">
+            <div class="frontpage-icon" *ngIf="userImageHash.length === 0; else profilePicture">
+              <b>{{ initials }}</b>
+            </div>
+          </ng-template>
+
+          <ng-template #profilePicture>
+            <img class="frontpage-icon" [src]="link + userImageHash" [alt]="username">
+          </ng-template>
+
+          <mat-icon class="frontpage-arrow">expand_{{ loginMenu ? 'less' : 'more' }}</mat-icon>
+        </a>
+  
+        <ul class="frontpage-dropdown-menu" id="sign-in" *ngIf="!isLoggedIn">
+          <li><h3>sign in via</h3></li>
+          <li><a [routerLink]="['/login']" (click)="closeLoginMenu()"><mat-icon>mail_outlined</mat-icon>email</a></li>
+          <!-- <li><a href="#"><mat-icon>linkedin</mat-icon>B</a></li> -->
+          <!-- <li><a href="#"><mat-icon>github</mat-icon>C</a></li> -->
+        </ul>
+  
+        <ul class="frontpage-dropdown-menu" id="sign-in" *ngIf="isLoggedIn">
+          <li><a [routerLink]="['/profile']" (click)="closeLoginMenu()">profile</a></li>
+          <li><a [routerLink]="['/profile/settings']" (click)="closeLoginMenu()">settings</a></li>
+          <li><a [routerLink]="['/']" (click)="onLogout()">log out</a></li> 
+        </ul>
+      </li>
+
+    </header>
+
+    <div class="w-body">
+
+      <nav class="w-side-bar" *ngIf="!sideBarMaximized">
+        <div class="w-side-bar-element" (click)="sideBarMaximized = true">
+          <mat-icon>menu</mat-icon>
         </div>
-
       </nav>
-      <main class="sklad-window">
-        <div class="sklad-window-table-head">
-          <div class="sklad-window-table-head-image">
-            <div class="sklad-head-image-circle">?</div>
+
+      <nav class="w-max" *ngIf="sideBarMaximized">
+        <div class="w-max-heading">
+          <div class="w-max-heading-left-button" (click)="sideBarMaximized = false">
+            <mat-icon>menu</mat-icon>
           </div>
-          <div class="sklad-head-contents">
-            <h1>Pavadinimas</h1>
-            <hr/>
+          <div
+            class="w-max-heading-right-button"
+            routerLinkActive="w-max-heading-selected"
+            [routerLink]="['/workspace', companyId]"
+            [routerLinkActiveOptions]="{exact: true}"
+          >
+            <h1>Home</h1>
           </div>
         </div>
+        
+        <hr/>
+        <!-- <div
+          *ngFor="let menu of leftBarMenu"
+          class="w-max-element" 
+          routerLinkActive="w-max-element-selected"
+          [routerLink]="menu.link" 
+        >
+          <mat-icon>{{ menu.logo }}</mat-icon>
+          <p>{{ menu.name }}({{ menu.number }})</p>
+        </div> -->
+        <div 
+          class="w-max-element"
+          routerLinkActive="w-max-element-selected"
+          [routerLink]="['/workspace', companyId, 'items']"
+        >
+          <mat-icon>inventory_2</mat-icon>
+          <p>items({{ company?.items?.length }})</p>
+        </div>
+        <div 
+          class="w-max-element"
+          routerLinkActive="w-max-element-selected"
+          [routerLink]="['/workspace', companyId, 'suppliers']"
+        >
+          <mat-icon>local_shipping</mat-icon>
+          <p>suppliers({{ company?.suppliers?.length }})</p>
+        </div>
+        <div 
+          class="w-max-element"
+          routerLinkActive="w-max-element-selected"
+          [routerLink]="['/workspace', companyId, 'locations']"
+        >
+          <mat-icon>warehouse</mat-icon>
+          <p>locations({{ company?.locations?.length }})</p>
+        </div>
+        <div 
+          [routerLink]="['/workspace', companyId, 'users']"
+          class="w-max-element" 
+          routerLinkActive="w-max-element-selected"
+        >
+          <mat-icon>group</mat-icon>
+          <p>users({{ company?.user?.length }})</p>
+        </div>
+        <div 
+          class="w-max-element" 
+          routerLinkActive="w-max-element-selected"
+          [routerLink]="['/workspace', companyId, 'gallery']" 
+        >
+          <mat-icon>photo_library</mat-icon>
+          <p>gallery({{ company?.imageData?.length }})</p>
+        </div>
+      </nav>
 
-        <table mat-table>
-          <!-- <tr>
-            <th>1</th>
-            <th>2</th>
-            <th>3</th>
-          </tr>
-          <tr>
-            <td>1</td>
-            <td>2</td>
-            <td>3</td>
-          </tr> -->
-        </table>
-
-      </main>
+      <div class="w-main-window">
+        <b>{{ currentRoute }}</b>
+        <router-outlet></router-outlet>
+      </div>
     </div>
   </div>
+</ng-template>
 
-</div>
-<router-outlet></router-outlet>
+

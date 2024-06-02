@@ -11,6 +11,7 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { Company } from '../../shared/models/company.model';
 import { BriefUserModel } from '../login/briefUser.model';
+import { Router, RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-profile',
@@ -23,20 +24,22 @@ export class ProfileComponent implements OnInit, OnDestroy {
   user: User = null;
   companyButtonState: boolean[];
   initials = "";
+  userImageHash = "";
+  link = environment.API_SERVER + "/api/rest/v1/secret/image/";
 
   error: string = "null";
   isLoading = false;
   alertOpen = false;
   alertTitle: string = null;
   alertPreset: AlertPresets = null;
-  companyForEdit: {id?: number, name: string, description: string};
+  companyForEdit: {id: string, name: string, description: string};
 
   private userDetailsSubscription: Subscription | undefined;
 
   constructor(
     private authService: AuthService,
-    private http: HttpClient
-    // private route: Router 
+    private http: HttpClient,
+    private router: Router
   ) {}
 
   ngOnInit() {
@@ -44,6 +47,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
       user => {
         this.user = user;
         this.initials = user?.firstname.toUpperCase().at(0) + user?.lastname.toUpperCase().at(0);
+        this.userImageHash = user?.image?.hash || "";
         this.companyButtonState = new Array<boolean>(this.user?.company?.length || 0).fill(false);
       }
     );
@@ -70,7 +74,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
     this.alertOpen = true;
   }
 
-  onOpenEditCompanyMenu(id: number, name: string, description: string) {
+  onOpenEditCompanyMenu(id: string, name: string, description: string) {
     this.companyForEdit = {id: id, name: name, description: description};
     this.alertTitle = 'Edit Company: ' + name;
     this.alertPreset = AlertPresets.editCompany
@@ -87,26 +91,28 @@ export class ProfileComponent implements OnInit, OnDestroy {
     }
 
     this.http.post<Company>(
-      environment.API_SERVER + '/api/secret/company',
+      environment.API_SERVER + '/api/rest/v1/secret/company',
       $event,
       {
         headers: {
           "Authorization": `Bearer ${userBriefData.token}`
         }
       }
-    ).subscribe({
-      next: () => {
-        this.alertOpen = false;
-        this.authService.autoLogin(); // updates company list
-      },
-      error: error => {
-        console.error('Error creating a company:', error);
-        this.error = error.error.error;
-      },
-      complete: () => {
-        this.isLoading = false;
+    ).subscribe(
+      {
+        next: () => {
+          this.alertOpen = false;
+          this.authService.autoLogin(); // updates company list
+        },
+        error: error => {
+          console.error('Error creating a company:', error);
+          this.error = error.error.error;
+        },
+        complete: () => {
+          this.isLoading = false;
+        }
       }
-    });
+    );
   }
 
   onEditCompany($event: {name: string, description: string}) {
@@ -120,7 +126,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
     const body = {name: $event.name, description: $event.description};
 
     this.http.put<Company>(
-      environment.API_SERVER + '/api/secret/company/' + this.companyForEdit.id,
+      environment.API_SERVER + '/api/rest/v1/secret/company/' + this.companyForEdit.id,
       body,
       {
         headers: {
@@ -142,37 +148,8 @@ export class ProfileComponent implements OnInit, OnDestroy {
     });
   }
 
-  // getCompanyImage() {
-  //   const userBriefData: {
-  //     username: string;
-  //     role: string;
-  //     token: string;
-  //   } = JSON.parse(localStorage.getItem('userBriefData'));
-
-  //   if (!userBriefData || !this.user?.image?.hash) {
-  //     return;
-  //   }
-
-  //   let authObs = this.http.get(
-  //     environment.API_SERVER + `/api/secret/image/${this.user.image.hash}`,
-  //     {
-  //       headers: {
-  //         "Authorization": `Bearer ${userBriefData.token}`
-  //       },
-  //       responseType: 'blob'
-  //     }
-  //   ).subscribe(
-  //     (imageBlob: Blob) => {
-  //       // Handle the image blob here
-  //       // For example, you can create a URL for the blob and assign it to an image element
-  //       const imageUrl = URL.createObjectURL(imageBlob);
-  //       // Assign the URL to an image element in the HTML
-  //       // For example:
-  //       // document.getElementById('companyImage').src = imageUrl;
-  //     },
-  //     error => {
-  //       console.error('Error fetching company image:', error);
-  //     }
-  //   );
-  // }
+  onOpenWorkspace(companyId: string) {
+    this.isLoading = true;
+    this.router.navigate(['/workspace', companyId]);
+  }
 }

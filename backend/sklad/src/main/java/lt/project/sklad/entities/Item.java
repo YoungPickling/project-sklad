@@ -38,7 +38,7 @@ public class Item {
     /**
      * Image for this item
      */
-    @OneToOne
+    @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.DETACH, CascadeType.MERGE})
     @JsonIgnoreProperties("ownedByCompany")
     @JoinColumn(name = "image_id")
     private Image image;
@@ -50,7 +50,12 @@ public class Item {
      * Additional columns of the Item
      */
     @JsonIgnoreProperties("ofTable")
-    @OneToMany(mappedBy = "ofTable", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(
+            mappedBy = "ofTable",
+            fetch = FetchType.EAGER,
+            cascade = {CascadeType.ALL},
+            orphanRemoval = true
+    )
     private List<ItemColumn> columns;
 
     /**
@@ -58,15 +63,31 @@ public class Item {
      * Parts from which this one is made out of.
      */
     @JsonIgnoreProperties({"children","parents", "columns", "quantity", "supplier", "description", "company", "code"})
-    @ManyToMany(mappedBy = "parents", fetch = FetchType.EAGER)
+    @ManyToMany(mappedBy = "parents", fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.DETACH, CascadeType.MERGE})
     private Set<Item> children;
+
+//    @ManyToMany
+//    @JoinTable(name="join_items",
+//            joinColumns=@JoinColumn(name="itemId"),
+//            inverseJoinColumns=@JoinColumn(name="parentId")
+//    )
+//    @JsonIgnoreProperties({"children","parents", "columns", "quantity", "supplier", "description", "company", "code"})
+//    private List<Item> parents;
+//
+//    @ManyToMany
+//    @JoinTable(name="join_items",
+//            joinColumns=@JoinColumn(name="parentId"),
+//            inverseJoinColumns=@JoinColumn(name="itemId")
+//    )
+//    @JsonIgnoreProperties({"children","parents", "columns", "quantity", "supplier", "description", "company", "code"})
+//    private List<Item> children;
 
     /**
      * Item's children classes.
      * Parts from which this one is made out of.
      */
     @JsonIgnoreProperties({"children","parents", "columns", "quantity", "supplier", "description", "company", "code"})
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.DETACH, CascadeType.MERGE})
     private Set<Item> parents;
 
     /**
@@ -75,7 +96,7 @@ public class Item {
      */
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "quantity_mapping", joinColumns = @JoinColumn(name = "item_table_id"))
-    @MapKeyColumn(name = "location_id")
+    @MapKeyColumn(name = "location_id", unique = true)
     private Map<Long, Integer> quantity;
 
     /**
@@ -90,7 +111,7 @@ public class Item {
     /**
      * Supplier of this item
      */
-    @OneToOne
+    @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.DETACH, CascadeType.MERGE})
     @JsonIgnoreProperties({"owner", "website", "description", "streetAndNumber", "cityOrTown", "postalCode", "phoneNumber", "phoneNumberTwo"})
     @JoinColumn(name = "supplier_id")
     private Supplier supplier;

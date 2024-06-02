@@ -11,36 +11,33 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 
 @RestController
-@RequestMapping("/api/secret/image")
+@RequestMapping("/api/rest/v1/secret/image")
 @RequiredArgsConstructor
 public class ImageController {
     private final ImageService imageService;
 
-    @PostMapping("/{id}")
+    @PostMapping("/{companyId}")
     public ResponseEntity<?> uploadImage(
-            @PathVariable @NotNull long id,
-            @RequestParam("image")MultipartFile file,
+            @PathVariable @NotNull long companyId,
+            @RequestParam("image") MultipartFile file,
             HttpServletRequest request
     ) throws IOException {
-        return imageService.uploadImage(id, file, request);
+        return imageService.uploadImage(companyId, file, request);
     }
 
     @GetMapping("/{fileHash}")
-    public ResponseEntity<?> downloadImage(@PathVariable String fileHash){
-        return imageService.downloadImage(fileHash);
+    public ResponseEntity<?> downloadImage(
+            @PathVariable String fileHash,
+            HttpServletRequest request
+    ) {
+        return imageService.downloadImage(fileHash, request);
     }
 
-    // For tech demo, has no authentication
-//    @GetMapping("demo/{fileHash}")
+//     For tech demo, has no authentication
+//    @GetMapping("/demo/{fileHash}")
 //    public ResponseEntity<?> demoGetImage(@PathVariable String fileHash){
 //        // TODO create an ImageData service method for tech demos
 //        return imageService.downloadImage(fileHash);
-//    }
-
-//    TODO image put endpoint, mostly for profile pictures
-//    @PutMapping
-//    public ResponseEntity<?> uploadImage(@RequestParam("image")MultipartFile file, @RequestParam String id) throws IOException {
-//        return imageDataService.updateImage(file, id);
 //    }
 
     @DeleteMapping("/{fileHash}")

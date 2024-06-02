@@ -12,6 +12,14 @@ export interface LoginResponseData {
   access_token: string
 }
 
+export interface RegisterData {
+  firstname: string;
+  lastname: string;
+  username: string;
+  email: string;
+  password: string;
+}
+
 @Injectable({providedIn: 'root'})
 export class AuthService {
   user = new BehaviorSubject<BriefUserModel>(null); // BehaviorSubject
@@ -25,7 +33,7 @@ export class AuthService {
 
   login(username: string, password: string) {
     return this.http.post<LoginResponseData>(
-      environment.API_SERVER + "/api/secret/auth/login",
+      environment.API_SERVER + "/api/rest/v1/secret/auth/login",
       {
         username: username,
         password: password
@@ -47,9 +55,29 @@ export class AuthService {
     );
   }
 
+  signup(regData: RegisterData) {
+    return this.http.post<LoginResponseData>(
+      environment.API_SERVER + "/api/rest/v1/secret/auth/register",
+      regData
+    )
+    .pipe(
+      catchError(this.handleError),
+      tap(resData => {
+        this.handleAuthentication(
+          regData.username,
+          resData.role, 
+          resData.access_token
+        );
+      }),
+      switchMap(resData =>
+        this.getUserDetails(resData.access_token)
+      )
+    );
+  }
+
   getUserDetails(token: string) {
     return this.http.get<any>(
-      environment.API_SERVER + "/api/secret/user/me",
+      environment.API_SERVER + "/api/rest/v1/secret/user/me",
       {
         headers: {
           "Authorization": `Bearer ${token}`
@@ -141,7 +169,7 @@ export class AuthService {
       });
 
       // this.http.post<LoginResponseData>(
-      //   environment.API_SERVER + "/api/secret/auth/login",
+      //   environment.API_SERVER + "/api/rest/v1/secret/auth/login",
       //   {
       //     email: email,
       //     password: password,

@@ -1,0 +1,206 @@
+/* <span class="frontpage-loader"></span> */
+
+:root, * {
+  color: #222;
+  font-family: "Trebuchet MS", Helvetica, sans-serif;
+}
+
+.frontpage-loader {
+  position: relative;
+  width: 130px;
+  height: 100px;
+  background-repeat: no-repeat;
+  background-image: linear-gradient(#bd0202, #bd0202),
+  linear-gradient(#f62929, #f74f4f), linear-gradient(#f62929, #f74f4f);
+  background-size: 80px 70px, 30px 50px, 30px 30px;
+  background-position: 0 0, 80px 20px, 100px 40px;
+}
+
+.frontpage-loader:after {
+  content: "";
+  position: absolute;
+  bottom: 10px;
+  left: 12px;
+  width: 10px;
+  height: 10px;
+  background: #fff;
+  border-radius: 50%;
+  box-sizing: content-box;
+  border: 10px solid #000;
+  box-shadow: 78px 0 0 -10px #fff, 78px 0 #000;
+  animation: wheelSk 0.75s ease-in infinite alternate;
+}
+
+.frontpage-loader:before {
+  content: "";
+  position: absolute;
+  right: 100%;
+  top: 0px;
+  height: 70px;
+  width: 70px;
+  background-image: linear-gradient(#888 45px, transparent 0),
+    linear-gradient(#888 45px, transparent 0),
+    linear-gradient(#888 45px, transparent 0);
+  background-repeat: no-repeat;
+  background-size: 30px 4px;
+  background-position: 0px 11px, 8px 35px, 0px 60px;
+  animation: lineDropping 0.75s linear infinite;
+}
+
+@keyframes wheelSk {
+  0%, 50%, 100% { transform: translatey(0) }
+  30%, 90% { transform: translatey(-3px) }
+}
+
+@keyframes lineDropping {
+  0% {
+    background-position: 100px 11px, 115px 35px, 105px 60px;
+    opacity: 1;
+  }
+  50% { background-position: 0px 11px, 20px 35px, 5px 60px }
+  60% { background-position: -30px 11px, 0px 35px, -10px 60px }
+  75%, 100% {
+    background-position: -30px 11px, -30px 35px, -30px 60px;
+    opacity: 0;
+  }
+}
+
+.frontpage-loader-container {
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.w-title {
+  margin-bottom: 0;
+}
+
+.w-empty {
+  margin: auto;
+  color: #666;
+  display: flex;
+  justify-content: center;
+}
+
+/* header menu */
+
+.frontpage-navigation-buttons {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: space-between;
+  height: 100%;
+  /* width: 48vw; */
+  /* max-width: 670px; */
+}
+
+.frontpage-navigation-buttons > a {
+  min-height: 100%;
+}
+
+.frontpage-navigation-buttons a {
+  display: flex;
+  align-items: center;
+}
+
+mat-icon .frontpage-login {
+  font-size: 3rem; 
+  width: 3rem;
+  height: 3rem;
+}
+
+mat-icon .frontpage-arrow {
+  font-size: 3rem; 
+  width: 3rem;
+  height: 3rem;
+}
+
+.frontpage-icon {
+  display: flex;
+  width: 40px;
+  height: 40px;
+  align-items: center;
+  justify-content: center;
+  object-fit: cover; /* to crop an image */
+  object-position: center;
+  image-rendering: smooth;
+  background-color: #222;
+  border-radius: 50%;
+  box-shadow: rgba(0, 0, 0, 0.2) 0px 2px 5px 2px, rgba(0, 0, 0, 0.1) 0px 0px 1px 0px;
+}
+
+.frontpage-icon:hover {
+  box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 5px 2px, rgba(0, 0, 0, 0.3) 0px 0px 1px 0px;
+}
+
+.frontpage-icon b {
+  color: #ff0;
+  padding: 0;
+}
+
+.open + .frontpage-dropdown-menu {
+  display: block;
+}
+
+.frontpage-dropdown-menu {
+  position: absolute;
+  top: 60px;
+  right: auto;
+  z-index: 2;
+  display: none;
+  float: left;
+  min-width: 160px;
+  padding: 35px;
+  margin: 0;
+  text-align: left;
+  list-style: none;
+  background-color: #fff;
+  background-clip: padding-box;
+  /* border: 1px solid #ccc; */
+  border: 1px solid rgba(0, 0, 0, .15);
+  -webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, .11);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, .11);
+}
+
+.frontpage-dropdown-menu > li {
+  margin: 0.7rem 0;
+}
+
+.frontpage-dropdown-menu > li:first-child {
+  margin: 0 0 0.7rem;
+}
+
+.frontpage-dropdown-menu > li:last-of-type {
+  margin: 0.7rem 0 0;
+}
+
+.frontpage-dropdown-menu h3 {
+  font-size: 1rem;
+  color: #999;
+  margin: 0 0 0.5rem;
+}
+
+.frontpage-dropdown-menu mat-icon {
+  margin-right: 0.7rem;
+}
+
+.loader-round {
+  width: 3rem;
+  height: 3rem;
+  border: 0.5rem dotted #000;
+  border-radius: 50%;
+  display: inline-block;
+  position: relative;
+  box-sizing: border-box;
+  animation: rotation-s 1.5s linear infinite;
+}
+
+@keyframes rotation-s {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+} 

@@ -1,0 +1,26 @@
+.settings-bar {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: calc(100% - 1rem - 2px);
+  padding: 0.5rem;
+  border: 1px solid rgb(214, 214, 214);
+  border-radius: 0.4rem;
+  margin-bottom: 1rem;
+  align-items: center
+}
+
+.settings-bar-column {
+  height: 4rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+}
+
+.settings-bar-column p {
+  margin: 0;
+}
+
+.frontpage-window-body h2:first-of-type {
+  margin-top: 0;
+}

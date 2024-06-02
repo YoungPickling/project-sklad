@@ -1,12 +1,15 @@
-import { CanActivate, Router, RouterStateSnapshot, ActivatedRouteSnapshot, UrlTree } from "@angular/router";
+import { CanActivate, Router, RouterStateSnapshot, ActivatedRouteSnapshot, UrlTree, CanActivateChild } from "@angular/router";
 import { AuthService } from "./auth.service";
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map, take } from 'rxjs/operators';
 
 @Injectable({ providedIn: 'root' })
-export class AuthGuard implements CanActivate {
-  constructor(private authService: AuthService, private router: Router) {}
+export class AuthGuard implements CanActivate, CanActivateChild  {
+  constructor(
+    private authService: AuthService, 
+    private router: Router
+  ) {}
 
   canActivate(
     route: ActivatedRouteSnapshot,
@@ -26,5 +29,12 @@ export class AuthGuard implements CanActivate {
         return this.router.createUrlTree(['/login']);
       })
     );
+  }
+
+  canActivateChild(
+    route: ActivatedRouteSnapshot,
+    router: RouterStateSnapshot,
+  ): any {
+    return this.canActivate(route, router);
   }
 }

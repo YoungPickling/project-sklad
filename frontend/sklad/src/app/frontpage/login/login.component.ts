@@ -14,7 +14,7 @@ import { LoginResponseData, AuthService } from './auth.service';
 })
 export class LoginComponent {
   isLoading = false;
-  error: string = null;
+  error: string;
 
   // private closeSub: Subscription;
 
@@ -34,11 +34,7 @@ export class LoginComponent {
 
     let authObs: Observable<LoginResponseData>;
 
-    // if (this.isLoginMode) {
     authObs = this.loginService.login(username, password);
-    // } else {
-    //   authObs = this.loginService.signup(email, password);
-    // }
 
     authObs.subscribe({
       next: (resData) => {
@@ -48,8 +44,11 @@ export class LoginComponent {
       },
       error: errorMessage => {
         console.log(errorMessage);
-        this.error = errorMessage;
-        // this.showErrorAlert(errorMessage);
+        if(errorMessage.error?.error) {
+          this.error = errorMessage.error?.error;
+        } else {
+          this.error = 'Something went wrong';
+        }
         this.isLoading = false;
       }
     });
