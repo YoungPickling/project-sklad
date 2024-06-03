@@ -1,4 +1,6 @@
-<h1 class="w-title">Suppliers</h1>
+<div class="w-title-bar">
+  <h1 class="w-title">Suppliers</h1><span *ngIf="isLoading" class="loader-round"></span></div>
+<div>
 
 <h1 class="w-empty" *ngIf="company?.suppliers?.length === 0 else view">No suppliers created yet</h1>
 

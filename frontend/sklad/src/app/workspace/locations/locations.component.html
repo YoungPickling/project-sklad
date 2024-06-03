@@ -1,4 +1,6 @@
-<h1 class="w-title">Locations</h1>
+<div class="w-title-bar">
+  <h1 class="w-title">Locations</h1><span *ngIf="isLoading" class="loader-round"></span></div>
+<div>
 
 <h1 class="w-empty" *ngIf="company?.locations?.length === 0 else view">No locations created yet</h1>
 

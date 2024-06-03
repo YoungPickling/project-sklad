@@ -14,6 +14,8 @@ import { CommonModule } from '@angular/common';
 export class LocationsComponent implements OnInit, OnDestroy {
   company: Company;
 
+  isLoading = false;
+
   constructor(
     private workspaceService: WorkspaceService
   ) {}

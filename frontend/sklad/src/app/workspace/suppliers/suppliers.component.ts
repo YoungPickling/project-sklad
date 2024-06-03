@@ -14,6 +14,8 @@ import { CommonModule } from '@angular/common';
 export class SuppliersComponent implements OnInit, OnDestroy {
   company: Company;
 
+  isLoading = false;
+
   constructor(
     private workspaceService: WorkspaceService
   ) {}

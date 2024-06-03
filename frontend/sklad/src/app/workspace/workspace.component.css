@@ -410,7 +410,7 @@ html {
   box-shadow: rgba(0, 0, 0, 0.1) 0 2px 4px;
   color: #FFF;
   cursor: pointer;
-  display: inline-block;
+  display: inline-flex;
   /* font-family: Inter,-apple-system,system-ui,Roboto,"Helvetica Neue",Arial,sans-serif; */
   height: 2.2rem;
   line-height: 2.25rem;
@@ -429,6 +429,8 @@ html {
   z-index: 9;
   border: 0;
   transition: box-shadow .2s;
+  align-items: center;
+  margin-right: 0.6rem;
 }
 
 .button-42:hover {
@@ -453,6 +455,9 @@ html {
   box-shadow: #0004fd80 0 3px 8px;
 }
 
+.button-42-icon {
+  padding: 0 0.37rem;
+}
 
 hr {
   background-color: #333; 
@@ -612,11 +617,6 @@ header a {
   background-color: white;
   margin-top: 1rem;
   border-collapse: collapse;
-}
-
-.workspace-table * input[type=text],
-.workspace-table * input[type=text]:focus {
-  /* border: none; */
 }
 
 .workspace-table thead {
@@ -781,7 +781,7 @@ header a {
 }
 
 .w-gallery-cell:hover .w-gallery-cell-overlay {
-  height: 40%;
+  height: 2.5rem;
 }
 
 .w-gallery-cell-overlay-text {

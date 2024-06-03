@@ -1,20 +1,37 @@
-<h1 class="w-title">Gallery</h1>
+<div class="w-title-bar">
+  <h1 class="w-title">Gallery</h1><span *ngIf="isLoading" class="loader-round"></span></div>
+<div>
+
+<button
+  class="button-42 button-42-icon" 
+  [ngClass]="{'button-42-active': addButtonActive}"
+  (click)="onClickAddBtn()"
+>
+  <mat-icon>add_a_photo</mat-icon>
+</button>
+
+<button 
+  class="button-42 button-42-icon" 
+  [ngClass]="{'button-42-active': removeButtonActive}"
+  (click)="onClickRemoveBtn()"
+>
+  <mat-icon>delete_forever</mat-icon>
+</button>
 
 <h1 class="w-empty" *ngIf="company?.imageData?.length === 0 else view">No images are found</h1>
 
 <ng-template #view>
-  <div 
-    class="w-gallery-table"
-    *ngFor="let image of company?.imageData"
-    >
-    <div 
-      class="w-gallery-cell" 
-      [ngStyle]="{'background-image': 'url(' + link + image?.hash + ')'}"
-      loading="lazy"
-    >
-      <div class="w-gallery-cell-overlay">
-        <div class="w-gallery-cell-overlay-text">{{image?.name}}</div>
-      </div>
-    </div>
+  <div class="w-gallery-table">
+      <ng-container *ngFor="let image of company?.imageData">
+        <div 
+          class="w-gallery-cell" 
+          [ngStyle]="{'background-image': 'url(' + link + image?.hash + ')'}"
+          loading="lazy"
+        >
+          <div class="w-gallery-cell-overlay">
+            <div class="w-gallery-cell-overlay-text">{{image?.name}}</div>
+          </div>
+        </div>
+      </ng-container>
   </div>
 </ng-template>

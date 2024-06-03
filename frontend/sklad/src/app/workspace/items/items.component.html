@@ -1,7 +1,7 @@
-<div class="w-title-bar"><h1 class="w-title">Items</h1><span *ngIf="isLoading" class="loader-round"></span></div>
+<div class="w-title-bar">
+  <h1 class="w-title">Items</h1><span *ngIf="isLoading" class="loader-round"></span></div>
 <div>
-  <button
-  style="margin-right:1rem"
+<button
   class="button-42" 
   [ngClass]="{'button-42-active': addButtonActive}"
   (click)="onClickAddBtn()"
@@ -129,7 +129,16 @@
         </td>
         <td style="padding:0;">
           <div class="cell-image-wrap">
-            <div *ngIf="!item?.image?.hash" class="cell-empty-image">
+            <div 
+              *ngIf="!item?.image?.hash" 
+              class="cell-empty-image" 
+              [ngStyle]="{'background-color': 
+                i % 6 === 0 ? 'crimson' : 
+                i % 6 === 1 ? 'gold' : 
+                i % 6 === 2 ? 'limegreen' :  
+                i % 6 === 3 ? 'lightskyblue' : 
+                i % 6 === 4 ? 'royalblue' : 'darkviolet'}"
+            >
               <mat-icon>add_a_photo</mat-icon>
             </div>
 
