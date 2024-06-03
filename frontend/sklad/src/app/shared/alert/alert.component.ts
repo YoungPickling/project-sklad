@@ -1,11 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Company } from '../models/company.model';
 
 export enum AlertPresets {
   addCompany,
-  editCompany
+  editCompany,
+  addImage
 }
 
 @Component({
@@ -81,5 +81,9 @@ export class AlertComponent implements OnInit {
 
   isEditCompay() {
     return this.preset === AlertPresets.editCompany;
+  }
+
+  isAddImage() {
+    return this.preset === AlertPresets.addImage;
   }
 }

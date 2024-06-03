@@ -5,13 +5,15 @@ import { Subscription } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { environment } from '../../../environments/environment';
 import { MatIconModule } from '@angular/material/icon';
+import { AlertComponent, AlertPresets } from '../../shared/alert/alert.component';
 
 @Component({
   selector: 'app-gallery',
   standalone: true,
   imports: [
     CommonModule,
-    MatIconModule
+    MatIconModule,
+    AlertComponent
   ],
   templateUrl: './gallery.component.html',
   styleUrl: './gallery.component.css'
@@ -22,7 +24,12 @@ export class GalleryComponent implements OnInit, OnDestroy {
 
   addButtonActive = false;
   removeButtonActive = false;
+
+  alertOpen = false;
   isLoading = false;
+  alertPreset: AlertPresets = null;
+  error: string = "null";
+  alertTitle: string = null;
 
   constructor(
     private workspaceService: WorkspaceService
@@ -50,5 +57,9 @@ export class GalleryComponent implements OnInit, OnDestroy {
 
   onClickRemoveBtn() {
 
+  }
+
+  onHandleError() {
+    
   }
 }

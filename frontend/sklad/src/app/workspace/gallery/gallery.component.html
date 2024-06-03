@@ -1,3 +1,12 @@
+<app-alert
+  *ngIf="alertOpen"
+  [(isLoadig)]="isLoading"
+  [preset]="alertPreset"
+  [message]="error"
+  [title]="alertTitle"
+  (close)="onHandleError()"
+></app-alert>
+
 <div class="w-title-bar">
   <h1 class="w-title">Gallery</h1><span *ngIf="isLoading" class="loader-round"></span></div>
 <div>

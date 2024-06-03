@@ -1,8 +1,10 @@
 <div class="backdrop" ></div><!-- (click)="onClose()"-->
 <div class="alert-box">
+  
   <ng-template [ngIf]="isAddCompay() || isEditCompay()">
     <div class="box-title"><h1>{{ title }}</h1></div>
     <span class="loader" *ngIf="isLoading else regForm"></span>
+
     <ng-template #regForm>
       <div class="error-box" *ngIf="message && lastMessage !== message">{{ message }}</div>
       <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
@@ -42,6 +44,11 @@
         </div>
       </form>
     </ng-template>
+  </ng-template>
+
+
+  <ng-template [ngIf]="isAddImage()">
+  
   </ng-template>
 
   <!-- <ng-template [ngIf]="isAddCompay()">
