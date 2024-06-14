@@ -2,8 +2,8 @@
   <div class="frontpage-navigation-wrapper">
     <a [routerLink]="['/']">
       <div>
-        <img src="/assets/sklad-s.svg" alt="logo" style="height: 54px; margin: auto 1rem auto 0;">
-        <h1>SKLAD</h1>
+        <img src="/assets/sklad-s.svg" alt="logo" style="height: 54px; margin: auto 0.45rem auto 0;">
+        <h2>ScalePilot</h2>
       </div>
     </a>
 
@@ -15,23 +15,27 @@
       </ul>
     </nav>
 
-    <li class="frontpage-navigation-buttons" style="min-width:4rem">
+    <li class="frontpage-navigation-buttons" style="min-width:4rem;align-items: center;flex-direction: row;">
+      <ng-template [ngIf]="isLoggedIn">
+        <a [routerLink]="['/profile']" *ngIf="userImageHash.length === 0; else profilePicture">
+          <div class="frontpage-icon">
+            <b>{{ initials }}</b>
+          </div>
+        </a>
+      </ng-template>
+      
+      <ng-template #profilePicture>
+        <a [routerLink]="['/profile']">
+          <img class="frontpage-icon" [src]="link + userImageHash" [alt]="username">
+        </a>
+      </ng-template>
+
       <a 
         role="button" 
         (click)="loginMenu = !loginMenu"
         (clickOutside)="closeLoginMenu()"
         [ngClass]="loginMenu ? 'open' : ''">
         <mat-icon class="frontpage-login" *ngIf="!isLoggedIn">login</mat-icon>
-        
-        <ng-template [ngIf]="isLoggedIn">
-          <div class="frontpage-icon" *ngIf="userImageHash.length === 0; else profilePicture">
-            <b>{{ initials }}</b>
-          </div>
-        </ng-template>
-        
-        <ng-template #profilePicture>
-          <img class="frontpage-icon" [src]="link + userImageHash" [alt]="username">
-        </ng-template>
 
         <mat-icon class="frontpage-arrow">expand_{{ loginMenu ? 'less' : 'more' }}</mat-icon>
       </a>

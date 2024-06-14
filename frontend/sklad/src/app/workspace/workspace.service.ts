@@ -11,11 +11,13 @@ export class WorkspaceService {
   companyDetails = new BehaviorSubject<Company>(null);
   isLoading = new BehaviorSubject<boolean>(false);
 
+  closeAlert = new BehaviorSubject<boolean>(false);
+
   constructor(
     private http: HttpClient
   ) {}
 
-  getCompany(id: number) {
+  getCompany(id: number): void {
     if (typeof localStorage === 'undefined')
       return;
 
@@ -48,7 +50,7 @@ export class WorkspaceService {
     );
   }
 
-  addItem(item: Item) {
+  addItem(item: Item): void {
     if (typeof localStorage === 'undefined')
       return;
 
@@ -68,8 +70,7 @@ export class WorkspaceService {
     ).subscribe(
       {
         next: result => {
-          console.log(result)
-          this.getCompany(this.companyDetails.value.id);
+          this.getLatestUpdates(result);
         },
         error: error => {
           console.error('Error inserting new item:', error);
@@ -81,7 +82,7 @@ export class WorkspaceService {
     );
   }
 
-  updateItem(item: Item) {
+  updateItem(item: Item): void {
     if (typeof localStorage === 'undefined')
       return;
 
@@ -101,8 +102,7 @@ export class WorkspaceService {
     ).subscribe(
       {
         next: result => {
-          console.log(result)
-          this.getCompany(this.companyDetails.value.id);
+          this.getLatestUpdates(result);
         },
         error: error => {
           console.error('Error updating existing item:', error);
@@ -114,7 +114,7 @@ export class WorkspaceService {
     );
   }
 
-  removeItems(items: number[]) {
+  removeItems(items: number[]): void {
     if (typeof localStorage === 'undefined')
       return;
 
@@ -136,8 +136,7 @@ export class WorkspaceService {
     ).subscribe(
       {
         next: result => {
-          console.log(result)
-          this.getCompany(this.companyDetails.value.id);
+          this.getLatestUpdates(result);
         },
         error: error => {
           console.error('Error removing items:', error);
@@ -149,7 +148,80 @@ export class WorkspaceService {
     );
   }
 
-  reset() {
+  addGalleryImage(image: File, companyId: number): void {
+    const userBriefData: BriefUserModel = JSON.parse(localStorage.getItem('userBriefData'));
+
+    if (!userBriefData) {
+      console.error('User data not available in localStorage');
+      this.isLoading.next(false);
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('image', image, image.name);
+
+    this.http.post<any>(
+      environment.API_SERVER + "/api/rest/v1/secret/image/" + companyId,
+      formData,
+      {
+        headers: {
+          "Authorization": `Bearer ${userBriefData.token}`
+        }
+      }
+    ).subscribe(
+      {
+        next: result => {
+          this.getLatestUpdates(result);
+        },
+        error: error => {
+          console.error('Error uploading image to Gallery:', error);
+        },
+        complete: () => {
+          this.isLoading.next(false);
+          this.closeAlert.next(false);
+        }
+      }
+    );
+  }
+
+  removeGalleryImage(hash: string): void {
+    const userBriefData: BriefUserModel = JSON.parse(localStorage.getItem('userBriefData'));
+
+    if (!userBriefData) {
+      console.error('User data not available in localStorage');
+      this.isLoading.next(false);
+      return;
+    }
+
+    this.http.delete<any>(
+      environment.API_SERVER + "/api/rest/v1/secret/image/" + hash,
+      {
+        headers: {
+          "Authorization": `Bearer ${userBriefData.token}`
+        }
+      }
+    ).subscribe(
+      {
+        next: result => {
+          this.getLatestUpdates(result);
+        },
+        error: error => {
+          console.error('Error removing gallery image:', error);
+        },
+        complete: () => {
+          this.isLoading.next(false);
+          this.closeAlert.next(false);
+        }
+      }
+    );
+  }
+
+  private getLatestUpdates(result: any): void {
+    console.log(result)
+    this.getCompany(this.companyDetails.value.id);
+  }
+
+  private reset(): void {
     this.companyDetails.next(null);
   }
 }

@@ -4,7 +4,13 @@
   [preset]="alertPreset"
   [message]="error"
   [title]="alertTitle"
-  (close)="onHandleError()"
+  [imageData]="imageData"
+  (close)="onHandleClose()"
+  [confirmWindow]="confirmDeletWindow"
+  [confirmMessage]="confirmMessage"
+  (addGalleryImage)="onAddGalleryImage($event)"
+  (deleteImage)="onClickDeleteImage()"
+  (confirmDeleteImage)="onClickConfirmDeleteImage()"
 ></app-alert>
 
 <div class="w-title-bar">
@@ -32,13 +38,19 @@
 <ng-template #view>
   <div class="w-gallery-table">
       <ng-container *ngFor="let image of company?.imageData">
-        <div 
-          class="w-gallery-cell" 
-          [ngStyle]="{'background-image': 'url(' + link + image?.hash + ')'}"
-          loading="lazy"
-        >
-          <div class="w-gallery-cell-overlay">
-            <div class="w-gallery-cell-overlay-text">{{image?.name}}</div>
+        <div class="w-gallery-cell-container">
+          <div 
+            class="w-gallery-cell-background"
+            [ngStyle]="{'background-image': 'url(' + link + image?.hash + ')'}"
+          ></div>
+          <div 
+            class="w-gallery-cell"
+            (click)="onClickOpenImage(image)"
+          >
+            <img [src]="link + image?.hash" [alt]="image?.name" class="disable-blur"/>
+            <div class="w-gallery-cell-overlay">
+              <div class="w-gallery-cell-overlay-text">{{image?.name}}</div>
+            </div>
           </div>
         </div>
       </ng-container>

@@ -45,13 +45,13 @@ export class ItemsComponent implements OnInit, OnDestroy, AfterViewChecked {
 
   addItemForm: FormGroup;
 
+  private companyDetailSub: Subscription;
+  private loadingSubscription: Subscription;
+
   constructor(
     private workspaceService: WorkspaceService,
     private cdr: ChangeDetectorRef
   ) {}
-
-  private companyDetailSub: Subscription;
-  private loadingSubscription: Subscription;
 
   ngOnInit() {
     this.companyDetailSub = this.workspaceService.companyDetails.subscribe(
