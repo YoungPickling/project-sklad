@@ -15,7 +15,7 @@ export class Item {
     public parents: Item[],
     public quantity: Map<number, number>, // Adjust the type if necessary
     public company: Company,
-    public supplier: Supplier,
+    public suppliers: Supplier[],
     public description: string
   ) {}
 }

@@ -9,8 +9,10 @@ import lt.project.sklad._security.services.TokenService;
 import lt.project.sklad._security.utils.MessagingUtils;
 import lt.project.sklad.entities.Company;
 import lt.project.sklad.entities.Image;
+import lt.project.sklad.entities.Item;
 import lt.project.sklad.repositories.CompanyRepository;
 import lt.project.sklad.repositories.ImageRepository;
+import lt.project.sklad.repositories.ItemRepository;
 import lt.project.sklad.utils.HashUtils;
 import lt.project.sklad.utils.ImageUtils;
 import org.slf4j.Logger;
@@ -26,14 +28,16 @@ import java.util.*;
 import static org.springframework.http.HttpStatus.*;
 
 @Service
+@RequiredArgsConstructor
 public class ImageService {
-    @Autowired private ImageRepository imageRepository;
-    @Autowired private UserRepository userRepository;
-    @Autowired private CompanyRepository companyRepository;
-    @Autowired private TokenService tokenService;
-    @Autowired private MessagingUtils msgUtils;
-    @Autowired private ImageUtils imgUtils;
-    @Autowired private HashUtils hashUtils;
+    private final ItemRepository itemRepository;
+    private final ImageRepository imageRepository;
+    private final UserRepository userRepository;
+    private final CompanyRepository companyRepository;
+    private final TokenService tokenService;
+    private final MessagingUtils msgUtils;
+    private final ImageUtils imgUtils;
+    private final HashUtils hashUtils;
 
     Logger logger = LoggerFactory.getLogger(ImageService.class);
 
@@ -198,6 +202,8 @@ public class ImageService {
 
         if(company == null)
             return msgUtils.error(FORBIDDEN, "Company not found");
+
+        itemRepository.setImageIdToNull(image.getId());
 
         company.getImageData().remove(image);
         imageRepository.delete(image);

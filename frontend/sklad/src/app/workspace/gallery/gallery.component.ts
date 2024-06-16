@@ -123,7 +123,7 @@ export class GalleryComponent implements OnInit, OnDestroy {
 
   onClickDeleteImage() {
     this.confirmDeletWindow = true;
-    this.confirmMessage = "Are you sure you want to permanently delete this image?"
+    this.confirmMessage = this.imageData?.name;
   }
 
   onClickConfirmDeleteImage() {

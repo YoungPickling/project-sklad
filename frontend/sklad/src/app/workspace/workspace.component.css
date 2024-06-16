@@ -470,15 +470,20 @@ header a {
   position: relative;
 }
 
+/* 0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 */
 .cell-empty-image {
   color: black;
   font-size: 3.75rem;
   width: 3.75rem;
   height: 3.75rem;
-  background-color: bisque;
+  background-color: #fff;
   display: flex; 
   justify-content: center;
   align-items: center;
+
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
 }
 
 .cell-image-wrap:hover .cell-image-hover-button {
@@ -494,11 +499,12 @@ header a {
   width: 1rem;
   height: 1rem;
   outline: 1px solid #ff0a0a;
-  background-color: white;
+  background-color: #fee;
 }
 
 .cell-image-hover-button:hover {
   outline: 1px solid rgb(0, 0, 255);
+  background-color: #fff;
 }
 
 .cell-image-hover-button:active {
@@ -508,6 +514,61 @@ header a {
 .cell-image-hover-button > mat-icon {
   font-size: 1rem;
 }
+
+.cell-image-hover-button {
+  display: none;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 1rem;
+  height: 1rem;
+  outline: 1px solid #ff0a0a;
+  background-color: #fee;
+}
+
+.to-block {
+  display: block;
+}
+
+.cell-image-context-menu {
+  background-color: #fff;
+  position: absolute;
+  left: calc(100% + 1px);
+  top: calc(100% + 1px);
+  width: auto;
+  height: auto;
+  outline: 1px solid #333;
+  box-shadow: rgba(0, 0, 0, 0.6) 2.4px 2.4px 3.2px;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.cell-image-context-menu > div {
+  width: calc(100% - 2rem);
+  height: 1.5rem;
+  background-color: #fff;
+  padding: 0.25rem 1rem 0.25rem;
+  border-bottom: 2px solid #aaa;
+  margin-bottom: -1px;
+  user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+}
+
+.cell-image-context-menu > div:hover {
+  background-color: #ffccaa;
+}
+
+.cell-image-context-menu > div:active {
+  background-color: #b8947c;
+}
+
+.cell-image-context-menu > div:last-child {
+  border-bottom: none;
+  margin-bottom: none;
+}
+
 /* .workspace-table td > input[type=text]:focus-visible { */
 /* .workspace-table td > span { */
   /* border: none; */

@@ -38,7 +38,7 @@ public class Item {
     /**
      * Image for this item
      */
-    @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.DETACH, CascadeType.MERGE})
+    @ManyToOne()
     @JsonIgnoreProperties("ownedByCompany")
     @JoinColumn(name = "image_id")
     private Image image;
@@ -53,7 +53,6 @@ public class Item {
     @OneToMany(
             mappedBy = "ofTable",
             fetch = FetchType.EAGER,
-            cascade = {CascadeType.ALL},
             orphanRemoval = true
     )
     private List<ItemColumn> columns;
@@ -63,7 +62,7 @@ public class Item {
      * Parts from which this one is made out of.
      */
     @JsonIgnoreProperties({"children","parents", "columns", "quantity", "supplier", "description", "company", "code"})
-    @ManyToMany(mappedBy = "parents", fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.DETACH, CascadeType.MERGE})
+    @ManyToMany(mappedBy = "parents", fetch = FetchType.EAGER)
     private Set<Item> children;
 
 //    @ManyToMany
@@ -87,7 +86,7 @@ public class Item {
      * Parts from which this one is made out of.
      */
     @JsonIgnoreProperties({"children","parents", "columns", "quantity", "supplier", "description", "company", "code"})
-    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.DETACH, CascadeType.MERGE})
+    @ManyToMany(fetch = FetchType.EAGER)
     private Set<Item> parents;
 
     /**
@@ -109,19 +108,20 @@ public class Item {
     private Company company;
 
     /**
-     * Supplier of this item
+     * Suppliers of this item
      */
-    @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.DETACH, CascadeType.MERGE})
+    @OneToMany(fetch = FetchType.EAGER)
     @JsonIgnoreProperties({"owner", "website", "description", "streetAndNumber", "cityOrTown", "postalCode", "phoneNumber", "phoneNumberTwo"})
     @JoinColumn(name = "supplier_id")
-    private Supplier supplier;
+    private List<Supplier> suppliers;
 
     @Lob
     private String description;
 
-    public Item(final String code, final String name, final Integer color, final String description, final Company company) {
+    public Item(final String code, final String name, final Image image,final Integer color, final String description, final Company company) {
         this.code = code;
         this.name = name;
+        this.image = image;
         this.color = color;
         this.description = description;
         this.company = company;

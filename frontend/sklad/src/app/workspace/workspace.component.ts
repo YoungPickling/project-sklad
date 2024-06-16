@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, HostListener, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
 import { MatIconModule} from '@angular/material/icon';
 import { ActivatedRoute, NavigationEnd, Params, Router, RouterModule, RouterOutlet } from '@angular/router';
 import { Subscription, filter } from 'rxjs';
@@ -173,6 +173,43 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
     const breadcrumb = ["Home", ...relevantSegments];
     // Join segments with a delimiter of your choice, e.g., ' > '
     return breadcrumb.join(" > ");
+  }
+
+  @HostListener('document:keydown', ['$event'])
+  handleKeyboardEvent(event: KeyboardEvent) {
+
+    if (event.altKey) {
+      switch(event.key) { 
+        case "h": { 
+          this.router.navigate(['/workspace', this.companyId]); 
+          break; 
+        } 
+        case "i": { 
+          this.router.navigate(['/workspace', this.companyId, 'items']); 
+          break; 
+        } 
+        case "s": { 
+          this.router.navigate(['/workspace', this.companyId, 'suppliers']);
+          break; 
+        } 
+        case "l": { 
+          this.router.navigate(['/workspace', this.companyId, 'locations']); 
+          break; 
+        } 
+        case "u": { 
+          this.router.navigate(['/workspace', this.companyId, 'users']); 
+          break; 
+        } 
+        case "g": { 
+          this.router.navigate(['/workspace', this.companyId, 'gallery']);
+          break; 
+        } 
+        case "b": { 
+          this.sideBarMaximized = !this.sideBarMaximized;
+          break; 
+       } 
+     } 
+    }
   }
 
   // ngAfterViewInit() {

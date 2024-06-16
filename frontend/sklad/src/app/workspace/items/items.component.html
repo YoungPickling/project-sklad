@@ -1,3 +1,17 @@
+<app-alert
+  *ngIf="alertOpen"
+  [(isLoadig)]="isLoading"
+  [preset]="alertPreset"
+  [message]="error"
+  [confirmMessage]="alertItemName"
+  [confirmField]="confirmField"
+  [tempId]="tempId"
+  [imageList]="imageList"
+  (close)="onCloseAlert()"
+  (removeItemImage)="onUpdateItemImage(-1)"
+  (setItemImage)="onUpdateItemImage($event)"
+></app-alert>
+
 <div class="w-title-bar">
   <h1 class="w-title">Items</h1><span *ngIf="isLoading" class="loader-round"></span></div>
 <div>
@@ -130,7 +144,7 @@
         <td style="padding:0;">
           <div class="cell-image-wrap">
             <div 
-              *ngIf="!item?.image?.hash" 
+              *ngIf="!item?.image" 
               class="cell-empty-image" 
               [ngStyle]="{'background-color': 
                 i % 6 === 0 ? 'crimson' : 
@@ -142,8 +156,26 @@
               <mat-icon>add_a_photo</mat-icon>
             </div>
 
-            <div class="cell-image-hover-button" title="Change image">
-              <mat-icon>expand_more</mat-icon>
+            <div 
+              *ngIf="item?.image"
+              class="cell-empty-image"
+              [ngStyle]="{'background-image': 'url(' + link + item?.image?.hash + ')'}"
+            ></div>
+
+            <div (clickOutside)="onClickOutsideImageContextMenu(i)">
+              <div 
+                title="Change image" 
+                (click)="onOpenImageContext(i)"
+                [ngClass]="{'to-block': rowImageContextMenu[i]}" 
+                class="cell-image-hover-button" 
+              >
+                <mat-icon>expand_more</mat-icon>
+              </div>
+
+              <div class="cell-image-context-menu" *ngIf="rowImageContextMenu[i]">
+                <div (click)="onClickSelectImageFromGallery(i)">select from gallery</div>
+                <div *ngIf="item?.image?.hash" (click)="onClickRemoveItemImage(i)">remove</div>
+              </div>
             </div>
           </div>
         </td>
@@ -160,7 +192,7 @@
             *ngIf="cellEditMode[(i+1) + '-' + 1]" 
             [(inputValue)]="tempCellValue"
             (clickOutside)="onClickOutsideCell((i+1) + '-' + 1)"
-            (keydown.enter)="updateCellValue((i+1), 1, item?.id)"
+            (keydown.enter)="updateCellValue((i+1), 1)"
             contenteditable
           ></span>
         </td>
@@ -177,7 +209,7 @@
             *ngIf="cellEditMode[(i+1) + '-' + 2]" 
             [(inputValue)]="tempCellValue"
             (clickOutside)="onClickOutsideCell((i+1) + '-' + 2)"
-            (keydown.enter)="updateCellValue((i+1), 2, item?.id)"
+            (keydown.enter)="updateCellValue((i+1), 2)"
             contenteditable
           ></span>
         </td>
@@ -194,10 +226,11 @@
             *ngIf="cellEditMode[(i+1) + '-' + 3]" 
             [(inputValue)]="tempCellValue"
             (clickOutside)="onClickOutsideCell((i+1) + '-' + 3)"
-            (keydown.enter)="updateCellValue((i+1), 3, item?.id)"
+            (keydown.enter)="updateCellValue((i+1), 3)"
             contenteditable
           ></span>
         </td>
+        <!--  -->
         <td 
           *ngFor="let el of customColumns | keyvalue; let ii = index"
           (click)="doubleClickCell(i+1,ii+4)"
@@ -212,6 +245,7 @@
             *ngIf="cellEditMode[(i+1) + '-' + (ii+4)]" 
             [(inputValue)]="tempCellValue"
             (clickOutside)="onClickOutsideCell((i+1) + '-' + (ii+4))"
+            (keydown.enter)="updateCellValue(i+1, ii+4)"
             contenteditable
           ></span>
         </td>

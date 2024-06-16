@@ -47,7 +47,7 @@
             class="w-gallery-cell"
             (click)="onClickOpenImage(image)"
           >
-            <img [src]="link + image?.hash" [alt]="image?.name" class="disable-blur"/>
+            <img [src]="link + image?.hash" [alt]="image?.name" class="disable-blur" loading="lazy"/>
             <div class="w-gallery-cell-overlay">
               <div class="w-gallery-cell-overlay-text">{{image?.name}}</div>
             </div>

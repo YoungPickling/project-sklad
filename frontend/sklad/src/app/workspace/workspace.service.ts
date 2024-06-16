@@ -216,6 +216,11 @@ export class WorkspaceService {
     );
   }
 
+  removeItemImage() {
+    // TODO
+    this.isLoading.next(false); 
+  }
+
   private getLatestUpdates(result: any): void {
     console.log(result)
     this.getCompany(this.companyDetails.value.id);

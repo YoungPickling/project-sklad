@@ -1,4 +1,4 @@
-import { AfterViewChecked, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewChecked, ChangeDetectorRef, Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { Company } from '../../shared/models/company.model';
 import { WorkspaceService } from '../workspace.service';
 import { Subscription } from 'rxjs';
@@ -9,6 +9,10 @@ import { Item } from '../../shared/models/item.model';
 import { ClickOutsideDirective } from '../../shared/directives/clickOutside.directive'
 import Utils from '../../shared/utils.service';
 import { ContentEditableModel } from '../../shared/directives/contenteditable.directive';
+import { AlertComponent, AlertPresets } from '../../shared/alert/alert.component';
+import { Image } from '../../shared/models/image.model';
+import { environment } from '../../../environments/environment';
+import { ItemColumn } from '../../shared/models/item-column.model';
 
 @Component({
   selector: 'app-items',
@@ -19,7 +23,8 @@ import { ContentEditableModel } from '../../shared/directives/contenteditable.di
     MatIconModule, 
     ClickOutsideDirective, 
     FormsModule,
-    ContentEditableModel
+    ContentEditableModel,
+    AlertComponent
   ],
   templateUrl: './items.component.html',
   styleUrl: './items.component.css'
@@ -36,6 +41,8 @@ export class ItemsComponent implements OnInit, OnDestroy, AfterViewChecked {
   customColumns: { [key: string]: {value: string, color: string, width: string}; } = {};
   cellEditMode: { [key: string]: boolean } = {}; // to be edited
   cellSelected: { [key: string]: boolean } = {};
+  rowImageContextMenu: boolean[];
+  rowImageContextMenuOpen = false
   editCellMode: boolean = false;
   tempCellValue: string = '';
   
@@ -44,6 +51,16 @@ export class ItemsComponent implements OnInit, OnDestroy, AfterViewChecked {
   isCellFirstClicked = false;
 
   addItemForm: FormGroup;
+
+  alertOpen = false;
+  alertPreset: AlertPresets = null;
+  alertItemName: string;
+  error: string;
+  tempId: number;
+  confirmField: string;
+  imageList: Image[];
+
+  link = environment.API_SERVER + "/api/rest/v1/secret/image/";
 
   private companyDetailSub: Subscription;
   private loadingSubscription: Subscription;
@@ -69,6 +86,8 @@ export class ItemsComponent implements OnInit, OnDestroy, AfterViewChecked {
         });
       }
     );
+
+    this.rowImageContextMenu = new Array<boolean>(this.company?.items?.length).fill(false);
 
     this.loadingSubscription = this.workspaceService.isLoading.subscribe(
       state => {
@@ -131,7 +150,6 @@ export class ItemsComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.isLoading = true;
     this.addButtonActive = false;
     this.removeButtonActive = false;
-
     this.workspaceService.removeItems(Array.from(this.itemsToDelete.values()));
   }
 
@@ -148,10 +166,6 @@ export class ItemsComponent implements OnInit, OnDestroy, AfterViewChecked {
     });
 
     this.columns.push(columnGroup);
-  }
-
-  logger(something: any) {
-    console.log(something);
   }
 
   onFontColor(hex: string) {
@@ -225,7 +239,13 @@ export class ItemsComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.isLoading = true;
     this.cellEditMode[x + '-' + y] = false;
 
-    let tempItem: Item = { ...this.company.items[x - 1] };
+    // let tempItem: Item = { ...this.company.items[x - 1] };
+
+    // Create a deep copy of the item
+    let tempItem: Item = { 
+      ...this.company.items[x - 1],
+      columns: this.company.items[x - 1].columns.map(col => ({ ...col }))
+  };
 
     if (y === 1) {
       tempItem.code = this.tempCellValue;
@@ -238,17 +258,100 @@ export class ItemsComponent implements OnInit, OnDestroy, AfterViewChecked {
       this.workspaceService.updateItem(tempItem);
     } 
     else if (y >= 4 && y <= (Object.keys(this.customColumns).length + 4)) {
-      const customColumnKey = Object.keys(this.customColumns)[y - 4];
-      const itemObject = this.company.items[x - 1].columns.find(col => col.name === customColumnKey).value;
+      // The Angluar 'keyvalue' pipeline in a template and Javascript sorts keys differently
+      // So make sure the key order is the same everywhere
+      const keyStore: string[] = Object.keys(this.customColumns).sort();
 
-      if (itemObject === undefined) {
-        // this.workspaceService.updateItemColumn(tempItem);
-        // this.company.items[x - 1].columns.push(new ItemColumn(null,"",))
+      // taking column's key
+      const customColumnKey: string = keyStore[y - 4];
+
+      // find existing column value for a copy
+      const itemColumnObject: ItemColumn = tempItem.columns.find(
+        col => col.name === customColumnKey
+      );
+      
+      if (!itemColumnObject) {
+        const newItem = {name: customColumnKey, value: this.tempCellValue};
+        tempItem.columns.push(newItem);
+        this.workspaceService.updateItem(tempItem);
+      } else {
+        tempItem.columns.find(col => col.name === customColumnKey).value = this.tempCellValue;
+        this.workspaceService.updateItem(tempItem);
+        // this.company.items[x - 1].columns.push(newItem)
       }
-
-      // find(col => col.name === customColumnKey).value = this.tempCellValue;
     }
 
     console.log(this.tempCellValue, x + '-' + y);
+  }
+
+  onOpenImageContext(index: number) {
+    this.rowImageContextMenu[index] = !this.rowImageContextMenu[index];
+  }
+  
+
+  onClickOutsideImageContextMenu(i: number) {
+    if(this.rowImageContextMenu[i]) {
+      this.rowImageContextMenu[i] = false;
+    }
+  }
+
+  @HostListener('document:keydown', ['$event'])
+  handleKeyboardEvent(event: KeyboardEvent) {
+    if (event.key === "Escape") {
+      this.alertOpen = false;
+      this.rowImageContextMenu.fill(false);
+    }
+  }
+
+  onCloseAlert() {
+    this.alertOpen = false;
+  }
+
+  onClickRemoveItemImage(index: number) {
+    // console.log(image);
+    this.tempId = index;
+    this.alertItemName = this.company?.items[index]?.name;
+    this.alertPreset = AlertPresets.removeItemImage
+    this.rowImageContextMenu[index] = false;
+    this.alertOpen = true;
+  }
+
+  onClickSelectImageFromGallery(index: number) {
+    // console.log(image);
+    this.rowImageContextMenu[index] = false;
+    this.tempId = index;
+    this.alertItemName = this.company?.items[index]?.name;
+    this.imageList = this.company.imageData;
+    this.confirmField = "";
+    this.alertPreset = AlertPresets.updateItemImage;
+    this.alertOpen = true;
+  }
+
+  onRemoveItemImage() {
+    this.alertOpen = false;
+    this.addButtonActive = false;
+    this.removeButtonActive = false;
+    this.isLoading = true;
+    this.workspaceService.removeItemImage();
+  }
+
+  onUpdateItemImage(imageId: number) {
+    console.log(imageId);
+
+    this.alertOpen = false;
+    this.isLoading = true;
+    this.imageList = null;
+    this.addButtonActive = false;
+    this.removeButtonActive = false;
+
+    let tempItem: Item = { ...this.company.items[this.tempId] };
+    if (imageId !== -1) {
+      tempItem.image = { ...this.company.imageData.filter(x => x.id === imageId).at(0) };
+    } else {
+      tempItem.image = null;
+    }
+    
+    console.log(tempItem);
+    this.workspaceService.updateItem(tempItem);
   }
 }

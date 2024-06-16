@@ -1,145 +1,183 @@
 <div class="backdrop" ></div>
-<div class="alert-box">
-  
-  <ng-template [ngIf]="isAddCompay() || isEditCompay()">
-    <div class="box-title"><h1>{{ title }}</h1></div>
-    <span class="loader" *ngIf="isLoading else regForm"></span>
+<div class="alert-box-wraper">
+  <div class="alert-box">
+    
+    <ng-template [ngIf]="isAddCompay() || isEditCompay()">
+      <div class="box-title"><h1>{{ title }}</h1></div>
+      <span class="loader" *ngIf="isLoading else regForm"></span>
 
-    <ng-template #regForm>
-      <div class="error-box" *ngIf="message && lastMessage !== message">{{ message }}</div>
-      <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
-        <div style="display:flex;flex-direction:column;">
-          <label for="name">Company name</label>
-          <input
-            type="text"
-            id="name"
-            formControlName="name"
-            class="form-control"
-            autocomplete="off" />
-          <span 
-            *ngIf="inputValidation('name')"
-          >
+      <ng-template #regForm>
+        <div class="error-box" *ngIf="message && lastMessage !== message">{{ message }}</div>
+        <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
+          <div style="display:flex;flex-direction:column;">
+            <label for="name">Company name</label>
+            <input
+              type="text"
+              id="name"
+              formControlName="name"
+              class="form-control"
+              autocomplete="off" />
             <span 
-              *ngIf="checkInvalid('required', 'name'); else break1"
-            >Please enter a valid name</span>
-            <br #break1 />
-          </span>
-          <label for="description">Description</label>
-          <textarea
-            id="description"
-            formControlName="description"
-            rows="3"
-            cols="50" 
-          ></textarea>
-          <span *ngIf="inputValidation('description')">
+              *ngIf="inputValidation('name')"
+            >
+              <span 
+                *ngIf="checkInvalid('required', 'name'); else break1"
+              >Please enter a valid name</span>
+              <br #break1 />
+            </span>
+            <label for="description">Description</label>
+            <textarea
+              id="description"
+              formControlName="description"
+              rows="3"
+              cols="50" 
+            ></textarea>
+            <span *ngIf="inputValidation('description')">
+              <span 
+                *ngIf="checkInvalid('required', 'description'); else break2"
+              >Please enter a brief description</span>
+              <br #break2 />
+            </span>
+          </div>
+          <div class="alert-box-actions">
+            <button type="submit" class="button" [disabled]="!formGroup.valid">{{ isAddCompay() ? 'Create' : 'Edit' }}</button>
+            <button class="button" (click)="onClose()">Cancel</button>
+          </div>
+        </form>
+      </ng-template>
+    </ng-template>
+
+
+    <ng-template [ngIf]="isAddImage()">
+      <div class="box-title"><h1>{{ title }}</h1></div>
+      <span class="loader" *ngIf="isLoading else regForm"></span>
+
+      <ng-template #regForm>
+        <div class="error-box" *ngIf="message && lastMessage !== message">{{ message }}</div>
+        <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
+          <div style="display:flex;flex-direction:column;">
+            <label for="image">Gallery image</label>
+            <!-- [ngClass]="{ 'is-invalid': submitted && f.image.errors }"  -->
+            <input 
+              type="file" 
+              class="form-control" 
+              id="UploadimgControlInput" 
+              formControlName="image" 
+              name="image" 
+              (change)="uploadImage($event)" 
+              [ngClass]="{ 'is-invalid': submitted && f.image.errors }" 
+              placeholder="Upload Image">
             <span 
-              *ngIf="checkInvalid('required', 'description'); else break2"
-            >Please enter a brief description</span>
-            <br #break2 />
-          </span>
+              *ngIf="inputValidation('image')"
+            >
+              <span 
+                *ngIf="checkInvalid('required', 'image'); else break1"
+              >Image is required</span>
+              <br #break1 />
+            </span>
+          </div>
+          <div class="alert-box-actions">
+            <button type="submit" class="button" [disabled]="!formGroup.valid">{{ isAddImage() ? 'Add' : 'Edit' }}</button>
+            <button class="button" (click)="onClose()">Cancel</button>
+          </div>
+        </form>
+      </ng-template>
+    </ng-template>
+
+    <ng-template [ngIf]="isShowImage()">
+      <!-- <div class="box-title"><h1>{{ title }}</h1></div> -->
+      <span class="loader" *ngIf="isLoading else regForm"></span>
+
+      <ng-template #regForm>
+        <div class="error-box" *ngIf="message && lastMessage !== message">{{ message }}</div>
+
+        <div style="display: flex; flex-direction: row; justify-content: space-between">
+          <div style="display: flex; justify-content: center; width: 50%;">
+            <img class="shadow" [src]="link + 'image/' + imageData?.hash" [alt]="imageData?.name" style="max-width: 95%; max-height: 300px;"/>
+          </div>
+          <div class="image-contents" style="display: flex; flex-direction: column;">
+            <h3>Name</h3>
+            <p>{{imageData?.name}}</p>
+            <h3>Type</h3>
+            <p>{{imageData?.type}}</p>
+          </div>
         </div>
         <div class="alert-box-actions">
-          <button type="submit" class="button" [disabled]="!formGroup.valid">{{ isAddCompay() ? 'Create' : 'Edit' }}</button>
-          <button class="button" (click)="onClose()">Cancel</button>
+          <button class="button" (click)="onDeleteImage()">Delete</button>
+          <button class="button" (click)="onClose()">Close</button>
         </div>
-      </form>
+      </ng-template>
     </ng-template>
-  </ng-template>
 
 
-  <ng-template [ngIf]="isAddImage()">
-    <div class="box-title"><h1>{{ title }}</h1></div>
-    <span class="loader" *ngIf="isLoading else regForm"></span>
+    <ng-template [ngIf]="confirmWindow">
+      <div class="backdrop"></div>
+      <div class="alert-box-wraper">
+        <div class="alert-box">
+          <div class="box-title"><h1>Delete image</h1></div>
 
-    <ng-template #regForm>
-      <div class="error-box" *ngIf="message && lastMessage !== message">{{ message }}</div>
-      <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
-        <div style="display:flex;flex-direction:column;">
-          <label for="image">Gallery image</label>
-          <!-- [ngClass]="{ 'is-invalid': submitted && f.image.errors }"  -->
-          <input 
-            type="file" 
-            class="form-control" 
-            id="UploadimgControlInput" 
-            formControlName="image" 
-            name="image" 
-            (change)="uploadImage($event)" 
-            [ngClass]="{ 'is-invalid': submitted && f.image.errors }" 
-            placeholder="Upload Image">
-          <span 
-            *ngIf="inputValidation('image')"
-          >
-            <span 
-              *ngIf="checkInvalid('required', 'image'); else break1"
-            >Image is required</span>
-            <br #break1 />
-          </span>
+          <p>Are you sure you want to permanently delete <b>{{confirmMessage}}</b> ?</p>
+
+          <p>To confirm deletion, type <b>delete</b> in the field below:</p>
+          <input type="text" placeholder="delete" [(ngModel)]="confirmField"/>
+
+          <div class="alert-box-actions">
+            <button class="button" (click)="onConfirmDeleteImage()" [disabled]="confirmField !== 'delete'">Delete</button>
+            <button class="button" (click)="onCloseConfirmation()">Cancel</button>
+          </div>
         </div>
-        <div class="alert-box-actions">
-          <button type="submit" class="button" [disabled]="!formGroup.valid">{{ isAddImage() ? 'Add' : 'Edit' }}</button>
-          <button class="button" (click)="onClose()">Cancel</button>
-        </div>
-      </form>
-    </ng-template>
-  </ng-template>
-
-  <ng-template [ngIf]="isShowImage()">
-    <ng-template>
-      <div class="backdrop" ></div><!-- (click)="onClose()"-->
-      <div class="alert-box">
-        
       </div>
     </ng-template>
 
-    <!-- <div class="box-title"><h1>{{ title }}</h1></div> -->
-    <span class="loader" *ngIf="isLoading else regForm"></span>
 
-    <ng-template #regForm>
-      <div class="error-box" *ngIf="message && lastMessage !== message">{{ message }}</div>
+    <ng-template [ngIf]="isRemoveItemImage()">
+      <div class="box-title"><h1>Remove image</h1></div>
 
-      <div style="display: flex; flex-direction: row; justify-content: space-between">
-        <div style="display: flex; justify-content: center; width: 50%;">
-          <img class="shadow" [src]="link + 'image/' + imageData?.hash" [alt]="imageData?.name" style="max-width: 300px; max-height: 300px;"/>
-        </div>
-        <div class="image-contents" style="display: flex; flex-direction: column;">
-          <h3>Name</h3>
-          <p>{{imageData?.name}}</p>
-          <h3>Type</h3>
-          <p>{{imageData?.type}}</p>
-          <!-- <h3>Size</h3> -->
-          <!-- <p>{{imageData?.size}}</p> -->
-        </div>
-      </div>
-      <div class="alert-box-actions">
-        <button class="button" (click)="onDeleteImage()">Delete</button>
-        <button class="button" (click)="onClose()">Close</button>
-      </div>
-    </ng-template>
-  </ng-template>
-
-
-  <ng-template [ngIf]="confirmWindow">
-    <div class="backdrop" ></div>
-    <div class="alert-box">
-      <div class="box-title"><h1>Delete image</h1></div>
-
-      <p>{{confirmMessage}}</p>
-
-      <p>To confirm deletion, type <b>delete</b> in the field</p>
-      <input type="text" placeholder="delete" [(ngModel)]="confirmField"/>
+      <p>Are you sure you want to remove an image for the item <b>{{confirmMessage}}</b>?</p>
 
       <div class="alert-box-actions">
-        <button class="button" (click)="onConfirmDeleteImage()" [disabled]="confirmField !== 'delete'">Delete</button>
-        <button class="button" (click)="onCloseConfirmation()">Cancel</button>
+        <button class="button" (click)="onRemoveItemImage()">Remove</button>
+        <button class="button" (click)="onClose()">Cancel</button>
       </div>
-    </div>
-  </ng-template>
+    </ng-template>
 
-  <!-- <ng-template [ngIf]="isAddCompay()">
-    <p>{{ message }}</p>
-    <div class="alert-box-actions">
-      <button class="btn btn-primary" (click)="onClose()">Close</button>
-    </div>
-  </ng-template> -->
+    <ng-template [ngIf]="isUpdateItemImage()">
+      <div class="box-title"><h1 style="margin:0">Select image</h1></div>
+      
+      <input type="text" placeholder="filter" [(ngModel)]="confirmField"/>
 
+      <div class="w-gallery-table">
+        <ng-container *ngFor="let image of onFilter()">
+          <div class="w-gallery-cell-container" [ngClass]="{'w-gallery-cell-selected': checkedImageId === image?.id}">
+            <div 
+              class="w-gallery-cell-background"
+              [ngStyle]="{'background-image': 'url(' + link + 'image/' + image?.hash + ')'}"
+            ></div>
+            <div
+              class="w-gallery-cell "
+              (click)="checkedImageId = image?.id"
+            >
+              <img [src]="link + 'image/' + image?.hash" [alt]="image?.name" class="disable-blur" loading="lazy"/>
+              <div class="w-gallery-cell-overlay">
+                <div class="w-gallery-cell-overlay-text">{{image?.name}}</div>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+      
+      <div class="alert-box-actions">
+        <button class="button" (click)="onSetItemImage()" [disabled]="checkedImageId === -1">Check out</button>
+        <button class="button" (click)="onClose()">Cancel</button>
+      </div>
+    </ng-template>
+
+    <!-- <ng-template [ngIf]="isAddCompay()">
+      <p>{{ message }}</p>
+      <div class="alert-box-actions">
+        <button class="btn btn-primary" (click)="onClose()">Close</button>
+      </div>
+    </ng-template> -->
+
+  </div>
 </div>

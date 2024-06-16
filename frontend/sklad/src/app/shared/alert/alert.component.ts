@@ -8,7 +8,9 @@ export enum AlertPresets {
   addCompany,
   editCompany,
   addGalleryImage,
-  showGalleryImage
+  showGalleryImage,
+  removeItemImage,
+  updateItemImage
 }
 
 @Component({
@@ -24,6 +26,7 @@ export class AlertComponent implements OnInit {
   @Input() preset: AlertPresets;
   @Input() message: string;
   @Input() title: string;
+  @Input() tempId: number;
   @Input() forEdit: {id?: number, name: string, description: string};
   @Output() close = new EventEmitter<void>();
   @Output() addCompany = new EventEmitter<{name: string, description: string}>();
@@ -31,12 +34,16 @@ export class AlertComponent implements OnInit {
   @Output() addGalleryImage = new EventEmitter<{ image: File }>();
   @Output() deleteImage = new EventEmitter<void>();
   @Output() confirmDeleteImage = new EventEmitter<void>();
+  @Output() removeItemImage = new EventEmitter<number>();
+  @Output() setItemImage = new EventEmitter<number>();
 
   @Input() imageData: Image;
+  @Input() imageList: Image[];
+  checkedImageId = -1;
   
   @Input() confirmWindow: boolean = false;
   @Input() confirmMessage: string;
-  confirmField: string;
+  confirmField = '';
   @Output() confirmWindowClose = new EventEmitter<void>();
 
   link = environment.API_SERVER + "/api/rest/v1/secret/";
@@ -75,20 +82,37 @@ export class AlertComponent implements OnInit {
   }
 
   onSubmit() {
-    // if(this.preset === 'addCompany') {
-    if(this.preset === AlertPresets.addCompany) {
-      this.isLoading = true;
-      this.addCompany.emit(this.formGroup.value);
-    // } else if(this.preset === 'editCompany') {
-    } else if(this.preset === AlertPresets.editCompany) {
-      this.isLoading = true;
-      this.editCompany.emit(this.formGroup.value);
-    } else if(this.preset === AlertPresets.addGalleryImage) {
-      this.isLoading = true;
-      const imageFile = this.formGroup.get('image').value;
-      this.addGalleryImage.emit({ image: imageFile });
+    // if(this.preset === AlertPresets.addCompany) {
+    //   this.isLoading = true;
+    //   this.addCompany.emit(this.formGroup.value);
+    // // } else if(this.preset === 'editCompany') {
+    // } else if(this.preset === AlertPresets.editCompany) {
+    //   this.isLoading = true;
+    //   this.editCompany.emit(this.formGroup.value);
+    // } else if(this.preset === AlertPresets.addGalleryImage) {
+    //   this.isLoading = true;
+    //   const imageFile = this.formGroup.get('image').value;
+    //   this.addGalleryImage.emit({ image: imageFile });
+    // }
 
-    }
+    switch(this.preset) { 
+      case AlertPresets.addCompany: { 
+        this.isLoading = true;
+        this.addCompany.emit(this.formGroup.value); 
+        break; 
+      } 
+      case AlertPresets.editCompany: { 
+        this.isLoading = true;
+        this.editCompany.emit(this.formGroup.value);
+        break; 
+      } 
+      case AlertPresets.addGalleryImage: { 
+        this.isLoading = true;
+        const imageFile = this.formGroup.get('image').value;
+        this.addGalleryImage.emit({ image: imageFile }); 
+        break; 
+      } 
+   } 
   }
 
   onCloseError() {
@@ -118,6 +142,14 @@ export class AlertComponent implements OnInit {
   isShowImage() {
     return this.preset === AlertPresets.showGalleryImage;
   }
+  
+  isRemoveItemImage() {
+    return this.preset === AlertPresets.removeItemImage;
+  }
+
+  isUpdateItemImage() {
+    return this.preset === AlertPresets.updateItemImage;
+  }
 
   uploadImage(event: Event) {
     const input = event.target as HTMLInputElement;
@@ -134,5 +166,20 @@ export class AlertComponent implements OnInit {
   
   onConfirmDeleteImage() {
     this.confirmDeleteImage.emit()
+  }
+
+  onRemoveItemImage() {
+    this.isLoading = true;
+    this.removeItemImage.emit();
+  }
+
+  onFilter(): Image[] {
+    return this.imageList.filter(image => image.name.toLowerCase().indexOf(this.confirmField.trim().toLowerCase()) !== -1 );
+  }
+
+  onSetItemImage() {
+    this.isLoading = true;
+    this.setItemImage.emit(this.checkedImageId);
+    this.checkedImageId = -1;
   }
 }
