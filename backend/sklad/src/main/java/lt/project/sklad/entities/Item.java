@@ -53,6 +53,7 @@ public class Item {
     @OneToMany(
             mappedBy = "ofTable",
             fetch = FetchType.EAGER,
+            cascade = CascadeType.ALL,
             orphanRemoval = true
     )
     private List<ItemColumn> columns;

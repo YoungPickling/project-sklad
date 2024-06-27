@@ -22,7 +22,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -195,6 +197,7 @@ public class ItemService {
         // Validating Image
         if (item.getImage() != null) {
             Image existingImage = imageRepository.findById(item.getImage().getId()).orElse(null);
+            // set new image if it exists in a gallery and owned by a company
             if (existingImage != null &&
                     user.getCompany().stream()
                             .anyMatch(company -> company.getId().equals(existingImage.getOwnedByCompany().getId()))) {
@@ -203,8 +206,32 @@ public class ItemService {
                 return msgUtils.error(BAD_REQUEST, "Image not found or not authorized");
             }
         } else {
+            // delete image if not provided
             itemOld.setImage(null);
         }
+
+        // clear duplicate columns in both items
+        deleteDuplicateColumns(item);
+        deleteDuplicateColumns(itemOld);
+
+//        List<Long> columns = new ArrayList<>();
+//        for(ItemColumn oldColumn : itemOld.getColumns()) {
+        Iterator<ItemColumn> oldColumnIterator = itemOld.getColumns().iterator();
+
+        while (oldColumnIterator.hasNext()) {
+            ItemColumn oldColumn = oldColumnIterator.next();
+            boolean contains = false;
+            for(ItemColumn newColumn : item.getColumns()) {
+                if (newColumn.getName().equals(oldColumn.getName())) {
+                    contains = true;
+                    break;
+                }
+            }
+            oldColumnIterator.remove();
+        }
+
+        if (itemOld == null)
+            return msgUtils.error(NOT_FOUND, "Error in updating items");
 
         // Validating custom columns
         if (item.getColumns() != null) {
@@ -224,20 +251,21 @@ public class ItemService {
             } else {
                 for (ItemColumn newItemColumn : item.getColumns()) {
                     boolean isUpdated = false;
-                    for (ItemColumn existingColumn : itemOld.getColumns()) {
-                        if (existingColumn.getId().equals(newItemColumn.getId())) {
-                            if (newItemColumn.getValue().isBlank()) {
-                                boolean result = itemOld.getColumns().remove(existingColumn);
-                                logger.info("Removed - " + result);
-                                break;
-                            } else {
-                                existingColumn.setName(newItemColumn.getName());
+                    Iterator<ItemColumn> existingIterator = itemOld.getColumns().iterator();
+
+                    while (existingIterator.hasNext()) {
+                        ItemColumn existingColumn = existingIterator.next();
+                        if (existingColumn.getName().equals(newItemColumn.getName())) {
+                            if (!newItemColumn.getValue().isBlank()) {
                                 existingColumn.setValue(newItemColumn.getValue());
                                 existingColumn.setColor(newItemColumn.getColor());
                                 existingColumn.setWidth(newItemColumn.getWidth());
-                                isUpdated = true;
-                                break;
+                            } else {
+                                existingIterator.remove();
+                                logger.info("Removed - " + existingColumn.getName());
                             }
+                            isUpdated = true;
+                            break;
                         }
                     }
                     if (!isUpdated) {
@@ -253,15 +281,9 @@ public class ItemService {
                         itemOld.getColumns().add(savedColumn);
                     }
                 }
-//                for (ItemColumn itemColumn : item.getColumns()) {
-//                    List<ItemColumn> columns = itemOld.getColumns().stream().filter(
-//                            x -> x.getName().equals(itemColumn.getName())
-//                    ).toList();
-//                    if(columns.isEmpty()) {
-//
-//                    }
-//                }
             }
+        } else {
+            itemOld.getColumns().clear();
         }
 
         itemOld.setCode(item.getCode());
@@ -333,5 +355,20 @@ public class ItemService {
         }
 
         return ResponseEntity.ok().body(items);
+    }
+
+    private void deleteDuplicateColumns(Item item) {
+        Iterator<ItemColumn> iterator = item.getColumns().iterator();
+        List<String> names = new ArrayList<>();
+
+        while (iterator.hasNext()) {
+            ItemColumn existingColumn = iterator.next();
+            if (names.contains(existingColumn.getName()) || existingColumn.getValue().isBlank()) {
+                logger.info("Removing - " + existingColumn.getName());
+                iterator.remove();
+            } else {
+                names.add(existingColumn.getName());
+            }
+        }
     }
 }
