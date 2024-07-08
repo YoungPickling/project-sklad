@@ -6,7 +6,7 @@ import org.bouncycastle.util.Arrays;
 import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.time.LocalDateTime;
+import java.util.Base64;
 
 @NoArgsConstructor
 public class HashUtils {
@@ -29,13 +29,8 @@ public class HashUtils {
             // compute the hash of the input string
             byte[] hash = md.digest(Arrays.concatenate(input.getBytes(), longToBytes(System.currentTimeMillis()), SALT));
 
-            // convert the hash to a hexadecimal string
-            StringBuilder hexString = new StringBuilder();
-            for (byte b : hash) {
-                hexString.append(String.format("%02x", b));
-            }
-
-            return hexString.toString();
+            // convert the hash to a base64 string
+            return Base64.getUrlEncoder().withoutPadding().encodeToString(hash);
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
             return null;

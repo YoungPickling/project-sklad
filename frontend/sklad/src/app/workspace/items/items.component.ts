@@ -13,6 +13,7 @@ import { AlertComponent, AlertPresets } from '../../shared/alert/alert.component
 import { Image } from '../../shared/models/image.model';
 import { environment } from '../../../environments/environment';
 import { ItemColumn } from '../../shared/models/item-column.model';
+import { ImageCacheDirective } from '../../shared/directives/image.directive';
 
 @Component({
   selector: 'app-items',
@@ -21,10 +22,11 @@ import { ItemColumn } from '../../shared/models/item-column.model';
     CommonModule, 
     ReactiveFormsModule, 
     MatIconModule, 
-    ClickOutsideDirective, 
+    ClickOutsideDirective,
+    ImageCacheDirective,
     FormsModule,
     ContentEditableModel,
-    AlertComponent
+    AlertComponent,
   ],
   templateUrl: './items.component.html',
   styleUrl: './items.component.css'

@@ -3,7 +3,6 @@ package lt.project.sklad.services;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lt.project.sklad._security.entities.Token;
-import lt.project.sklad._security.entities.User;
 import lt.project.sklad._security.services.HttpResponseService;
 import lt.project.sklad._security.services.TokenService;
 import lt.project.sklad._security.utils.MessagingUtils;

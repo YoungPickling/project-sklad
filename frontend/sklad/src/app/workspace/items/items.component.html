@@ -13,19 +13,20 @@
 ></app-alert>
 
 <div class="w-title-bar">
-  <h1 class="w-title">Items</h1><span *ngIf="isLoading" class="loader-round"></span></div>
+  <h1 class="w-title">Items</h1><span *ngIf="isLoading" class="loader-round"></span>
+</div>
 <div>
-<button
-  class="button-42" 
-  [ngClass]="{'button-42-active': addButtonActive}"
-  (click)="onClickAddBtn()"
->Add Row</button>
+  <button
+    class="button-42" 
+    [ngClass]="{'button-42-active': addButtonActive}"
+    (click)="onClickAddBtn()"
+  >Add Row</button>
 
-<button 
-  class="button-42" 
-  [ngClass]="{'button-42-active': removeButtonActive}"
-  (click)="onClickRemoveBtn()"
->Delete Row</button>
+  <button 
+    class="button-42" 
+    [ngClass]="{'button-42-active': removeButtonActive}"
+    (click)="onClickRemoveBtn()"
+  >Delete Row</button>
 </div>
 <div *ngIf="!isLoading && addButtonActive">
   <hr/>
@@ -156,11 +157,13 @@
               <mat-icon>add_a_photo</mat-icon>
             </div>
 
+            <!-- [ngStyle]="{'background-image': 'url(' + link + item?.image?.hash + ')'}" -->
             <div 
               *ngIf="item?.image"
               class="cell-empty-image"
-              [ngStyle]="{'background-image': 'url(' + link + item?.image?.hash + ')'}"
+              [cacheSrc]="link + item?.image?.hash"
             ></div>
+            
 
             <div (clickOutside)="onClickOutsideImageContextMenu(i)">
               <div 

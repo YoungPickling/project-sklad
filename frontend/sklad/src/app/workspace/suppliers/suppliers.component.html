@@ -1,6 +1,27 @@
+<app-alert
+  *ngIf="alertOpen"
+  [(isLoadig)]="isLoading"
+  [preset]="alertPreset"
+  [message]="error"
+  (close)="onCloseAlert()"
+></app-alert>
+
 <div class="w-title-bar">
   <h1 class="w-title">Suppliers</h1><span *ngIf="isLoading" class="loader-round"></span></div>
 <div>
+
+<div>
+  <button
+    class="button-42" 
+    (click)="onClickAddBtn()"
+  >Add Row</button>
+
+  <button 
+    class="button-42" 
+    (click)="onClickRemoveBtn()"
+    [disabled]="company?.suppliers?.length === 0"
+  >Delete Row</button>
+</div>
 
 <h1 class="w-empty" *ngIf="company?.suppliers?.length === 0 else view">No suppliers created yet</h1>
 

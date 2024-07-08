@@ -3,6 +3,7 @@ import { Company } from '../../shared/models/company.model';
 import { WorkspaceService } from '../workspace.service';
 import { Subscription } from 'rxjs';
 import { CommonModule } from '@angular/common';
+import { AlertPresets } from '../../shared/alert/alert.component';
 
 @Component({
   selector: 'app-suppliers',
@@ -13,8 +14,15 @@ import { CommonModule } from '@angular/common';
 })
 export class SuppliersComponent implements OnInit, OnDestroy {
   company: Company;
-
+  addButtonActive = false;
+  removeButtonActive = false;
   isLoading = false;
+
+  alertOpen = false;
+  alertPreset: AlertPresets = null;
+  error: string;
+  tempId: number;
+  confirmField: string;
 
   constructor(
     private workspaceService: WorkspaceService
@@ -34,5 +42,13 @@ export class SuppliersComponent implements OnInit, OnDestroy {
     if(this.companyDetailSub) {
       this.companyDetailSub.unsubscribe()
     }
+  }
+
+  onClickAddBtn() {
+
+  }
+
+  onClickRemoveBtn() {
+
   }
 }

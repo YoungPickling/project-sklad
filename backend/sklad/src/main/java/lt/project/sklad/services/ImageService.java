@@ -9,7 +9,6 @@ import lt.project.sklad._security.services.TokenService;
 import lt.project.sklad._security.utils.MessagingUtils;
 import lt.project.sklad.entities.Company;
 import lt.project.sklad.entities.Image;
-import lt.project.sklad.entities.Item;
 import lt.project.sklad.repositories.CompanyRepository;
 import lt.project.sklad.repositories.ImageRepository;
 import lt.project.sklad.repositories.ItemRepository;
@@ -17,12 +16,13 @@ import lt.project.sklad.utils.HashUtils;
 import lt.project.sklad.utils.ImageUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import static org.springframework.http.HttpStatus.*;
@@ -103,6 +103,7 @@ public class ImageService {
                     .imageData(compressedImage)
                     .compressedSize(compressedImage.length)
                     .ownedByCompany(company)
+                    .date( LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) )
                     .build());
 
             if (image == null)

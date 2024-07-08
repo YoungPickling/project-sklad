@@ -93,7 +93,7 @@
 
         <div style="display: flex; flex-direction: row; justify-content: space-between">
           <div style="display: flex; justify-content: center; width: 50%;">
-            <img class="shadow" [src]="link + 'image/' + imageData?.hash" [alt]="imageData?.name" style="max-width: 95%; max-height: 300px;"/>
+            <img class="shadow" [cacheSrc]="link + 'image/' + imageData?.hash" [alt]="imageData?.name" style="max-width: 95%; max-height: 300px;"/>
           </div>
           <div class="image-contents" style="display: flex; flex-direction: column;">
             <h3>Name</h3>
@@ -149,15 +149,16 @@
       <div class="w-gallery-table">
         <ng-container *ngFor="let image of onFilter()">
           <div class="w-gallery-cell-container" [ngClass]="{'w-gallery-cell-selected': checkedImageId === image?.id}">
+            <!-- [ngStyle]="{'background-image': 'url(' + link + 'image/' + image?.hash + ')'}" -->
             <div 
               class="w-gallery-cell-background"
-              [ngStyle]="{'background-image': 'url(' + link + 'image/' + image?.hash + ')'}"
+              [cacheSrc]="link + 'image/' + image?.hash"
             ></div>
             <div
               class="w-gallery-cell "
               (click)="checkedImageId = image?.id"
             >
-              <img [src]="link + 'image/' + image?.hash" [alt]="image?.name" class="disable-blur" loading="lazy"/>
+              <img [cacheSrc]="link + 'image/' + image?.hash" [alt]="image?.name" class="disable-blur" loading="lazy"/>
               <div class="w-gallery-cell-overlay">
                 <div class="w-gallery-cell-overlay-text">{{image?.name}}</div>
               </div>
@@ -170,6 +171,52 @@
         <button class="button" (click)="onSetItemImage()" [disabled]="checkedImageId === -1">Check out</button>
         <button class="button" (click)="onClose()">Cancel</button>
       </div>
+    </ng-template>
+
+    <!-- TODO -->
+    <ng-template [ngIf]="isAddSupplier()">
+      <div class="box-title"><h1 style="margin:0">Add Supplier</h1></div>
+      <span class="loader" *ngIf="isLoading else regSupplier"></span>
+
+      <ng-template #regSupplier>
+        <div class="error-box" *ngIf="message && lastMessage !== message">{{ message }}</div>
+        <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
+          <div style="display:flex;flex-direction:column;">
+            <label for="name">Company name</label>
+            <input
+              type="text"
+              id="name"
+              formControlName="name"
+              class="form-control"
+              autocomplete="off" />
+            <span 
+              *ngIf="inputValidation('name')"
+            >
+              <span 
+                *ngIf="checkInvalid('required', 'name'); else break1"
+              >Please enter a valid name</span>
+              <br #break1 />
+            </span>
+            <label for="description">Description</label>
+            <textarea
+              id="description"
+              formControlName="description"
+              rows="3"
+              cols="50" 
+            ></textarea>
+            <span *ngIf="inputValidation('description')">
+              <span 
+                *ngIf="checkInvalid('required', 'description'); else break2"
+              >Please enter a brief description</span>
+              <br #break2 />
+            </span>
+          </div>
+          <div class="alert-box-actions">
+            <button type="submit" class="button" [disabled]="!formGroup.valid">{{ isAddCompay() ? 'Create' : 'Edit' }}</button>
+            <button class="button" (click)="onClose()">Cancel</button>
+          </div>
+        </form>
+      </ng-template>
     </ng-template>
 
     <!-- <ng-template [ngIf]="isAddCompay()">

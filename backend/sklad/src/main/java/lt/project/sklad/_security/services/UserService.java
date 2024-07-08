@@ -6,13 +6,10 @@ import lt.project.sklad._security.entities.Token;
 import lt.project.sklad._security.entities.User;
 import lt.project.sklad._security.repositories.UserRepository;
 import lt.project.sklad._security.utils.MessagingUtils;
-import lt.project.sklad.entities.Company;
 import lt.project.sklad.entities.Image;
-import lt.project.sklad.repositories.CompanyRepository;
 import lt.project.sklad.repositories.ImageRepository;
 import lt.project.sklad.utils.HashUtils;
 import lt.project.sklad.utils.ImageUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,13 +17,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import static org.springframework.http.HttpStatus.*;
-import static org.springframework.http.HttpStatus.FORBIDDEN;
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 /**
  * Service class responsible for handling operations related to users.
@@ -43,7 +41,6 @@ public class UserService {
     private final MessagingUtils msgUtils;
     private final ImageUtils imgUtils;
     private final ImageRepository imageRepository;
-    private final CompanyRepository companyRepository;
     private final HashUtils hashUtils;
 
     /**
@@ -120,6 +117,8 @@ public class UserService {
         try {
             final byte[] compressedImage = imgUtils.compressImage(file.getBytes());
 
+            final String date = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+
             Image image = imageRepository.save(Image.builder()
                     .name(file.getOriginalFilename())
                     .hash(hash)
@@ -127,6 +126,7 @@ public class UserService {
                     .size(file.getSize())
                     .imageData(compressedImage)
                     .compressedSize(compressedImage.length)
+                    .date(date)
                     .build()
             );
 
@@ -138,6 +138,7 @@ public class UserService {
             Map<String, String> response = new HashMap<>();
             response.put("msg", "Upload successful");
             response.put("name", file.getOriginalFilename());
+            response.put("date", date);
             response.put("hash", hash);
             return ResponseEntity.ok().body(response);
         } catch (Exception e) {

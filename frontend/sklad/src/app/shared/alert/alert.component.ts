@@ -3,6 +3,7 @@ import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Image } from '../models/image.model';
 import { environment } from '../../../environments/environment';
+import { ImageCacheDirective } from '../directives/image.directive';
 
 export enum AlertPresets {
   addCompany,
@@ -10,12 +11,13 @@ export enum AlertPresets {
   addGalleryImage,
   showGalleryImage,
   removeItemImage,
-  updateItemImage
+  updateItemImage,
+  addSupplier
 }
 
 @Component({
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, ImageCacheDirective],
   selector: 'app-alert',
   templateUrl: './alert.component.html',
   styleUrls: ['./alert.component.css']
@@ -149,6 +151,10 @@ export class AlertComponent implements OnInit {
 
   isUpdateItemImage() {
     return this.preset === AlertPresets.updateItemImage;
+  }
+
+  isAddSupplier() {
+    return this.preset === AlertPresets.addSupplier;
   }
 
   uploadImage(event: Event) {
