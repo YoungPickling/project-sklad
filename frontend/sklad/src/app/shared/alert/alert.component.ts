@@ -34,6 +34,18 @@ export class AlertComponent implements OnInit {
   @Output() addCompany = new EventEmitter<{name: string, description: string}>();
   @Output() editCompany = new EventEmitter<{name: string, description: string}>();
   @Output() addGalleryImage = new EventEmitter<{ image: File }>();
+  @Output() addSupplier = new EventEmitter<{
+    name: string, 
+    street_and_number: string, 
+    city_or_town: string, 
+    country: string, 
+    postal_code: string, 
+    phone_number: string, 
+    hone_number_two: string, 
+    website: string, 
+    description: string
+  }>();
+  
   @Output() deleteImage = new EventEmitter<void>();
   @Output() confirmDeleteImage = new EventEmitter<void>();
   @Output() removeItemImage = new EventEmitter<number>();
@@ -52,6 +64,266 @@ export class AlertComponent implements OnInit {
 
   private lastMessage: string;
   private formGroup: FormGroup;
+
+  countries = new Map<string, string>([
+    ["AD", "Andorra"],
+    ["AE", "United Arab Emirates"],
+    ["AF", "Afghanistan"],
+    ["AG", "Antigua & Barbuda"],
+    ["AI", "Anguilla"],
+    ["AL", "Albania"],
+    ["AM", "Armenia"],
+    ["AN", "Netherlands Antilles"],
+    ["AO", "Angola"],
+    ["AQ", "Antarctica"],
+    ["AR", "Argentina"],
+    ["AS", "American Samoa"],
+    ["AT", "Austria"],
+    ["AU", "Australia"],
+    ["AW", "Aruba"],
+    ["AX", "Aland Islands"],
+    ["AZ", "Azerbaijan"],
+    ["BA", "Bosnia & Herzegovina"],
+    ["BB", "Barbados"],
+    ["BD", "Bangladesh"],
+    ["BE", "Belgium"],
+    ["BF", "Burkina Faso"],
+    ["BG", "Bulgaria"],
+    ["BH", "Bahrain"],
+    ["BI", "Burundi"],
+    ["BJ", "Benin"],
+    ["BL", "St. Barthelemy"],
+    ["BM", "Bermuda"],
+    ["BN", "Bruneia Darussalam"],
+    ["BO", "Bolivia"],
+    ["BQ", "Bonaire"],
+    ["BQ", "Saba"],
+    ["BQ", "St. Eustatius"],
+    ["BR", "Brazil"],
+    ["BS", "Bahamas"],
+    ["BT", "Bhutan"],
+    ["BV", "Bouvet Island"],
+    ["BW", "Botswana"],
+    ["BY", "Belarus"],
+    ["BZ", "Belize"],
+    ["CA", "Canada"],
+    ["CC", "Cocos (Keeling) Islands"],
+    ["CD", "Democratic Republic of Congo"],
+    ["CF", "Central African Republic"],
+    ["CG", "Congo"],
+    ["CH", "Switzerland"],
+    ["CI", "Cote DIvoire"],
+    ["CK", "Cook Islands"],
+    ["CL", "Chile"],
+    ["CM", "Cameroon"],
+    ["CN", "China Mainland"],
+    ["CO", "Colombia"],
+    ["CR", "Costa Rica"],
+    ["CS", "Serbia & Montenegro"],
+    ["RS", "Serbia"],
+    ["ME", "Montenegro"],
+    ["CU", "Cuba"],
+    ["CV", "Cape Verde"],
+    ["CW", "Curacao"],
+    ["CX", "Christmas Islands"],
+    ["CY", "Cyprus"],
+    ["CZ", "Czech Republic"],
+    ["DE", "Germany"],
+    ["DJ", "Djibouti"],
+    ["DK", "Denmark"],
+    ["DM", "Dominica"],
+    ["DO", "Dominican Republic"],
+    ["DZ", "Algeria"],
+    ["EC", "Ecuador"],
+    ["EE", "Estonia"],
+    ["EG", "Egypt"],
+    ["EH", "Western Sahara"],
+    ["ER", "Eritrea"],
+    ["ES", "Spain"],
+    ["ET", "Ethiopia"],
+    ["FI", "Finland"],
+    ["FJ", "Fiji"],
+    ["FK", "Falkland Island (Malvinas)"],
+    ["FM", "Micronesia (Federated States of)"],
+    ["FO", "Faroe Islands"],
+    ["FR", "France"],
+    ["GA", "Gabon"],
+    ["GB", "United Kingdom"],
+    ["GD", "Grenada"],
+    ["GE", "Georgia"],
+    ["GF", "French Guiana"],
+    ["GG", "Guernsey"],
+    ["GH", "Ghana"],
+    ["GI", "Gibraltar"],
+    ["GL", "Greenland"],
+    ["GM", "Gambia"],
+    ["GN", "Guinea"],
+    ["GP", "Guadeloupe"],
+    ["GQ", "Equatorial Guinea"],
+    ["GR", "Greece"],
+    ["GS", "South Georgia & South Sandwich Is."],
+    ["GT", "Guatemala"],
+    ["GU", "Guam"],
+    ["GW", "Guinea-Bissau"],
+    ["GY", "Guyana"],
+    ["HK", "Hong Kong SAR, China"],
+    ["HM", "Heard Island & McDonald Islands"],
+    ["HN", "Honduras"],
+    ["HR", "Croatia"],
+    ["HT", "Haiti"],
+    ["HU", "Hungary"],
+    ["ID", "Indonesia"],
+    ["IE", "Ireland"],
+    ["IL", "Israel"],
+    ["IM", "Isle of Man"],
+    ["IN", "India"],
+    ["IO", "British Indian Ocean Territory"],
+    ["IQ", "Iraq"],
+    ["IR", "Iran (Islamic Republic of)"],
+    ["IS", "Iceland"],
+    ["IT", "Italy"],
+    ["JE", "Jersey"],
+    ["JM", "Jamaica"],
+    ["JO", "Jordan"],
+    ["JP", "Japan"],
+    ["KE", "Kenya"],
+    ["KG", "Kyrgyzstan"],
+    ["KH", "Cambodia"],
+    ["KI", "Kiribati"],
+    ["KM", "Comoros"],
+    ["KN", "Saint Kitts & Nevis"],
+    ["KP", "Korea, Democratic Peoples Republic"],
+    ["KR", "Korea, Republic of"],
+    ["KV", "Kosovo"],
+    ["KW", "Kuwait"],
+    ["KY", "Cayman Islands"],
+    ["KZ", "Kazakhstan"],
+    ["LA", "Lao Peoples Democratic Republic"],
+    ["LB", "Lebanon"],
+    ["LC", "Saint Lucia"],
+    ["LI", "Liechtenstein"],
+    ["LK", "Sri Lanka"],
+    ["LR", "Liberia"],
+    ["LS", "Lesotho"],
+    ["LT", "Lithuania"],
+    ["LU", "Luxembourg"],
+    ["LV", "Latvia"],
+    ["LY", "Libyan Arab Jamahiriya"],
+    ["MA", "Morocco"],
+    ["MC", "Monaco"],
+    ["MD", "Moldova, Republic of"],
+    ["ME", "Montenegro"],
+    ["MG", "Madagascar"],
+    ["MH", "Marshall Islands"],
+    ["MK", "Former Yugoslavia Republic of Macedonia (FYROM)"],
+    ["ML", "Mali"],
+    ["MM", "Myanmar"],
+    ["MN", "Mongolia"],
+    ["MO", "Macau SAR, China"],
+    ["MP", "Northern Mariana Islands"],
+    ["MQ", "Martinique"],
+    ["MR", "Mauritania"],
+    ["MS", "Montserrat"],
+    ["MT", "Malta"],
+    ["MU", "Mauritius"],
+    ["MV", "Maldives"],
+    ["MW", "Malawi"],
+    ["MX", "Mexico"],
+    ["MY", "Malaysia"],
+    ["MZ", "Mozambique"],
+    ["NA", "Namibia"],
+    ["NC", "New Caledonia"],
+    ["NE", "Niger"],
+    ["NF", "Norfolk Island"],
+    ["NG", "Nigeria"],
+    ["NI", "Nicaragua"],
+    ["NL", "Netherlands"],
+    ["NO", "Norway"],
+    ["NP", "Nepal"],
+    ["NR", "Nauru"],
+    ["NU", "Niue"],
+    ["NZ", "New Zealand"],
+    ["OM", "Oman"],
+    ["PA", "Panama"],
+    ["PE", "Peru"],
+    ["PF", "French Polynesia"],
+    ["PG", "Papua New Guinea"],
+    ["PH", "Philippines"],
+    ["PK", "Pakistan"],
+    ["PL", "Poland"],
+    ["PM", "Saint Pierre & Miquelon"],
+    ["PN", "Pitcairn"],
+    ["PR", "Puerto Rico"],
+    ["PS", "Occupied Palestinian Territory"],
+    ["PT", "Portugal"],
+    ["PW", "Palau"],
+    ["PY", "Paraguay"],
+    ["QA", "Qatar"],
+    ["RE", "Reunion"],
+    ["RO", "Romania"],
+    ["RS", "Serbia"],
+    ["RU", "Russian Federation"],
+    ["RW", "Rwanda"],
+    ["SA", "Saudi Arabia"],
+    ["SB", "Solomon Islands"],
+    ["SC", "Seychelles"],
+    ["SD", "Sudan"],
+    ["SE", "Sweden"],
+    ["SG", "Singapore"],
+    ["SH", "Saint Helena"],
+    ["SI", "Slovenia"],
+    ["SJ", "Svalbard & Jan Mayen"],
+    ["SK", "Slovakia"],
+    ["SL", "Sierra Leone"],
+    ["SM", "San Marino"],
+    ["SN", "Senegal"],
+    ["SO", "Somalia"],
+    ["SR", "Suriname"],
+    ["ST", "Sao Tome & Principe"],
+    ["SV", "El Salvador"],
+    ["SX", "St. Maarten"],
+    ["SX", "St. Martin (French)"],
+    ["SY", "Syrian Arab Republic"],
+    ["SZ", "Swaziland"],
+    ["TC", "Turks & Caicos Islands"],
+    ["TD", "Chad"],
+    ["TF", "French Southern Territories"],
+    ["TG", "Togo"],
+    ["TH", "Thailand"],
+    ["TJ", "Tajikistan"],
+    ["TK", "Tokelau"],
+    ["TL", "Timor-Leste"],
+    ["TM", "Turkmenistan"],
+    ["TN", "Tunisia"],
+    ["TO", "Tonga"],
+    ["TP", "East Timor"],
+    ["TR", "Turkey"],
+    ["TT", "Trinidad & Tobago"],
+    ["TV", "Tuvalu"],
+    ["TW", "Taiwan, China"],
+    ["TZ", "Tanzania, United Republic of"],
+    ["UA", "Ukraine"],
+    ["UG", "Uganda"],
+    ["UM", ""],
+    ["US", "United States"],
+    ["UY", "Uruguay"],
+    ["UZ", "Uzbekistan"],
+    ["VA", "Vatican City State (Holy See)"],
+    ["VC", "Saint Vincent & The Grenadines"],
+    ["VE", "Venezuela"],
+    ["VG", "Virgin Islands (British)"],
+    ["VI", "Virgin Islands (U.S.)"],
+    ["VI", "St. Croix"],
+    ["VN", "Viet Nam"],
+    ["VU", "Vanuatu"],
+    ["WF", "Wallis & Futuna Islands"],
+    ["WS", "Samoa"],
+    ["YE", "Yemen"],
+    ["YT", "Mayotte"],
+    ["ZA", "South Africa"],
+    ["ZM", "Zambia"],
+    ["ZW", "Zimbabwe"],
+  ]);
 
   ngOnInit() {
     this.lastMessage = this.message;
@@ -72,6 +344,18 @@ export class AlertComponent implements OnInit {
       this.formGroup = new FormGroup({
         'image': new FormControl(null, [Validators.required])
       });
+    } else if (this.preset === AlertPresets.addSupplier) {
+      this.formGroup = new FormGroup({
+        'name': new FormControl(null, [Validators.required]),
+        'street_and_number': new FormControl(null),
+        'city_or_town': new FormControl(null),
+        'country': new FormControl("LT"),
+        'postal_code': new FormControl(null),
+        'phone_number': new FormControl(null),
+        'phone_number_two': new FormControl(null),
+        'website': new FormControl(null),
+        'description': new FormControl(null)
+      });
     }
   }
 
@@ -84,19 +368,6 @@ export class AlertComponent implements OnInit {
   }
 
   onSubmit() {
-    // if(this.preset === AlertPresets.addCompany) {
-    //   this.isLoading = true;
-    //   this.addCompany.emit(this.formGroup.value);
-    // // } else if(this.preset === 'editCompany') {
-    // } else if(this.preset === AlertPresets.editCompany) {
-    //   this.isLoading = true;
-    //   this.editCompany.emit(this.formGroup.value);
-    // } else if(this.preset === AlertPresets.addGalleryImage) {
-    //   this.isLoading = true;
-    //   const imageFile = this.formGroup.get('image').value;
-    //   this.addGalleryImage.emit({ image: imageFile });
-    // }
-
     switch(this.preset) { 
       case AlertPresets.addCompany: { 
         this.isLoading = true;
@@ -114,7 +385,12 @@ export class AlertComponent implements OnInit {
         this.addGalleryImage.emit({ image: imageFile }); 
         break; 
       } 
-   } 
+      case AlertPresets.addSupplier: { 
+        this.isLoading = true;
+        this.addSupplier.emit(this.formGroup.value);
+        break;  
+      } 
+    } 
   }
 
   onCloseError() {
@@ -122,10 +398,6 @@ export class AlertComponent implements OnInit {
   }
 
   onClose() {
-    this.close.emit();
-  }
-
-  onCloseConfirmation() {
     this.close.emit();
   }
 

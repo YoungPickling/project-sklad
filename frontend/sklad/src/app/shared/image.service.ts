@@ -1,6 +1,6 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { Observable, map, of, tap } from "rxjs";
+import { Observable, map, of } from "rxjs";
 
 interface CachedImage {
   url: string;

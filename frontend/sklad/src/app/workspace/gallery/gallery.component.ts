@@ -7,6 +7,7 @@ import { environment } from '../../../environments/environment';
 import { MatIconModule } from '@angular/material/icon';
 import { AlertComponent, AlertPresets } from '../../shared/alert/alert.component';
 import { Image } from '../../shared/models/image.model';
+import { ImageCacheDirective } from '../../shared/directives/image.directive';
 
 @Component({
   selector: 'app-gallery',
@@ -14,7 +15,8 @@ import { Image } from '../../shared/models/image.model';
   imports: [
     CommonModule,
     MatIconModule,
-    AlertComponent
+    AlertComponent,
+    ImageCacheDirective
   ],
   templateUrl: './gallery.component.html',
   styleUrl: './gallery.component.css'

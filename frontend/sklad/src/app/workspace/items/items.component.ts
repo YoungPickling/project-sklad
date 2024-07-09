@@ -32,14 +32,14 @@ import { ImageCacheDirective } from '../../shared/directives/image.directive';
   styleUrl: './items.component.css'
 })
 export class ItemsComponent implements OnInit, OnDestroy, AfterViewChecked {
-  private focusCellKey: string | null = null;
   company: Company;
   addButtonActive = false;
   removeButtonActive = false;
   isLoading = false;
-
+  
   itemsToDelete: Set<number> = new Set();
-
+  
+  private focusCellKey: string | null = null;
   customColumns: { [key: string]: {value: string, color: string, width: string}; } = {};
   cellEditMode: { [key: string]: boolean } = {}; // to be edited
   cellSelected: { [key: string]: boolean } = {};
@@ -209,7 +209,8 @@ export class ItemsComponent implements OnInit, OnDestroy, AfterViewChecked {
     if (
       this.isCellFirstClicked && 
       this.lastCellClickedX === x && 
-      this.lastCellClickedY === y
+      this.lastCellClickedY === y &&
+      !this.cellEditMode[cellKey]
     ) {
       console.log('double clicked!' + cellKey) // HTMLInputElement
       this.tempCellValue = (<HTMLElement>document.getElementById(cellKey)).textContent || '';

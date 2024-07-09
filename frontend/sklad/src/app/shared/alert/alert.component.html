@@ -123,7 +123,7 @@
 
           <div class="alert-box-actions">
             <button class="button" (click)="onConfirmDeleteImage()" [disabled]="confirmField !== 'delete'">Delete</button>
-            <button class="button" (click)="onCloseConfirmation()">Cancel</button>
+            <button class="button" (click)="onClose()">Cancel</button>
           </div>
         </div>
       </div>
@@ -173,30 +173,91 @@
       </div>
     </ng-template>
 
-    <!-- TODO -->
     <ng-template [ngIf]="isAddSupplier()">
-      <div class="box-title"><h1 style="margin:0">Add Supplier</h1></div>
+      <div class="box-title">
+        <h1 style="margin:0">Add Supplier</h1>
+      </div>
       <span class="loader" *ngIf="isLoading else regSupplier"></span>
 
       <ng-template #regSupplier>
         <div class="error-box" *ngIf="message && lastMessage !== message">{{ message }}</div>
         <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
           <div style="display:flex;flex-direction:column;">
-            <label for="name">Company name</label>
+            <label for="name">Supplier name</label>
             <input
               type="text"
               id="name"
               formControlName="name"
               class="form-control"
               autocomplete="off" />
-            <span 
-              *ngIf="inputValidation('name')"
-            >
+            <span *ngIf="inputValidation('name')">
               <span 
                 *ngIf="checkInvalid('required', 'name'); else break1"
               >Please enter a valid name</span>
               <br #break1 />
             </span>
+
+            <label for="street_and_number">Street</label>
+            <input
+              type="text"
+              id="street_and_number"
+              formControlName="street_and_number"
+              class="form-control"
+              autocomplete="off" 
+            />
+
+            <label for="city_or_town">City/Town</label>
+            <input
+              type="text"
+              id="city_or_town"
+              formControlName="city_or_town"
+              class="form-control"
+              autocomplete="off" 
+            />
+            
+            <label for="country">Country</label>
+            <select name="country" id="country" formControlName="country">
+              <option *ngFor="let country of countries | keyvalue" [ngValue]="country.key">
+                {{ country.value }}
+              </option>
+            </select>
+
+            <label for="postal_code">Postal code</label>
+            <input
+              type="text"
+              id="postal_code"
+              formControlName="postal_code"
+              class="form-control"
+              autocomplete="off" 
+            />
+
+            <label for="phone_number">Phone number</label>
+            <input
+              type="text"
+              id="phone_number"
+              formControlName="phone_number"
+              class="form-control"
+              autocomplete="off" 
+            />
+
+            <label for="phone_number_two">Phone number 2</label>
+            <input
+              type="text"
+              id="phone_number_two"
+              formControlName="phone_number_two"
+              class="form-control"
+              autocomplete="off" 
+            />
+
+            <label for="website">Website</label>
+            <input
+              type="text"
+              id="website"
+              formControlName="website"
+              class="form-control"
+              autocomplete="off" 
+            />
+
             <label for="description">Description</label>
             <textarea
               id="description"
@@ -204,15 +265,10 @@
               rows="3"
               cols="50" 
             ></textarea>
-            <span *ngIf="inputValidation('description')">
-              <span 
-                *ngIf="checkInvalid('required', 'description'); else break2"
-              >Please enter a brief description</span>
-              <br #break2 />
-            </span>
+
           </div>
           <div class="alert-box-actions">
-            <button type="submit" class="button" [disabled]="!formGroup.valid">{{ isAddCompay() ? 'Create' : 'Edit' }}</button>
+            <button type="submit" class="button" [disabled]="!formGroup.valid">{{ isAddSupplier() ? 'Create' : 'Edit' }}</button>
             <button class="button" (click)="onClose()">Cancel</button>
           </div>
         </form>

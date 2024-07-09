@@ -292,7 +292,7 @@ public class ItemService {
 
         itemRepository.save(itemOld);
 
-        return ResponseEntity.ok().body(item);
+        return ResponseEntity.ok().body(itemOld);
     }
 
     @Transactional

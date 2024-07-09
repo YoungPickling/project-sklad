@@ -6,12 +6,12 @@ export class Location {
     public id: number,
     public name: string,
     public image: Image,
-    public streetAndNumber: string,
-    public cityOrTown: string,
-    public countryCode: string,
-    public postalCode: string,
-    public phoneNumber: string,
-    public phoneNumberTwo: string,
+    public street_and_number: string,
+    public city_or_town: string,
+    public country_code: string,
+    public postal_code: string,
+    public phone_number: string,
+    public phone_number_two: string,
     public description: string,
     public owner: Company
   ) {}

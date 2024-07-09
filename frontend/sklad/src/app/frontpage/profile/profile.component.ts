@@ -12,11 +12,18 @@ import { environment } from '../../../environments/environment';
 import { Company } from '../../shared/models/company.model';
 import { BriefUserModel } from '../login/briefUser.model';
 import { Router, RouterModule } from '@angular/router';
+import { ImageCacheDirective } from '../../shared/directives/image.directive';
 
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [CommonModule, ShortenPipe, MatIconModule, AlertComponent],
+  imports: [
+    CommonModule, 
+    ShortenPipe, 
+    MatIconModule, 
+    AlertComponent,
+    ImageCacheDirective
+  ],
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.css'
 })

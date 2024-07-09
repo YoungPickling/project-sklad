@@ -13,7 +13,7 @@
 <div class="frontpage-body">
   <div class="frontpage-window-top">
     <div *ngIf="userImageHash.length < 1" class="frontpage-window-top-pfp" style="margin-right:1rem;"></div>
-    <img *ngIf="userImageHash.length > 0" class="frontpage-window-top-pfp" style="margin-right:1rem;" [src]="link + userImageHash" [alt]="username">
+    <img *ngIf="userImageHash.length > 0" class="frontpage-window-top-pfp" style="margin-right:1rem;" [cacheSrc]="link + userImageHash" [alt]="username">
     <div class="frontpage-info-box">
       <b>{{ user?.firstname }}</b>
       <b>{{ user?.lastname }}</b>

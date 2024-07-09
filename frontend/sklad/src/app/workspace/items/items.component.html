@@ -13,8 +13,10 @@
 ></app-alert>
 
 <div class="w-title-bar">
-  <h1 class="w-title">Items</h1><span *ngIf="isLoading" class="loader-round"></span>
+  <h1 class="w-title">Items</h1>
+  <span *ngIf="isLoading" class="loader-round"></span>
 </div>
+
 <div>
   <button
     class="button-42" 
@@ -28,6 +30,7 @@
     (click)="onClickRemoveBtn()"
   >Delete Row</button>
 </div>
+
 <div *ngIf="!isLoading && addButtonActive">
   <hr/>
   <form [formGroup]="addItemForm" (ngSubmit)="onSubmitAddItem()">

@@ -26,7 +26,7 @@
       
       <ng-template #profilePicture>
         <a [routerLink]="['/profile']">
-          <img class="frontpage-icon" [src]="link + userImageHash" [alt]="username">
+          <img class="frontpage-icon" [cacheSrc]="link + userImageHash" [alt]="username">
         </a>
       </ng-template>
 

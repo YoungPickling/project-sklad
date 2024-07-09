@@ -14,8 +14,9 @@
 ></app-alert>
 
 <div class="w-title-bar">
-  <h1 class="w-title">Gallery</h1><span *ngIf="isLoading" class="loader-round"></span></div>
-<div>
+  <h1 class="w-title">Gallery</h1>
+  <span *ngIf="isLoading" class="loader-round"></span>
+</div>
 
 <button
   class="button-42 button-42-icon" 
@@ -40,14 +41,14 @@
       <ng-container *ngFor="let image of company?.imageData">
         <div class="w-gallery-cell-container">
           <div 
-            class="w-gallery-cell-background"
-            [ngStyle]="{'background-image': 'url(' + link + image?.hash + ')'}"
+            [ngClass]="'w-gallery-cell-background'"
+            [cacheSrc]="link + image?.hash"
           ></div>
           <div 
             class="w-gallery-cell"
             (click)="onClickOpenImage(image)"
           >
-            <img [src]="link + image?.hash" [alt]="image?.name" class="disable-blur" loading="lazy"/>
+            <img [cacheSrc]="link + image?.hash" [alt]="image?.name" [ngClass]="'disable-blur'" loading="lazy"/>
             <div class="w-gallery-cell-overlay">
               <div class="w-gallery-cell-overlay-text">{{image?.name}}</div>
             </div>

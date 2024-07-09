@@ -5,6 +5,7 @@ import { HttpClient } from "@angular/common/http";
 import { environment } from "../../environments/environment";
 import { BriefUserModel } from "../frontpage/login/briefUser.model";
 import { Item } from "../shared/models/item.model";
+import { Supplier } from "../shared/models/supplier.model";
 
 @Injectable()
 export class WorkspaceService {
@@ -12,6 +13,8 @@ export class WorkspaceService {
   isLoading = new BehaviorSubject<boolean>(false);
 
   closeAlert = new BehaviorSubject<boolean>(false);
+
+  private API_PATH = "/api/rest/v1/secret/";
 
   constructor(
     private http: HttpClient
@@ -27,7 +30,7 @@ export class WorkspaceService {
       return;
 
     this.http.get<any>(
-      environment.API_SERVER + "/api/rest/v1/secret/company/" + id,
+      environment.API_SERVER + this.API_PATH + "company/" + id,
       {
         headers: {
           "Authorization": `Bearer ${userBriefData.token}`
@@ -45,6 +48,7 @@ export class WorkspaceService {
         },
         complete: () => {
           this.isLoading.next(false);
+          this.closeAlert.next(false);
         }
       }
     );
@@ -60,7 +64,7 @@ export class WorkspaceService {
       return;
 
     this.http.post<Item>(
-      environment.API_SERVER + "/api/rest/v1/secret/item/" + this.companyDetails.value.id,
+      environment.API_SERVER + this.API_PATH + "item/" + this.companyDetails.value.id,
       item,
       {
         headers: {
@@ -77,6 +81,7 @@ export class WorkspaceService {
         },
         complete: () => {
           this.isLoading.next(false);
+          this.closeAlert.next(false);
         }
       }
     );
@@ -92,7 +97,7 @@ export class WorkspaceService {
       return;
 
     this.http.put<Item>(
-      environment.API_SERVER + "/api/rest/v1/secret/item/" + item.id,
+      environment.API_SERVER + this.API_PATH + "item/" + item.id,
       item,
       {
         headers: {
@@ -109,6 +114,7 @@ export class WorkspaceService {
         },
         complete: () => {
           this.isLoading.next(false);
+          this.closeAlert.next(false);
         }
       }
     );
@@ -124,7 +130,7 @@ export class WorkspaceService {
       return;
 
     this.http.delete<number[]>(
-      environment.API_SERVER + "/api/rest/v1/secret/item",
+      environment.API_SERVER + this.API_PATH + "item",
       {
         headers: {
           "Authorization": `Bearer ${userBriefData.token}`
@@ -143,6 +149,7 @@ export class WorkspaceService {
         },
         complete: () => {
           this.isLoading.next(false);
+          this.closeAlert.next(false);
         }
       }
     );
@@ -161,7 +168,7 @@ export class WorkspaceService {
     formData.append('image', image, image.name);
 
     this.http.post<any>(
-      environment.API_SERVER + "/api/rest/v1/secret/image/" + companyId,
+      environment.API_SERVER + this.API_PATH + "image/" + companyId,
       formData,
       {
         headers: {
@@ -194,7 +201,7 @@ export class WorkspaceService {
     }
 
     this.http.delete<any>(
-      environment.API_SERVER + "/api/rest/v1/secret/image/" + hash,
+      environment.API_SERVER + this.API_PATH + "image/" + hash,
       {
         headers: {
           "Authorization": `Bearer ${userBriefData.token}`
@@ -216,8 +223,73 @@ export class WorkspaceService {
     );
   }
 
+  addSupplier(supplier): void {
+    if (typeof localStorage === 'undefined')
+      return;
+
+    const userBriefData: BriefUserModel = JSON.parse(localStorage.getItem('userBriefData'));
+
+    if (!userBriefData)
+      return;
+
+    this.http.post<Supplier>(
+      environment.API_SERVER + this.API_PATH + "supplier/" + this.companyDetails.value.id,
+      supplier,
+      {
+        headers: {
+          "Authorization": `Bearer ${userBriefData.token}`
+        }
+      }
+    ).subscribe(
+      {
+        next: result => {
+          this.getLatestUpdates(result);
+        },
+        error: error => {
+          console.error('Error inserting new Supplier:', error);
+        },
+        complete: () => {
+          this.isLoading.next(false);
+          this.closeAlert.next(false);
+        }
+      }
+    );
+  }
+
+  updateSupplier(supplier: Supplier): void {
+    if (typeof localStorage === 'undefined')
+      return;
+
+    const userBriefData: BriefUserModel = JSON.parse(localStorage.getItem('userBriefData'));
+
+    if (!userBriefData)
+      return;
+
+    this.http.put<Supplier>(
+      environment.API_SERVER + this.API_PATH + "supplier/" + this.companyDetails.value.id,
+      supplier,
+      {
+        headers: {
+          "Authorization": `Bearer ${userBriefData.token}`
+        }
+      }
+    ).subscribe(
+      {
+        next: result => {
+          this.getLatestUpdates(result);
+        },
+        error: error => {
+          console.error('Error updating existing Supplier:', error);
+        },
+        complete: () => {
+          this.isLoading.next(false);
+          this.closeAlert.next(false);
+        }
+      }
+    );
+  }
+
   removeItemImage() {
-    // TODO
     this.isLoading.next(false); 
   }
 

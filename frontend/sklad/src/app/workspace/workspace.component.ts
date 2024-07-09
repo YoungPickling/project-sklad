@@ -8,6 +8,7 @@ import { Company } from '../shared/models/company.model';
 import { AuthService } from '../frontpage/login/auth.service';
 import { ClickOutsideDirective } from '../shared/directives/clickOutside.directive';
 import { environment } from '../../environments/environment';
+import { ImageCacheDirective } from '../shared/directives/image.directive';
 
 @Component({
   selector: 'app-workspace',
@@ -17,7 +18,8 @@ import { environment } from '../../environments/environment';
     RouterModule,
     RouterOutlet, 
     MatIconModule,
-    ClickOutsideDirective
+    ClickOutsideDirective,
+    ImageCacheDirective
   ],
   providers: [WorkspaceService],
   templateUrl: './workspace.component.html',
