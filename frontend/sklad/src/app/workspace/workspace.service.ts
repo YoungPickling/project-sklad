@@ -1,11 +1,12 @@
 import { Injectable } from "@angular/core";
 import { BehaviorSubject } from "rxjs";
 import { Company } from "../shared/models/company.model";
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpErrorResponse } from "@angular/common/http";
 import { environment } from "../../environments/environment";
 import { BriefUserModel } from "../frontpage/login/briefUser.model";
 import { Item } from "../shared/models/item.model";
 import { Supplier } from "../shared/models/supplier.model";
+import { Location } from "../shared/models/location.model";
 
 @Injectable()
 export class WorkspaceService {
@@ -13,6 +14,7 @@ export class WorkspaceService {
   isLoading = new BehaviorSubject<boolean>(false);
 
   closeAlert = new BehaviorSubject<boolean>(false);
+  errorResponse = new BehaviorSubject<HttpErrorResponse>(null);
 
   private API_PATH = "/api/rest/v1/secret/";
 
@@ -44,6 +46,8 @@ export class WorkspaceService {
           this.companyDetails.next(result);
         },
         error: error => {
+          this.errorResponse.next(error);
+          this.isLoading.next(false);
           console.error('Error getting a company:', error);
         },
         complete: () => {
@@ -77,6 +81,8 @@ export class WorkspaceService {
           this.getLatestUpdates(result);
         },
         error: error => {
+          this.errorResponse.next(error);
+          this.isLoading.next(false);
           console.error('Error inserting new item:', error);
         },
         complete: () => {
@@ -110,6 +116,8 @@ export class WorkspaceService {
           this.getLatestUpdates(result);
         },
         error: error => {
+          this.errorResponse.next(error);
+          this.isLoading.next(false);
           console.error('Error updating existing item:', error);
         },
         complete: () => {
@@ -145,6 +153,8 @@ export class WorkspaceService {
           this.getLatestUpdates(result);
         },
         error: error => {
+          this.errorResponse.next(error);
+          this.isLoading.next(false);
           console.error('Error removing items:', error);
         },
         complete: () => {
@@ -181,6 +191,8 @@ export class WorkspaceService {
           this.getLatestUpdates(result);
         },
         error: error => {
+          this.errorResponse.next(error);
+          this.isLoading.next(false);
           console.error('Error uploading image to Gallery:', error);
         },
         complete: () => {
@@ -213,6 +225,8 @@ export class WorkspaceService {
           this.getLatestUpdates(result);
         },
         error: error => {
+          this.errorResponse.next(error);
+          this.isLoading.next(false);
           console.error('Error removing gallery image:', error);
         },
         complete: () => {
@@ -246,6 +260,8 @@ export class WorkspaceService {
           this.getLatestUpdates(result);
         },
         error: error => {
+          this.errorResponse.next(error);
+          this.isLoading.next(false);
           console.error('Error inserting new Supplier:', error);
         },
         complete: () => {
@@ -279,6 +295,8 @@ export class WorkspaceService {
           this.getLatestUpdates(result);
         },
         error: error => {
+          this.errorResponse.next(error);
+          this.isLoading.next(false);
           console.error('Error updating existing Supplier:', error);
         },
         complete: () => {
@@ -289,12 +307,158 @@ export class WorkspaceService {
     );
   }
 
-  removeItemImage() {
-    this.isLoading.next(false); 
+  removeSuppliers(suppliers: number[]): void {
+    if (typeof localStorage === 'undefined')
+      return;
+
+    const userBriefData: BriefUserModel = JSON.parse(localStorage.getItem('userBriefData'));
+
+    if (!userBriefData)
+      return;
+
+    this.http.delete<number[]>(
+      environment.API_SERVER + this.API_PATH + "supplier/" + this.companyDetails.value.id,
+      {
+        headers: {
+          "Authorization": `Bearer ${userBriefData.token}`
+        },
+        params : {
+          "delete": suppliers
+        }
+      }
+    ).subscribe(
+      {
+        next: result => {
+          this.getLatestUpdates(result);
+        },
+        error: error => {
+          this.errorResponse.next(error);
+          this.isLoading.next(false);
+          console.error('Error removing suppliers:', error);
+        },
+        complete: () => {
+          this.isLoading.next(false);
+          this.closeAlert.next(false);
+        }
+      }
+    );
   }
 
+  addLocation(location): void {
+    if (typeof localStorage === 'undefined')
+      return;
+
+    const userBriefData: BriefUserModel = JSON.parse(localStorage.getItem('userBriefData'));
+
+    if (!userBriefData)
+      return;
+
+    this.http.post<Location>(
+      environment.API_SERVER + this.API_PATH + "location/" + this.companyDetails.value.id,
+      location,
+      {
+        headers: {
+          "Authorization": `Bearer ${userBriefData.token}`
+        }
+      }
+    ).subscribe(
+      {
+        next: result => {
+          this.getLatestUpdates(result);
+        },
+        error: error => {
+          this.errorResponse.next(error);
+          this.isLoading.next(false);
+          console.error('Error inserting new Location:', error);
+        },
+        complete: () => {
+          this.isLoading.next(false);
+          this.closeAlert.next(false);
+        }
+      }
+    );
+  }
+
+  updateLocation(location: Location): void {
+    if (typeof localStorage === 'undefined')
+      return;
+
+    const userBriefData: BriefUserModel = JSON.parse(localStorage.getItem('userBriefData'));
+
+    if (!userBriefData)
+      return;
+
+    this.http.put<Location>(
+      environment.API_SERVER + this.API_PATH + "location/" + this.companyDetails.value.id,
+      location,
+      {
+        headers: {
+          "Authorization": `Bearer ${userBriefData.token}`
+        }
+      }
+    ).subscribe(
+      {
+        next: result => {
+          this.getLatestUpdates(result);
+        },
+        error: error => {
+          this.errorResponse.next(error);
+          this.isLoading.next(false);
+          console.error('Error updating existing Location:', error);
+        },
+        complete: () => {
+          this.isLoading.next(false);
+          this.closeAlert.next(false);
+        }
+      }
+    );
+  }
+
+  removeLocations(locations: number[]): void {
+    if (typeof localStorage === 'undefined')
+      return;
+
+    const userBriefData: BriefUserModel = JSON.parse(localStorage.getItem('userBriefData'));
+
+    if (!userBriefData)
+      return;
+
+    this.http.delete<number[]>(
+      environment.API_SERVER + this.API_PATH + "location/" + this.companyDetails.value.id,
+      {
+        headers: {
+          "Authorization": `Bearer ${userBriefData.token}`
+        },
+        params : {
+          "delete": locations
+        }
+      }
+    ).subscribe(
+      {
+        next: result => {
+          this.getLatestUpdates(result);
+        },
+        error: error => {
+          this.errorResponse.next(error);
+          this.isLoading.next(false);
+          console.error('Error removing locations:', error);
+        },
+        complete: () => {
+          this.isLoading.next(false);
+          this.closeAlert.next(false);
+        }
+      }
+    );
+  }
+
+  // removeItemImage() {
+  //   this.isLoading.next(false); 
+  // }
+
   private getLatestUpdates(result: any): void {
-    console.log(result)
+    if(result) {
+      console.log(result)
+    }
     this.getCompany(this.companyDetails.value.id);
   }
 

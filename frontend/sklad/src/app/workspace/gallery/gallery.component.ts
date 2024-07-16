@@ -8,6 +8,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { AlertComponent, AlertPresets } from '../../shared/alert/alert.component';
 import { Image } from '../../shared/models/image.model';
 import { ImageCacheDirective } from '../../shared/directives/image.directive';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-gallery',
@@ -34,6 +35,7 @@ export class GalleryComponent implements OnInit, OnDestroy {
   alertPreset: AlertPresets = null;
   error: string = "null";
   alertTitle: string = null;
+  errorResponse: HttpErrorResponse;
 
   imageData: Image;
 
@@ -43,6 +45,7 @@ export class GalleryComponent implements OnInit, OnDestroy {
   private companyDetailSub: Subscription;
   private loadingSubscription: Subscription;
   private alertWindowSubscription: Subscription;
+  private errorSubscription: Subscription;
 
   constructor(
     private workspaceService: WorkspaceService
@@ -59,21 +62,32 @@ export class GalleryComponent implements OnInit, OnDestroy {
       state => {
         this.isLoading = state;
       }
-    )
+    );
 
     this.alertWindowSubscription = this.workspaceService.closeAlert.subscribe(
       state => {
         this.alertOpen = state;
       }
-    )
+    );
+
+    this.errorSubscription = this.workspaceService.errorResponse.subscribe(
+      error => {
+        this.errorResponse = error;
+      }
+    );
   }
 
   ngOnDestroy() {
+    this.workspaceService.errorResponse.next(null);
     if(this.companyDetailSub) {
       this.companyDetailSub.unsubscribe()
     }
     this.loadingSubscription.unsubscribe();
     this.alertWindowSubscription.unsubscribe();
+  }
+
+  get images() {
+    return this.company?.imageData.sort((a, b) => a.id - b.id);
   }
 
   @HostListener('document:keydown', ['$event'])

@@ -3,26 +3,29 @@
   [(isLoadig)]="isLoading"
   [preset]="alertPreset"
   [message]="error"
+  [error]="errorResponse"
   (close)="onCloseAlert()"
   (addLocation)="onAddLocation($event)"
 ></app-alert>
 
-<div class="w-title-bar">
-  <h1 class="w-title">Locations</h1>
-  <span *ngIf="isLoading" class="loader-round"></span>
-</div>
+<div style="margin-left: 1rem">
+  <div class="w-title-bar">
+    <h1 class="w-title">Locations</h1>
+    <span *ngIf="isLoading" class="loader-round"></span>
+  </div>
 
-<div>
-  <button
-    class="button-42" 
-    (click)="onClickAddBtn()"
-  >Add Row</button>
+  <div>
+    <button
+      class="button-42" 
+      (click)="onClickAddBtn()"
+    >Add Row</button>
 
-  <button 
-    class="button-42" 
-    (click)="onClickRemoveBtn()"
-    [disabled]="company?.suppliers?.length === 0"
-  >Delete Row</button>
+    <button 
+      class="button-42" 
+      (click)="onClickRemoveBtn()"
+      [disabled]="company?.locations?.length === 0"
+    >Delete Row</button>
+  </div>
 </div>
 
 <h1 class="w-empty" *ngIf="company?.locations?.length === 0 else view">No locations created yet</h1>
@@ -46,9 +49,14 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let supplier of company?.locations; let i = index">
-          <td *ngIf="removeButtonActive"> <!-- TODO -->
-            <input type="checkbox" id="r{{i}}" name="remove" (change)="onCheckboxChange($event, item?.id)"/>
+        <tr *ngFor="let location of company?.locations; let i = index">
+          <td *ngIf="removeButtonActive">
+            <input 
+              type="checkbox" 
+              id="r{{i}}" 
+              name="remove" 
+              class="ws-check-box"
+              (change)="onCheckboxChange($event, location?.id)"/>
           </td>
 
           <td 
@@ -58,7 +66,7 @@
             <div
               [id]="i + '-0'"
               *ngIf="!cellEditMode[i + '-0']"
-              >{{ supplier?.name }}</div>
+              >{{ location?.name }}</div>
             <span
               [id]="i + '-0f'"
               *ngIf="cellEditMode[i + '-0']" 
@@ -76,7 +84,7 @@
             <div
               [id]="i + '-1'"
               *ngIf="!cellEditMode[i + '-1']"
-              >{{ supplier?.street_and_number }}</div>
+              >{{ location?.street_and_number }}</div>
             <span
               [id]="i + '-1f'"
               *ngIf="cellEditMode[i + '-1']" 
@@ -94,7 +102,7 @@
             <div
               [id]="i + '-2'"
               *ngIf="!cellEditMode[i + '-2']"
-              >{{ supplier?.city_or_town }}</div>
+              >{{ location?.city_or_town }}</div>
             <span
               [id]="i + '-2f'"
               *ngIf="cellEditMode[i + '-2']" 
@@ -112,7 +120,7 @@
             <div
               [id]="i + '-3'"
               *ngIf="!cellEditMode[i + '-3']"
-              >{{ supplier?.country_code }}</div>
+              >{{ location?.country_code }}</div>
             <span
               [id]="i + '-3f'"
               *ngIf="cellEditMode[i + '-3']" 
@@ -130,7 +138,7 @@
             <div
               [id]="i + '-4'"
               *ngIf="!cellEditMode[i + '-4']"
-              >{{ supplier?.postal_code }}</div>
+              >{{ location?.postal_code }}</div>
             <span
               [id]="i + '-4f'"
               *ngIf="cellEditMode[i + '-4']" 
@@ -148,7 +156,7 @@
             <div
               [id]="i + '-5'"
               *ngIf="!cellEditMode[i + '-5']"
-              >{{ supplier?.phone_number }}</div>
+              >{{ location?.phone_number }}</div>
             <span
               [id]="i + '-5f'"
               *ngIf="cellEditMode[i + '-5']" 
@@ -166,7 +174,7 @@
             <div
               [id]="i + '-6'"
               *ngIf="!cellEditMode[i + '-6']"
-              >{{ supplier?.phone_number_two }}</div>
+              >{{ location?.phone_number_two }}</div>
             <span
               [id]="i + '-6f'"
               *ngIf="cellEditMode[i + '-6']" 
@@ -184,7 +192,7 @@
             <div
               [id]="i + '-7'"
               *ngIf="!cellEditMode[i + '-7']"
-              >{{ supplier?.description }}</div>
+              >{{ location?.description }}</div>
             <span
               [id]="i + '-7f'"
               *ngIf="cellEditMode[i + '-7']" 
@@ -200,3 +208,10 @@
     </table>
   </div>
 </ng-template>
+
+<button
+  *ngIf="removeButtonActive"
+  class="button-42" 
+  [disabled]="isLoading || suppliersToDelete.size < 1"
+  (click)="onRemoveRows()"
+>Submit Removal</button>

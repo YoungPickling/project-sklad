@@ -14,6 +14,7 @@ import { Image } from '../../shared/models/image.model';
 import { environment } from '../../../environments/environment';
 import { ItemColumn } from '../../shared/models/item-column.model';
 import { ImageCacheDirective } from '../../shared/directives/image.directive';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-items',
@@ -61,11 +62,13 @@ export class ItemsComponent implements OnInit, OnDestroy, AfterViewChecked {
   tempId: number;
   confirmField: string;
   imageList: Image[];
+  errorResponse: HttpErrorResponse;
 
   link = environment.API_SERVER + "/api/rest/v1/secret/image/";
 
   private companyDetailSub: Subscription;
   private loadingSubscription: Subscription;
+  private errorSubscription: Subscription;
 
   constructor(
     private workspaceService: WorkspaceService,
@@ -95,12 +98,19 @@ export class ItemsComponent implements OnInit, OnDestroy, AfterViewChecked {
       state => {
         this.isLoading = state;
       }
-    )
+    );
 
-    this.resetForm()
+    this.errorSubscription = this.workspaceService.errorResponse.subscribe(
+      error => {
+        this.errorResponse = error;
+      }
+    );
+
+    this.resetForm();
   }
 
   ngOnDestroy() {
+    this.workspaceService.errorResponse.next(null);
     this.companyDetailSub.unsubscribe();
     this.loadingSubscription.unsubscribe();
   }
@@ -114,6 +124,10 @@ export class ItemsComponent implements OnInit, OnDestroy, AfterViewChecked {
         this.focusCellKey = null;
       }
     }
+  }
+
+  get items() {
+    return this.company?.items.sort((a, b) => a.id - b.id);
   }
 
   onClickAddBtn() {
@@ -157,6 +171,14 @@ export class ItemsComponent implements OnInit, OnDestroy, AfterViewChecked {
 
   get columns() {
     return this.addItemForm.get('columns') as FormArray;
+  }
+
+  get locationPostfix() {
+    return 3 + Object.keys(this.customColumns).length;
+  }
+
+  get supplierPostfix() {
+    return 3 + Object.keys(this.customColumns).length + this.company.locations.length;
   }
 
   addColumn() {
@@ -246,27 +268,27 @@ export class ItemsComponent implements OnInit, OnDestroy, AfterViewChecked {
 
     // Create a deep copy of the item
     let tempItem: Item = { 
-      ...this.company.items[x - 1],
-      columns: this.company.items[x - 1].columns.map(col => ({ ...col }))
+      ...this.company.items[x],
+      columns: this.company.items[x].columns.map(col => ({ ...col }))
   };
 
-    if (y === 1) {
+    if (y === 0) {
       tempItem.code = this.tempCellValue;
       this.workspaceService.updateItem(tempItem);
-    } else if (y === 2) {
+    } else if (y === 1) {
       tempItem.name = this.tempCellValue;
       this.workspaceService.updateItem(tempItem);
-    } else if (y === 3) {
+    } else if (y === 2) {
       tempItem.description = this.tempCellValue;
       this.workspaceService.updateItem(tempItem);
     } 
-    else if (y >= 4 && y <= (Object.keys(this.customColumns).length + 4)) {
+    else if (y >= 3 && y <= this.locationPostfix) {
       // The Angluar 'keyvalue' pipeline in a template and Javascript sorts keys differently
       // So make sure the key order is the same everywhere
       const keyStore: string[] = Object.keys(this.customColumns).sort();
 
       // taking column's key
-      const customColumnKey: string = keyStore[y - 4];
+      const customColumnKey: string = keyStore[y - 3];
 
       // find existing column value for a copy
       const itemColumnObject: ItemColumn = tempItem.columns.find(
@@ -335,7 +357,7 @@ export class ItemsComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.addButtonActive = false;
     this.removeButtonActive = false;
     this.isLoading = true;
-    this.workspaceService.removeItemImage();
+    // this.workspaceService.removeItemImage();
   }
 
   onUpdateItemImage(imageId: number) {

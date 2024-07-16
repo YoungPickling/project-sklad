@@ -7,6 +7,8 @@ import { AlertComponent, AlertPresets } from '../../shared/alert/alert.component
 import { Location } from '../../shared/models/location.model';
 import { ClickOutsideDirective } from '../../shared/directives/clickOutside.directive';
 import { ContentEditableModel } from '../../shared/directives/contenteditable.directive';
+import { HttpErrorResponse } from '@angular/common/http';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-locations',
@@ -15,14 +17,14 @@ import { ContentEditableModel } from '../../shared/directives/contenteditable.di
     CommonModule, 
     AlertComponent,
     ClickOutsideDirective,
-    ContentEditableModel
+    ContentEditableModel,
+    MatIconModule
   ],
   templateUrl: './locations.component.html',
   styleUrl: './locations.component.css'
 })
 export class LocationsComponent implements OnInit, OnDestroy {
   company: Company;
-  addButtonActive = false;
   removeButtonActive = false;
   isLoading = false;
 
@@ -40,6 +42,7 @@ export class LocationsComponent implements OnInit, OnDestroy {
   alertOpen = false;
   alertPreset: AlertPresets = null;
   error: string;
+  errorResponse: HttpErrorResponse;
 
   constructor(
     private workspaceService: WorkspaceService,
@@ -49,6 +52,7 @@ export class LocationsComponent implements OnInit, OnDestroy {
   private companyDetailSub: Subscription;
   private loadingSubscription: Subscription;
   private alertWindowSubscription: Subscription;
+  private errorSubscription: Subscription;
 
   ngOnInit() {
     this.companyDetailSub = this.workspaceService.companyDetails.subscribe(
@@ -61,13 +65,19 @@ export class LocationsComponent implements OnInit, OnDestroy {
       state => {
         this.isLoading = state;
       }
-    )
+    );
 
     this.alertWindowSubscription = this.workspaceService.closeAlert.subscribe(
       state => {
         this.alertOpen = state;
       }
-    )
+    );
+
+    this.errorSubscription = this.workspaceService.errorResponse.subscribe(
+      error => {
+        this.errorResponse = error;
+      }
+    );
   }
 
   ngAfterViewChecked() {
@@ -82,11 +92,16 @@ export class LocationsComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    this.workspaceService.errorResponse.next(null);
     if(this.companyDetailSub) {
       this.companyDetailSub.unsubscribe()
     }
     this.loadingSubscription.unsubscribe();
     this.alertWindowSubscription.unsubscribe();
+  }
+
+  get locations() {
+    return this.company?.locations.sort((a, b) => a.id - b.id);
   }
 
   @HostListener('document:keydown', ['$event'])
@@ -97,7 +112,7 @@ export class LocationsComponent implements OnInit, OnDestroy {
   }
 
   onClickAddBtn() {
-    this.alertPreset = AlertPresets.addSupplier
+    this.alertPreset = AlertPresets.addLocation
     this.error = null;
     this.alertOpen = true;
   }
@@ -110,12 +125,31 @@ export class LocationsComponent implements OnInit, OnDestroy {
   }
 
   onAddLocation(location: any) {
-    // this.isLoading = true;
-    // this.workspaceService.addLocation(location);
+    this.isLoading = true;
+    this.workspaceService.addLocation(location);
   }
 
   onCloseAlert() {
     this.alertOpen = false;
+  }
+
+  // ###########
+  // row removal logic
+  // ###########
+
+  onCheckboxChange(event: Event, index: number): void {
+    const checkbox = event.target as HTMLInputElement;
+    if (checkbox.checked) {
+      this.locationsToDelete.add(index);
+    } else {
+      this.locationsToDelete.delete(index);
+    }
+  }
+
+  onRemoveRows() {
+    this.isLoading = true;
+    this.removeButtonActive = false;
+    this.workspaceService.removeSuppliers(Array.from(this.locationsToDelete.values()));
   }
 
   // ###########
@@ -173,7 +207,7 @@ export class LocationsComponent implements OnInit, OnDestroy {
       case 6: { tempLocation.phone_number_two = this.tempCellValue; break; }
       case 7: { tempLocation.description = this.tempCellValue; break; }
     }
-    // this.workspaceService.updateLocation(tempLocation);
+    this.workspaceService.updateLocation(tempLocation);
 
     console.log(this.tempCellValue, x + '-' + y);
   }

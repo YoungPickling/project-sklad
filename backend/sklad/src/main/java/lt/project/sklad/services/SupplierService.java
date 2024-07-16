@@ -15,9 +15,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
-import static org.springframework.http.HttpStatus.FORBIDDEN;
-import static org.springframework.http.HttpStatus.UNAUTHORIZED;
+import static org.springframework.http.HttpStatus.*;
 
 /**
  * {@link Supplier} service
@@ -74,7 +74,6 @@ public class SupplierService {
 
         return ResponseEntity.ok().body(result);
     }
-    // TODO SupplierService methods
 
     @Transactional
     public ResponseEntity<?> updateSupplier(
@@ -108,6 +107,7 @@ public class SupplierService {
 
         existingSupplier.setName(supplier.getName());
         existingSupplier.setStreetAndNumber(supplier.getStreetAndNumber());
+        existingSupplier.setCityOrTown(supplier.getCityOrTown());
         existingSupplier.setCountryCode(supplier.getCountryCode());
         existingSupplier.setPostalCode(supplier.getPostalCode());
         existingSupplier.setPhoneNumber(supplier.getPhoneNumber());
@@ -121,7 +121,7 @@ public class SupplierService {
     }
 
     @Transactional
-    public ResponseEntity<?> deleteSupplier(
+    public ResponseEntity<?> deleteSuppliers(
             final long companyId,
             final List<Long> suppliers,
             final HttpServletRequest request
@@ -142,10 +142,24 @@ public class SupplierService {
         if (company == null)
             return ResponseEntity.notFound().build();
 
-        if(!company.getUser().contains(token.getUser()))
-            return msgUtils.error(FORBIDDEN, "Access denied");
+        List<Supplier> foundSuppliers = supplierRepository.findAllById(suppliers);
 
-        // TODO
+        if (foundSuppliers == null || foundSuppliers.isEmpty())
+            return msgUtils.error(NOT_FOUND, "Suppliers not found");
+
+        boolean wrongCompany = foundSuppliers.stream().anyMatch(
+                x -> x.getOwner().getId() != companyId);
+
+        if(wrongCompany)
+            return msgUtils.error(NOT_FOUND, "Alien supplier in the list");
+
+        company.getSuppliers().removeAll(foundSuppliers);
+
+        List<Supplier> postDeleteSuppliers = supplierRepository.findAllById(suppliers);
+        if (!postDeleteSuppliers.isEmpty()) {
+            System.err.println("Suppliers not deleted: " + postDeleteSuppliers.stream().map(Supplier::getId).collect(Collectors.toList()));
+            return msgUtils.error(INTERNAL_SERVER_ERROR, "Failed to delete some suppliers");
+        }
 
         return ResponseEntity.ok().body(null);
     }

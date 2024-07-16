@@ -3,6 +3,7 @@
   [(isLoadig)]="isLoading"
   [preset]="alertPreset"
   [message]="error"
+  [error]="errorResponse"
   [title]="alertTitle"
   [imageData]="imageData"
   (close)="onHandleClose()"
@@ -13,32 +14,34 @@
   (confirmDeleteImage)="onClickConfirmDeleteImage()"
 ></app-alert>
 
-<div class="w-title-bar">
-  <h1 class="w-title">Gallery</h1>
-  <span *ngIf="isLoading" class="loader-round"></span>
+<div style="margin-left: 1rem">
+  <div class="w-title-bar">
+    <h1 class="w-title">Gallery</h1>
+    <span *ngIf="isLoading" class="loader-round"></span>
+  </div>
+
+  <button
+    class="button-42 button-42-icon" 
+    [ngClass]="{'button-42-active': addButtonActive}"
+    (click)="onClickAddBtn()"
+  >
+    <mat-icon>add_a_photo</mat-icon>
+  </button>
+
+  <button 
+    class="button-42 button-42-icon" 
+    [ngClass]="{'button-42-active': removeButtonActive}"
+    [disabled]="company?.imageData?.length === 0"
+    (click)="onClickRemoveBtn()"
+  >
+    <mat-icon>delete_forever</mat-icon>
+  </button>
+
+  <h1 class="w-empty" *ngIf="company?.imageData?.length === 0 else view">No images are found</h1>
 </div>
-
-<button
-  class="button-42 button-42-icon" 
-  [ngClass]="{'button-42-active': addButtonActive}"
-  (click)="onClickAddBtn()"
->
-  <mat-icon>add_a_photo</mat-icon>
-</button>
-
-<button 
-  class="button-42 button-42-icon" 
-  [ngClass]="{'button-42-active': removeButtonActive}"
-  (click)="onClickRemoveBtn()"
->
-  <mat-icon>delete_forever</mat-icon>
-</button>
-
-<h1 class="w-empty" *ngIf="company?.imageData?.length === 0 else view">No images are found</h1>
-
 <ng-template #view>
   <div class="w-gallery-table">
-      <ng-container *ngFor="let image of company?.imageData">
+      <ng-container *ngFor="let image of images">
         <div class="w-gallery-cell-container">
           <div 
             [ngClass]="'w-gallery-cell-background'"

@@ -173,17 +173,17 @@
       </div>
     </ng-template>
 
-    <ng-template [ngIf]="isAddSupplier()">
+    <ng-template [ngIf]="isAddSupplier() || isAddLocation()">
       <div class="box-title">
-        <h1 style="margin:0">Add Supplier</h1>
+        <h1 style="margin:0">Add {{ isAddLocation() ? "Location" : "Supplier"}}</h1>
       </div>
       <span class="loader" *ngIf="isLoading else regSupplier"></span>
 
-      <ng-template #regSupplier>
-        <div class="error-box" *ngIf="message && lastMessage !== message">{{ message }}</div>
+      <ng-template #regSupplier>  
+        <div class="error-box" *ngIf="error"><b>Error:</b>{{ error?.status }} <b>Message:</b>{{ error?.error?.error }}</div>
         <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
           <div style="display:flex;flex-direction:column;">
-            <label for="name">Supplier name</label>
+            <label for="name">{{ isAddLocation() ? "Location" : "Supplier"}} name</label>
             <input
               type="text"
               id="name"
@@ -216,7 +216,7 @@
             />
             
             <label for="country">Country</label>
-            <select name="country" id="country" formControlName="country">
+            <select name="country" id="country" formControlName="country_code">
               <option *ngFor="let country of countries | keyvalue" [ngValue]="country.key">
                 {{ country.value }}
               </option>
@@ -249,14 +249,16 @@
               autocomplete="off" 
             />
 
-            <label for="website">Website</label>
-            <input
-              type="text"
-              id="website"
-              formControlName="website"
-              class="form-control"
-              autocomplete="off" 
-            />
+            <ng-template [ngIf]="isAddSupplier()">
+              <label for="website">Website</label>
+              <input
+                type="text"
+                id="website"
+                formControlName="website"
+                class="form-control"
+                autocomplete="off" 
+              />
+            </ng-template>
 
             <label for="description">Description</label>
             <textarea
@@ -268,7 +270,7 @@
 
           </div>
           <div class="alert-box-actions">
-            <button type="submit" class="button" [disabled]="!formGroup.valid">{{ isAddSupplier() ? 'Create' : 'Edit' }}</button>
+            <button type="submit" class="button" [disabled]="!formGroup.valid">Create</button>
             <button class="button" (click)="onClose()">Cancel</button>
           </div>
         </form>

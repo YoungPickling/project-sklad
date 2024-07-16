@@ -112,8 +112,8 @@ public class Item {
      * Suppliers of this item
      */
     @OneToMany(fetch = FetchType.EAGER)
+    @JoinColumn(name = "item_id")
     @JsonIgnoreProperties({"owner", "website", "description", "streetAndNumber", "cityOrTown", "postalCode", "phoneNumber", "phoneNumberTwo"})
-    @JoinColumn(name = "supplier_id")
     private List<Supplier> suppliers;
 
     @Lob

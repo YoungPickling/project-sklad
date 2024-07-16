@@ -4,6 +4,7 @@ import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } 
 import { Image } from '../models/image.model';
 import { environment } from '../../../environments/environment';
 import { ImageCacheDirective } from '../directives/image.directive';
+import { HttpErrorResponse } from '@angular/common/http';
 
 export enum AlertPresets {
   addCompany,
@@ -12,7 +13,8 @@ export enum AlertPresets {
   showGalleryImage,
   removeItemImage,
   updateItemImage,
-  addSupplier
+  addSupplier,
+  addLocation
 }
 
 @Component({
@@ -26,7 +28,8 @@ export class AlertComponent implements OnInit {
   @Input() isLoading: boolean;
   // @Input() preset: string;
   @Input() preset: AlertPresets;
-  @Input() message: string;
+  @Input() message: string; // deprecated
+  @Input() error: HttpErrorResponse;
   @Input() title: string;
   @Input() tempId: number;
   @Input() forEdit: {id?: number, name: string, description: string};
@@ -42,7 +45,17 @@ export class AlertComponent implements OnInit {
     postal_code: string, 
     phone_number: string, 
     hone_number_two: string, 
-    website: string, 
+    website?: string, 
+    description: string
+  }>();
+  @Output() addLocation = new EventEmitter<{
+    name: string, 
+    street_and_number: string, 
+    city_or_town: string, 
+    country: string, 
+    postal_code: string, 
+    phone_number: string, 
+    hone_number_two: string,
     description: string
   }>();
   
@@ -304,7 +317,6 @@ export class AlertComponent implements OnInit {
     ["TZ", "Tanzania, United Republic of"],
     ["UA", "Ukraine"],
     ["UG", "Uganda"],
-    ["UM", ""],
     ["US", "United States"],
     ["UY", "Uruguay"],
     ["UZ", "Uzbekistan"],
@@ -349,11 +361,22 @@ export class AlertComponent implements OnInit {
         'name': new FormControl(null, [Validators.required]),
         'street_and_number': new FormControl(null),
         'city_or_town': new FormControl(null),
-        'country': new FormControl("LT"),
+        'country_code': new FormControl("LT"),
         'postal_code': new FormControl(null),
         'phone_number': new FormControl(null),
         'phone_number_two': new FormControl(null),
         'website': new FormControl(null),
+        'description': new FormControl(null)
+      });
+    }  else if (this.preset === AlertPresets.addLocation) {
+      this.formGroup = new FormGroup({
+        'name': new FormControl(null, [Validators.required]),
+        'street_and_number': new FormControl(null),
+        'city_or_town': new FormControl(null),
+        'country_code': new FormControl("LT"),
+        'postal_code': new FormControl(null),
+        'phone_number': new FormControl(null),
+        'phone_number_two': new FormControl(null),
         'description': new FormControl(null)
       });
     }
@@ -370,24 +393,24 @@ export class AlertComponent implements OnInit {
   onSubmit() {
     switch(this.preset) { 
       case AlertPresets.addCompany: { 
-        this.isLoading = true;
         this.addCompany.emit(this.formGroup.value); 
         break; 
       } 
       case AlertPresets.editCompany: { 
-        this.isLoading = true;
         this.editCompany.emit(this.formGroup.value);
         break; 
       } 
       case AlertPresets.addGalleryImage: { 
-        this.isLoading = true;
         const imageFile = this.formGroup.get('image').value;
         this.addGalleryImage.emit({ image: imageFile }); 
         break; 
       } 
       case AlertPresets.addSupplier: { 
-        this.isLoading = true;
         this.addSupplier.emit(this.formGroup.value);
+        break;  
+      } 
+      case AlertPresets.addLocation: { 
+        this.addLocation.emit(this.formGroup.value);
         break;  
       } 
     } 
@@ -427,6 +450,10 @@ export class AlertComponent implements OnInit {
 
   isAddSupplier() {
     return this.preset === AlertPresets.addSupplier;
+  }
+
+  isAddLocation() {
+    return this.preset === AlertPresets.addLocation;
   }
 
   uploadImage(event: Event) {

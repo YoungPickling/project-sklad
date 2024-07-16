@@ -1,28 +1,31 @@
 <app-alert
   *ngIf="alertOpen"
-  [(isLoadig)]="isLoading"
+  [isLoadig]="isLoading"
   [preset]="alertPreset"
   [message]="error"
+  [error]="errorResponse"
   (close)="onCloseAlert()"
   (addSupplier)="onAddSupplier($event)"
 ></app-alert>
 
-<div class="w-title-bar">
-  <h1 class="w-title">Suppliers</h1>
-  <span *ngIf="isLoading" class="loader-round"></span>
-</div>
+<div style="margin-left: 1rem">
+  <div class="w-title-bar">
+    <h1 class="w-title">Suppliers</h1>
+    <span *ngIf="isLoading" class="loader-round"></span>
+  </div>
 
-<div>
-  <button
-    class="button-42" 
-    (click)="onClickAddBtn()"
-  >Add Row</button>
+  <div>
+    <button
+      class="button-42" 
+      (click)="onClickAddBtn()"
+    >Add Row</button>
 
-  <button 
-    class="button-42" 
-    (click)="onClickRemoveBtn()"
-    [disabled]="company?.suppliers?.length === 0"
-  >Delete Row</button>
+    <button 
+      class="button-42" 
+      (click)="onClickRemoveBtn()"
+      [disabled]="company?.suppliers?.length === 0"
+    >Delete Row</button>
+  </div>
 </div>
 
 <h1 class="w-empty" *ngIf="company?.suppliers?.length === 0 else view">No suppliers created yet</h1>
@@ -48,9 +51,14 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let supplier of company?.suppliers; let i = index">
-          <td *ngIf="removeButtonActive"> <!-- TODO -->
-            <input type="checkbox" id="r{{i}}" name="remove" (change)="onCheckboxChange($event, item?.id)"/>
+        <tr *ngFor="let supplier of suppliers; let i = index">
+          <td *ngIf="removeButtonActive">
+            <input 
+              type="checkbox" 
+              id="r{{i}}" 
+              name="remove" 
+              class="ws-check-box"
+              (change)="onCheckboxChange($event, supplier?.id)"/>
           </td>
 
           <td 
@@ -220,3 +228,10 @@
     </table>
   </div>
 </ng-template>
+
+<button
+  *ngIf="removeButtonActive"
+  class="button-42" 
+  [disabled]="isLoading || suppliersToDelete.size < 1"
+  (click)="onRemoveRows()"
+>Submit Removal</button>

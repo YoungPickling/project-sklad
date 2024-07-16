@@ -42,6 +42,6 @@ public class SupplierController {
             @RequestParam("delete") @NotNull List<Long> suppliers,
             HttpServletRequest request
     ) {
-        return supplierService.deleteSupplier(companyId, suppliers, request);
+        return supplierService.deleteSuppliers(companyId, suppliers, request);
     }
 }

@@ -136,30 +136,30 @@ public class ImageService {
 
         if (image == null)
             return msgUtils.error(NOT_FOUND, "Image not found");
+        /*
+        Company company = image.getOwnedByCompany();
 
-//        Company company = image.getOwnedByCompany();
-//
-//        if (company != null) {
-//            String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-//
-//            if (msgUtils.isBearer(authHeader))
-//                return msgUtils.error(UNAUTHORIZED, "Bad credentials");
-//
-//            String jwt = authHeader.substring(7);
-//            Token token = tokenService.findByToken(jwt).orElse(null);
-//
-//            if (token == null)
-//                return msgUtils.error(UNAUTHORIZED, "Token not found");
-//
-//            final User user = userRepository.findById(token.getUser().getId()).orElse(null);
-//
-//            if (user == null) {
-//                return msgUtils.error(NOT_FOUND, "User not found");
-//            }
-//
-//            if ( user.getCompany().stream().noneMatch(c -> c.getId().equals( company.getId() )) )
-//                return msgUtils.error(UNAUTHORIZED, "Access denied");
-//        }
+        if (company != null) {
+            String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+
+            if (msgUtils.isBearer(authHeader))
+                return msgUtils.error(UNAUTHORIZED, "Bad credentials");
+
+            String jwt = authHeader.substring(7);
+            Token token = tokenService.findByToken(jwt).orElse(null);
+
+            if (token == null)
+                return msgUtils.error(UNAUTHORIZED, "Token not found");
+
+            final User user = userRepository.findById(token.getUser().getId()).orElse(null);
+
+            if (user == null) {
+                return msgUtils.error(NOT_FOUND, "User not found");
+            }
+
+            if ( user.getCompany().stream().noneMatch(c -> c.getId().equals( company.getId() )) )
+                return msgUtils.error(UNAUTHORIZED, "Access denied");
+        }*/
 
         byte[] result = imgUtils.decompressImage(image.getImageData());
         return ResponseEntity.status(HttpStatus.OK)

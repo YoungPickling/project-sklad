@@ -76,13 +76,6 @@
   margin-bottom: 0;
 }
 
-.w-empty {
-  margin: auto;
-  color: #666;
-  display: flex;
-  justify-content: center;
-}
-
 /* header menu */
 
 .frontpage-navigation-buttons {

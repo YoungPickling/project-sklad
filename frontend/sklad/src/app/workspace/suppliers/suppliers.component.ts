@@ -7,6 +7,8 @@ import { AlertComponent, AlertPresets } from '../../shared/alert/alert.component
 import { ClickOutsideDirective } from '../../shared/directives/clickOutside.directive';
 import { ContentEditableModel } from '../../shared/directives/contenteditable.directive';
 import { Supplier } from '../../shared/models/supplier.model';
+import { HttpErrorResponse } from '@angular/common/http';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-suppliers',
@@ -15,14 +17,14 @@ import { Supplier } from '../../shared/models/supplier.model';
     CommonModule, 
     AlertComponent,
     ClickOutsideDirective,
-    ContentEditableModel
+    ContentEditableModel,
+    MatIconModule
   ],
   templateUrl: './suppliers.component.html',
   styleUrl: './suppliers.component.css'
 })
 export class SuppliersComponent implements OnInit, OnDestroy {
   company: Company;
-  addButtonActive = false;
   removeButtonActive = false;
   isLoading = false;
 
@@ -40,6 +42,7 @@ export class SuppliersComponent implements OnInit, OnDestroy {
   alertOpen = false;
   alertPreset: AlertPresets = null;
   error: string;
+  errorResponse: HttpErrorResponse;
 
   constructor(
     private workspaceService: WorkspaceService,
@@ -49,6 +52,7 @@ export class SuppliersComponent implements OnInit, OnDestroy {
   private companyDetailSub: Subscription;
   private loadingSubscription: Subscription;
   private alertWindowSubscription: Subscription;
+  private errorSubscription: Subscription;
 
   ngOnInit() {
     this.companyDetailSub = this.workspaceService.companyDetails.subscribe(
@@ -61,13 +65,19 @@ export class SuppliersComponent implements OnInit, OnDestroy {
       state => {
         this.isLoading = state;
       }
-    )
+    );
 
     this.alertWindowSubscription = this.workspaceService.closeAlert.subscribe(
       state => {
         this.alertOpen = state;
       }
-    )
+    );
+
+    this.errorSubscription = this.workspaceService.errorResponse.subscribe(
+      error => {
+        this.errorResponse = error;
+      }
+    );
   }
 
   ngAfterViewChecked() {
@@ -82,11 +92,16 @@ export class SuppliersComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    this.workspaceService.errorResponse.next(null);
     if(this.companyDetailSub) {
       this.companyDetailSub.unsubscribe()
     }
     this.loadingSubscription.unsubscribe();
     this.alertWindowSubscription.unsubscribe();
+  }
+
+  get suppliers() {
+    return this.company?.suppliers.sort((a, b) => a.id - b.id);
   }
 
   @HostListener('document:keydown', ['$event'])
@@ -116,6 +131,25 @@ export class SuppliersComponent implements OnInit, OnDestroy {
 
   onCloseAlert() {
     this.alertOpen = false;
+  }
+
+  // ###########
+  // row removal logic
+  // ###########
+
+  onCheckboxChange(event: Event, index: number): void {
+    const checkbox = event.target as HTMLInputElement;
+    if (checkbox.checked) {
+      this.suppliersToDelete.add(index);
+    } else {
+      this.suppliersToDelete.delete(index);
+    }
+  }
+
+  onRemoveRows() {
+    this.isLoading = true;
+    this.removeButtonActive = false;
+    this.workspaceService.removeSuppliers(Array.from(this.suppliersToDelete.values()));
   }
 
   // ###########
@@ -161,20 +195,20 @@ export class SuppliersComponent implements OnInit, OnDestroy {
     this.cellEditMode[x + '-' + y] = false;
 
     // Create a deep copy of the Supplier
-    let tempSupplier: Supplier = {...this.company.suppliers[x]};
+    let tmp: Supplier = {...this.company.suppliers[x]};
 
     switch(y) {
-      case 0: { tempSupplier.name = this.tempCellValue; break; }
-      case 1: { tempSupplier.street_and_number = this.tempCellValue; break; }
-      case 2: { tempSupplier.city_or_town = this.tempCellValue; break; }
-      case 3: { tempSupplier.country_code = this.tempCellValue; break; }
-      case 4: { tempSupplier.postal_code = this.tempCellValue; break; }
-      case 5: { tempSupplier.phone_number = this.tempCellValue; break; }
-      case 6: { tempSupplier.phone_number_two = this.tempCellValue; break; }
-      case 7: { tempSupplier.website = this.tempCellValue; break; }
-      case 8: { tempSupplier.description = this.tempCellValue; break; }
+      case 0: { tmp.name = this.tempCellValue; break; }
+      case 1: { tmp.street_and_number = this.tempCellValue; break; }
+      case 2: { tmp.city_or_town = this.tempCellValue; break; }
+      case 3: { tmp.country_code = this.tempCellValue; break; }
+      case 4: { tmp.postal_code = this.tempCellValue; break; }
+      case 5: { tmp.phone_number = this.tempCellValue; break; }
+      case 6: { tmp.phone_number_two = this.tempCellValue; break; }
+      case 7: { tmp.website = this.tempCellValue; break; }
+      case 8: { tmp.description = this.tempCellValue; break; }
     }
-    this.workspaceService.updateSupplier(tempSupplier);
+    this.workspaceService.updateSupplier(tmp);
 
     console.log(this.tempCellValue, x + '-' + y);
   }

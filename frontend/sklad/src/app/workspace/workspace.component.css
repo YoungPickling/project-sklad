@@ -145,7 +145,7 @@ html {
 } */
 
 .w-main-window {
-  padding: 1rem 0 0 1rem;
+  padding: 1rem 0 0 0rem;
   width: 100%;
   height: 100%;
   overflow-y: auto;
@@ -408,8 +408,9 @@ header a {
   overflow: scroll;
   white-space: nowrap;
   background-color: white;
-  margin-top: 1rem;
+  /* margin-top: 1rem; */
   border-collapse: collapse;
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 5px 5px, rgba(0, 0, 0, 0.1) 0px 0px 1px 0px;
 }
 
 .workspace-table thead {
@@ -437,13 +438,29 @@ header a {
   padding: 0.25rem;
 }
 
-.workspace-table .w-suppliers {
+/* .workspace-table .w-suppliers {
+  display: flex;
+  align-items: center;
+} */
+
+.ws-icon-cell div {
   display: flex;
   align-items: center;
 }
 
-.workspace-table .w-suppliers > mat-icon {
-  margin-right: 0.4rem;
+.ws-icon-cell > div > mat-icon {
+  display: inline;
+}
+
+.ws-even-cell {
+  background-color: khaki;
+  color: #000;
+}
+
+.ws-even-cell *,
+.ws-even-cell > div,
+.ws-even-cell > div * {
+  color: #000;
 }
 
 /* .workspace-table td > input[type=text] {
@@ -592,10 +609,11 @@ header a {
 
 .w-table-container {
   display: block;
-  margin: 1rem 1rem 1rem 0;
-  max-width: fit-content;
-  /* overflow: scroll; */
-  box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 5px 5px, rgba(0, 0, 0, 0.1) 0px 0px 1px 0px;
+  margin: 1rem 0rem 0rem 0;
+  padding: 10px;
+  /* max-width: fit-content; */
+  overflow: overlay;
+  /* box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 5px 5px, rgba(0, 0, 0, 0.1) 0px 0px 1px 0px; */
 }
 
 .w-gallery-table {
@@ -750,4 +768,18 @@ header a {
     width: calc(0.2rem + 1vw + 10px + 2vw);
     height: calc(0.2rem + 1vw + 10px + 2vw);
   }
+}
+
+.ws-check-box {
+  width: 1rem;
+  height: 1rem;
+  display: block;
+  margin: 0px auto;
+}
+
+.w-empty {
+  margin-left: 1rem;
+  color: #666;
+  display: flex;
+  justify-content: center;
 }
