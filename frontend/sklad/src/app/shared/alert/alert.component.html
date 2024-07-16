@@ -1,54 +1,288 @@
-<div class="backdrop" ></div><!-- (click)="onClose()"-->
-<div class="alert-box">
-  <ng-template [ngIf]="isAddCompay() || isEditCompay()">
-    <div class="box-title"><h1>{{ title }}</h1></div>
-    <span class="loader" *ngIf="isLoading else regForm"></span>
-    <ng-template #regForm>
-      <div class="error-box" *ngIf="message && lastMessage !== message">{{ message }}</div>
-      <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
-        <div style="display:flex;flex-direction:column;">
-          <label for="name">Company name</label>
-          <input
-            type="text"
-            id="name"
-            formControlName="name"
-            class="form-control"
-            autocomplete="off" />
-          <span 
-            *ngIf="inputValidation('name')"
-          >
+<div class="backdrop" ></div>
+<div class="alert-box-wraper">
+  <div class="alert-box">
+    
+    <ng-template [ngIf]="isAddCompay() || isEditCompay()">
+      <div class="box-title"><h1>{{ title }}</h1></div>
+      <span class="loader" *ngIf="isLoading else regForm"></span>
+
+      <ng-template #regForm>
+        <div class="error-box" *ngIf="message && lastMessage !== message">{{ message }}</div>
+        <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
+          <div style="display:flex;flex-direction:column;">
+            <label for="name">Company name</label>
+            <input
+              type="text"
+              id="name"
+              formControlName="name"
+              class="form-control"
+              autocomplete="off" />
             <span 
-              *ngIf="checkInvalid('required', 'name'); else break1"
-            >Please enter a valid name</span>
-            <br #break1 />
-          </span>
-          <label for="description">Description</label>
-          <textarea
-            id="description"
-            formControlName="description"
-            rows="3"
-            cols="50" 
-          ></textarea>
-          <span *ngIf="inputValidation('description')">
+              *ngIf="inputValidation('name')"
+            >
+              <span 
+                *ngIf="checkInvalid('required', 'name'); else break1"
+              >Please enter a valid name</span>
+              <br #break1 />
+            </span>
+            <label for="description">Description</label>
+            <textarea
+              id="description"
+              formControlName="description"
+              rows="3"
+              cols="50" 
+            ></textarea>
+            <span *ngIf="inputValidation('description')">
+              <span 
+                *ngIf="checkInvalid('required', 'description'); else break2"
+              >Please enter a brief description</span>
+              <br #break2 />
+            </span>
+          </div>
+          <div class="alert-box-actions">
+            <button type="submit" class="button" [disabled]="!formGroup.valid">{{ isAddCompay() ? 'Create' : 'Edit' }}</button>
+            <button class="button" (click)="onClose()">Cancel</button>
+          </div>
+        </form>
+      </ng-template>
+    </ng-template>
+
+
+    <ng-template [ngIf]="isAddImage()">
+      <div class="box-title"><h1>{{ title }}</h1></div>
+      <span class="loader" *ngIf="isLoading else regForm"></span>
+
+      <ng-template #regForm>
+        <div class="error-box" *ngIf="message && lastMessage !== message">{{ message }}</div>
+        <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
+          <div style="display:flex;flex-direction:column;">
+            <label for="image">Gallery image</label>
+            <!-- [ngClass]="{ 'is-invalid': submitted && f.image.errors }"  -->
+            <input 
+              type="file" 
+              class="form-control" 
+              id="UploadimgControlInput" 
+              formControlName="image" 
+              name="image" 
+              (change)="uploadImage($event)" 
+              [ngClass]="{ 'is-invalid': submitted && f.image.errors }" 
+              placeholder="Upload Image">
             <span 
-              *ngIf="checkInvalid('required', 'description'); else break2"
-            >Please enter a brief description</span>
-            <br #break2 />
-          </span>
+              *ngIf="inputValidation('image')"
+            >
+              <span 
+                *ngIf="checkInvalid('required', 'image'); else break1"
+              >Image is required</span>
+              <br #break1 />
+            </span>
+          </div>
+          <div class="alert-box-actions">
+            <button type="submit" class="button" [disabled]="!formGroup.valid">{{ isAddImage() ? 'Add' : 'Edit' }}</button>
+            <button class="button" (click)="onClose()">Cancel</button>
+          </div>
+        </form>
+      </ng-template>
+    </ng-template>
+
+    <ng-template [ngIf]="isShowImage()">
+      <!-- <div class="box-title"><h1>{{ title }}</h1></div> -->
+      <span class="loader" *ngIf="isLoading else regForm"></span>
+
+      <ng-template #regForm>
+        <div class="error-box" *ngIf="message && lastMessage !== message">{{ message }}</div>
+
+        <div style="display: flex; flex-direction: row; justify-content: space-between">
+          <div style="display: flex; justify-content: center; width: 50%;">
+            <img class="shadow" [cacheSrc]="link + 'image/' + imageData?.hash" [alt]="imageData?.name" style="max-width: 95%; max-height: 300px;"/>
+          </div>
+          <div class="image-contents" style="display: flex; flex-direction: column;">
+            <h3>Name</h3>
+            <p>{{imageData?.name}}</p>
+            <h3>Type</h3>
+            <p>{{imageData?.type}}</p>
+          </div>
         </div>
         <div class="alert-box-actions">
-          <button type="submit" class="button" [disabled]="!formGroup.valid">{{ isAddCompay() ? 'Create' : 'Edit' }}</button>
-          <button class="button" (click)="onClose()">Cancel</button>
+          <button class="button" (click)="onDeleteImage()">Delete</button>
+          <button class="button" (click)="onClose()">Close</button>
         </div>
-      </form>
+      </ng-template>
     </ng-template>
-  </ng-template>
 
-  <!-- <ng-template [ngIf]="isAddCompay()">
-    <p>{{ message }}</p>
-    <div class="alert-box-actions">
-      <button class="btn btn-primary" (click)="onClose()">Close</button>
-    </div>
-  </ng-template> -->
 
+    <ng-template [ngIf]="confirmWindow">
+      <div class="backdrop"></div>
+      <div class="alert-box-wraper">
+        <div class="alert-box">
+          <div class="box-title"><h1>Delete image</h1></div>
+
+          <p>Are you sure you want to permanently delete <b>{{confirmMessage}}</b> ?</p>
+
+          <p>To confirm deletion, type <b>delete</b> in the field below:</p>
+          <input type="text" placeholder="delete" [(ngModel)]="confirmField"/>
+
+          <div class="alert-box-actions">
+            <button class="button" (click)="onConfirmDeleteImage()" [disabled]="confirmField !== 'delete'">Delete</button>
+            <button class="button" (click)="onClose()">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </ng-template>
+
+
+    <ng-template [ngIf]="isRemoveItemImage()">
+      <div class="box-title"><h1>Remove image</h1></div>
+
+      <p>Are you sure you want to remove an image for the item <b>{{confirmMessage}}</b>?</p>
+
+      <div class="alert-box-actions">
+        <button class="button" (click)="onRemoveItemImage()">Remove</button>
+        <button class="button" (click)="onClose()">Cancel</button>
+      </div>
+    </ng-template>
+
+    <ng-template [ngIf]="isUpdateItemImage()">
+      <div class="box-title"><h1 style="margin:0">Select image</h1></div>
+      
+      <input type="text" placeholder="filter" [(ngModel)]="confirmField"/>
+
+      <div class="w-gallery-table">
+        <ng-container *ngFor="let image of onFilter()">
+          <div class="w-gallery-cell-container" [ngClass]="{'w-gallery-cell-selected': checkedImageId === image?.id}">
+            <!-- [ngStyle]="{'background-image': 'url(' + link + 'image/' + image?.hash + ')'}" -->
+            <div 
+              class="w-gallery-cell-background"
+              [cacheSrc]="link + 'image/' + image?.hash"
+            ></div>
+            <div
+              class="w-gallery-cell "
+              (click)="checkedImageId = image?.id"
+            >
+              <img [cacheSrc]="link + 'image/' + image?.hash" [alt]="image?.name" class="disable-blur" loading="lazy"/>
+              <div class="w-gallery-cell-overlay">
+                <div class="w-gallery-cell-overlay-text">{{image?.name}}</div>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+      
+      <div class="alert-box-actions">
+        <button class="button" (click)="onSetItemImage()" [disabled]="checkedImageId === -1">Check out</button>
+        <button class="button" (click)="onClose()">Cancel</button>
+      </div>
+    </ng-template>
+
+    <ng-template [ngIf]="isAddSupplier() || isAddLocation()">
+      <div class="box-title">
+        <h1 style="margin:0">Add {{ isAddLocation() ? "Location" : "Supplier"}}</h1>
+      </div>
+      <span class="loader" *ngIf="isLoading else regSupplier"></span>
+
+      <ng-template #regSupplier>  
+        <div class="error-box" *ngIf="error"><b>Error:</b>{{ error?.status }} <b>Message:</b>{{ error?.error?.error }}</div>
+        <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
+          <div style="display:flex;flex-direction:column;">
+            <label for="name">{{ isAddLocation() ? "Location" : "Supplier"}} name</label>
+            <input
+              type="text"
+              id="name"
+              formControlName="name"
+              class="form-control"
+              autocomplete="off" />
+            <span *ngIf="inputValidation('name')">
+              <span 
+                *ngIf="checkInvalid('required', 'name'); else break1"
+              >Please enter a valid name</span>
+              <br #break1 />
+            </span>
+
+            <label for="street_and_number">Street</label>
+            <input
+              type="text"
+              id="street_and_number"
+              formControlName="street_and_number"
+              class="form-control"
+              autocomplete="off" 
+            />
+
+            <label for="city_or_town">City/Town</label>
+            <input
+              type="text"
+              id="city_or_town"
+              formControlName="city_or_town"
+              class="form-control"
+              autocomplete="off" 
+            />
+            
+            <label for="country">Country</label>
+            <select name="country" id="country" formControlName="country_code">
+              <option *ngFor="let country of countries | keyvalue" [ngValue]="country.key">
+                {{ country.value }}
+              </option>
+            </select>
+
+            <label for="postal_code">Postal code</label>
+            <input
+              type="text"
+              id="postal_code"
+              formControlName="postal_code"
+              class="form-control"
+              autocomplete="off" 
+            />
+
+            <label for="phone_number">Phone number</label>
+            <input
+              type="text"
+              id="phone_number"
+              formControlName="phone_number"
+              class="form-control"
+              autocomplete="off" 
+            />
+
+            <label for="phone_number_two">Phone number 2</label>
+            <input
+              type="text"
+              id="phone_number_two"
+              formControlName="phone_number_two"
+              class="form-control"
+              autocomplete="off" 
+            />
+
+            <ng-template [ngIf]="isAddSupplier()">
+              <label for="website">Website</label>
+              <input
+                type="text"
+                id="website"
+                formControlName="website"
+                class="form-control"
+                autocomplete="off" 
+              />
+            </ng-template>
+
+            <label for="description">Description</label>
+            <textarea
+              id="description"
+              formControlName="description"
+              rows="3"
+              cols="50" 
+            ></textarea>
+
+          </div>
+          <div class="alert-box-actions">
+            <button type="submit" class="button" [disabled]="!formGroup.valid">Create</button>
+            <button class="button" (click)="onClose()">Cancel</button>
+          </div>
+        </form>
+      </ng-template>
+    </ng-template>
+
+    <!-- <ng-template [ngIf]="isAddCompay()">
+      <p>{{ message }}</p>
+      <div class="alert-box-actions">
+        <button class="btn btn-primary" (click)="onClose()">Close</button>
+      </div>
+    </ng-template> -->
+
+  </div>
 </div>

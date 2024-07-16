@@ -1,7 +1,237 @@
-<h1 class="w-title">Suppliers</h1>
+<app-alert
+  *ngIf="alertOpen"
+  [isLoadig]="isLoading"
+  [preset]="alertPreset"
+  [message]="error"
+  [error]="errorResponse"
+  (close)="onCloseAlert()"
+  (addSupplier)="onAddSupplier($event)"
+></app-alert>
+
+<div style="margin-left: 1rem">
+  <div class="w-title-bar">
+    <h1 class="w-title">Suppliers</h1>
+    <span *ngIf="isLoading" class="loader-round"></span>
+  </div>
+
+  <div>
+    <button
+      class="button-42" 
+      (click)="onClickAddBtn()"
+    >Add Row</button>
+
+    <button 
+      class="button-42" 
+      (click)="onClickRemoveBtn()"
+      [disabled]="company?.suppliers?.length === 0"
+    >Delete Row</button>
+  </div>
+</div>
 
 <h1 class="w-empty" *ngIf="company?.suppliers?.length === 0 else view">No suppliers created yet</h1>
 
 <ng-template #view>
 
+  <div class="w-table-container">
+    <table class="workspace-table">
+      <thead>
+        <tr>
+          <th *ngIf="removeButtonActive">
+            <mat-icon>delete</mat-icon>
+          </th>
+          <th>name</th>
+          <th>street</th>
+          <th>city/town</th>
+          <th>country</th>
+          <th>postal code</th>
+          <th>phone 1</th>
+          <th>phone 2</th>
+          <th>website</th>
+          <th>description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let supplier of suppliers; let i = index">
+          <td *ngIf="removeButtonActive">
+            <input 
+              type="checkbox" 
+              id="r{{i}}" 
+              name="remove" 
+              class="ws-check-box"
+              (change)="onCheckboxChange($event, supplier?.id)"/>
+          </td>
+
+          <td 
+            [ngClass]="{'cell-edit-border': cellEditMode[i + '-0']}"
+            (click)="doubleClickCell(i,0)"
+          >
+            <div
+              [id]="i + '-0'"
+              *ngIf="!cellEditMode[i + '-0']"
+              >{{ supplier?.name }}</div>
+            <span
+              [id]="i + '-0f'"
+              *ngIf="cellEditMode[i + '-0']" 
+              [(inputValue)]="tempCellValue"
+              (clickOutside)="onClickOutsideCell(i + '-0')"
+              (keydown.enter)="updateCellValue(i, 0)"
+              contenteditable
+            ></span>
+          </td>
+
+          <td 
+            [ngClass]="{'cell-edit-border': cellEditMode[i + '-1']}"
+            (click)="doubleClickCell(i,1)"
+          >
+            <div
+              [id]="i + '-1'"
+              *ngIf="!cellEditMode[i + '-1']"
+              >{{ supplier?.street_and_number }}</div>
+            <span
+              [id]="i + '-1f'"
+              *ngIf="cellEditMode[i + '-1']" 
+              [(inputValue)]="tempCellValue"
+              (clickOutside)="onClickOutsideCell(i + '-1')"
+              (keydown.enter)="updateCellValue(i, 1)"
+              contenteditable
+            ></span>
+          </td>
+
+          <td 
+            [ngClass]="{'cell-edit-border': cellEditMode[i + '-2']}"
+            (click)="doubleClickCell(i,2)"
+          >
+            <div
+              [id]="i + '-2'"
+              *ngIf="!cellEditMode[i + '-2']"
+              >{{ supplier?.city_or_town }}</div>
+            <span
+              [id]="i + '-2f'"
+              *ngIf="cellEditMode[i + '-2']" 
+              [(inputValue)]="tempCellValue"
+              (clickOutside)="onClickOutsideCell(i + '-2')"
+              (keydown.enter)="updateCellValue(i, 2)"
+              contenteditable
+            ></span>
+          </td>
+
+          <td 
+            [ngClass]="{'cell-edit-border': cellEditMode[i + '-3']}"
+            (click)="doubleClickCell(i,3)"
+          >
+            <div
+              [id]="i + '-3'"
+              *ngIf="!cellEditMode[i + '-3']"
+              >{{ supplier?.country_code }}</div>
+            <span
+              [id]="i + '-3f'"
+              *ngIf="cellEditMode[i + '-3']" 
+              [(inputValue)]="tempCellValue"
+              (clickOutside)="onClickOutsideCell(i + '-3')"
+              (keydown.enter)="updateCellValue(i, 3)"
+              contenteditable
+            ></span>
+          </td>
+
+          <td 
+            [ngClass]="{'cell-edit-border': cellEditMode[i + '-4']}"
+            (click)="doubleClickCell(i,4)"
+          >
+            <div
+              [id]="i + '-4'"
+              *ngIf="!cellEditMode[i + '-4']"
+              >{{ supplier?.postal_code }}</div>
+            <span
+              [id]="i + '-4f'"
+              *ngIf="cellEditMode[i + '-4']" 
+              [(inputValue)]="tempCellValue"
+              (clickOutside)="onClickOutsideCell(i + '-4')"
+              (keydown.enter)="updateCellValue(i, 4)"
+              contenteditable
+            ></span>
+          </td>
+
+          <td 
+            [ngClass]="{'cell-edit-border': cellEditMode[i + '-5']}"
+            (click)="doubleClickCell(i,5)"
+          >
+            <div
+              [id]="i + '-5'"
+              *ngIf="!cellEditMode[i + '-5']"
+              >{{ supplier?.phone_number }}</div>
+            <span
+              [id]="i + '-5f'"
+              *ngIf="cellEditMode[i + '-5']" 
+              [(inputValue)]="tempCellValue"
+              (clickOutside)="onClickOutsideCell(i + '-5')"
+              (keydown.enter)="updateCellValue(i, 5)"
+              contenteditable
+            ></span>
+          </td>
+
+          <td 
+            [ngClass]="{'cell-edit-border': cellEditMode[i + '-6']}"
+            (click)="doubleClickCell(i,6)"
+          >
+            <div
+              [id]="i + '-6'"
+              *ngIf="!cellEditMode[i + '-6']"
+              >{{ supplier?.phone_number_two }}</div>
+            <span
+              [id]="i + '-6f'"
+              *ngIf="cellEditMode[i + '-6']" 
+              [(inputValue)]="tempCellValue"
+              (clickOutside)="onClickOutsideCell(i + '-6')"
+              (keydown.enter)="updateCellValue(i, 6)"
+              contenteditable
+            ></span>
+          </td>
+
+          <td 
+            [ngClass]="{'cell-edit-border': cellEditMode[i + '-7']}"
+            (click)="doubleClickCell(i,7)"
+          >
+            <div
+              [id]="i + '-7'"
+              *ngIf="!cellEditMode[i + '-7']"
+              >{{ supplier?.website }}</div>
+            <span
+              [id]="i + '-7f'"
+              *ngIf="cellEditMode[i + '-7']" 
+              [(inputValue)]="tempCellValue"
+              (clickOutside)="onClickOutsideCell(i + '-7')"
+              (keydown.enter)="updateCellValue(i, 7)"
+              contenteditable
+            ></span>
+          </td>
+
+          <td 
+            [ngClass]="{'cell-edit-border': cellEditMode[i + '-8']}"
+            (click)="doubleClickCell(i,8)"
+          >
+            <div
+              [id]="i + '-8'"
+              *ngIf="!cellEditMode[i + '-8']"
+              >{{ supplier?.description }}</div>
+            <span
+              [id]="i + '-8f'"
+              *ngIf="cellEditMode[i + '-8']" 
+              [(inputValue)]="tempCellValue"
+              (clickOutside)="onClickOutsideCell(i + '-8')"
+              (keydown.enter)="updateCellValue(i, 8)"
+              contenteditable
+            ></span>
+          </td>
+
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </ng-template>
+
+<button
+  *ngIf="removeButtonActive"
+  class="button-42" 
+  [disabled]="isLoading || suppliersToDelete.size < 1"
+  (click)="onRemoveRows()"
+>Submit Removal</button>

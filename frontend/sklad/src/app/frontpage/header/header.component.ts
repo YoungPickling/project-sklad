@@ -6,11 +6,18 @@ import { ClickOutsideDirective } from '../../shared/directives/clickOutside.dire
 import { AuthService } from '../login/auth.service';
 import { Subscription } from 'rxjs';
 import { environment } from '../../../environments/environment';
+import { ImageCacheDirective } from '../../shared/directives/image.directive';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [CommonModule, RouterModule, MatIconModule, ClickOutsideDirective],
+  imports: [
+    CommonModule, 
+    RouterModule, 
+    MatIconModule, 
+    ClickOutsideDirective,
+    ImageCacheDirective
+  ],
   templateUrl: './header.component.html',
   styleUrl: './header.component.css'
 })

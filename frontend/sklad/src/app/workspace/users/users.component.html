@@ -1,6 +1,11 @@
-<h1 class="w-title">Users</h1>
-
+<div style="margin-left: 1rem">
+  <div class="w-title-bar">
+    <h1 class="w-title">Users</h1>
+    <span *ngIf="isLoading" class="loader-round"></span>
+  </div>
+</div>
 <h1 class="w-empty" *ngIf="company?.user?.length === 0 else view">No users in this company</h1>
+
 
 <ng-template #view>
 

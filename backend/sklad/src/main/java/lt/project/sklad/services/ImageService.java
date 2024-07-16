@@ -11,29 +11,33 @@ import lt.project.sklad.entities.Company;
 import lt.project.sklad.entities.Image;
 import lt.project.sklad.repositories.CompanyRepository;
 import lt.project.sklad.repositories.ImageRepository;
+import lt.project.sklad.repositories.ItemRepository;
 import lt.project.sklad.utils.HashUtils;
 import lt.project.sklad.utils.ImageUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import static org.springframework.http.HttpStatus.*;
 
 @Service
+@RequiredArgsConstructor
 public class ImageService {
-    @Autowired private ImageRepository imageRepository;
-    @Autowired private UserRepository userRepository;
-    @Autowired private CompanyRepository companyRepository;
-    @Autowired private TokenService tokenService;
-    @Autowired private MessagingUtils msgUtils;
-    @Autowired private ImageUtils imgUtils;
-    @Autowired private HashUtils hashUtils;
+    private final ItemRepository itemRepository;
+    private final ImageRepository imageRepository;
+    private final UserRepository userRepository;
+    private final CompanyRepository companyRepository;
+    private final TokenService tokenService;
+    private final MessagingUtils msgUtils;
+    private final ImageUtils imgUtils;
+    private final HashUtils hashUtils;
 
     Logger logger = LoggerFactory.getLogger(ImageService.class);
 
@@ -99,6 +103,7 @@ public class ImageService {
                     .imageData(compressedImage)
                     .compressedSize(compressedImage.length)
                     .ownedByCompany(company)
+                    .date( LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) )
                     .build());
 
             if (image == null)
@@ -131,30 +136,30 @@ public class ImageService {
 
         if (image == null)
             return msgUtils.error(NOT_FOUND, "Image not found");
+        /*
+        Company company = image.getOwnedByCompany();
 
-//        Company company = image.getOwnedByCompany();
-//
-//        if (company != null) {
-//            String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-//
-//            if (msgUtils.isBearer(authHeader))
-//                return msgUtils.error(UNAUTHORIZED, "Bad credentials");
-//
-//            String jwt = authHeader.substring(7);
-//            Token token = tokenService.findByToken(jwt).orElse(null);
-//
-//            if (token == null)
-//                return msgUtils.error(UNAUTHORIZED, "Token not found");
-//
-//            final User user = userRepository.findById(token.getUser().getId()).orElse(null);
-//
-//            if (user == null) {
-//                return msgUtils.error(NOT_FOUND, "User not found");
-//            }
-//
-//            if ( user.getCompany().stream().noneMatch(c -> c.getId().equals( company.getId() )) )
-//                return msgUtils.error(UNAUTHORIZED, "Access denied");
-//        }
+        if (company != null) {
+            String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+
+            if (msgUtils.isBearer(authHeader))
+                return msgUtils.error(UNAUTHORIZED, "Bad credentials");
+
+            String jwt = authHeader.substring(7);
+            Token token = tokenService.findByToken(jwt).orElse(null);
+
+            if (token == null)
+                return msgUtils.error(UNAUTHORIZED, "Token not found");
+
+            final User user = userRepository.findById(token.getUser().getId()).orElse(null);
+
+            if (user == null) {
+                return msgUtils.error(NOT_FOUND, "User not found");
+            }
+
+            if ( user.getCompany().stream().noneMatch(c -> c.getId().equals( company.getId() )) )
+                return msgUtils.error(UNAUTHORIZED, "Access denied");
+        }*/
 
         byte[] result = imgUtils.decompressImage(image.getImageData());
         return ResponseEntity.status(HttpStatus.OK)
@@ -198,6 +203,8 @@ public class ImageService {
 
         if(company == null)
             return msgUtils.error(FORBIDDEN, "Company not found");
+
+        itemRepository.setImageIdToNull(image.getId());
 
         company.getImageData().remove(image);
         imageRepository.delete(image);

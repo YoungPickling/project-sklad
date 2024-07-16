@@ -12,11 +12,18 @@ import { environment } from '../../../environments/environment';
 import { Company } from '../../shared/models/company.model';
 import { BriefUserModel } from '../login/briefUser.model';
 import { Router, RouterModule } from '@angular/router';
+import { ImageCacheDirective } from '../../shared/directives/image.directive';
 
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [CommonModule, ShortenPipe, MatIconModule, AlertComponent],
+  imports: [
+    CommonModule, 
+    ShortenPipe, 
+    MatIconModule, 
+    AlertComponent,
+    ImageCacheDirective
+  ],
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.css'
 })
@@ -81,7 +88,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
     this.alertOpen = true;
   }
 
-  onAddCompany($event: {name: string, description: string}) {
+  onAddCompany(event: {name: string, description: string}) {
     this.isLoading = true;
 
     const userBriefData: BriefUserModel = JSON.parse(localStorage.getItem('userBriefData'));
@@ -92,7 +99,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
     this.http.post<Company>(
       environment.API_SERVER + '/api/rest/v1/secret/company',
-      $event,
+      event,
       {
         headers: {
           "Authorization": `Bearer ${userBriefData.token}`
@@ -115,7 +122,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
     );
   }
 
-  onEditCompany($event: {name: string, description: string}) {
+  onEditCompany(event: {name: string, description: string}) {
     this.isLoading = true;
     const userBriefData: BriefUserModel = JSON.parse(localStorage.getItem('userBriefData'));
 
@@ -123,7 +130,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const body = {name: $event.name, description: $event.description};
+    const body = {name: event.name, description: event.description};
 
     this.http.put<Company>(
       environment.API_SERVER + '/api/rest/v1/secret/company/' + this.companyForEdit.id,

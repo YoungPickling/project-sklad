@@ -40,6 +40,9 @@ public class Image {
     @Column(nullable = false)
     private Integer compressedSize;
 
+    @Column(nullable = false)
+    private String date;
+
     /**
      * Company that owns this Image.
      * Made to display everything in

@@ -9,6 +9,8 @@ import lt.project.sklad.services.SupplierService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/rest/v1/secret/supplier")
 @RequiredArgsConstructor
@@ -24,28 +26,22 @@ public class SupplierController {
     ) {
         return supplierService.createSupplier(companyId, supplier, request);
     }
+    
+    @PutMapping("/{companyId}")
+    public ResponseEntity<?> updateSupplier(
+            @PathVariable @NotNull long companyId,
+            @Valid @RequestBody Supplier supplier,
+            HttpServletRequest request
+    ) {
+        return supplierService.updateSupplier(companyId, supplier, request);
+    }
 
-//    @GetMapping("/{itemId}")
-//    public ResponseEntity<?> readSupplier(
-//            @PathVariable @NotNull long itemId,
-//            HttpServletRequest request
-//    ) {
-//        return supplierService.readSupplier(itemId, request);
-//    }
-//
-//    @PutMapping("/{itemId}")
-//    public ResponseEntity<?> updateSupplier(
-//            @PathVariable @NotNull long itemId,
-//            HttpServletRequest request
-//    ) {
-//        return supplierService.updateSupplier(itemId, request);
-//    }
-//
-//    @DeleteMapping("/{itemId}")
-//    public ResponseEntity<?> deleteSupplier(
-//            @PathVariable @NotNull long itemId,
-//            HttpServletRequest request
-//    ) {
-//        return supplierService.deleteSupplier(itemId, request);
-//    }
+    @DeleteMapping("/{companyId}")
+    public ResponseEntity<?> deleteSupplier(
+            @PathVariable @NotNull long companyId,
+            @RequestParam("delete") @NotNull List<Long> suppliers,
+            HttpServletRequest request
+    ) {
+        return supplierService.deleteSuppliers(companyId, suppliers, request);
+    }
 }

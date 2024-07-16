@@ -5,21 +5,26 @@ import lombok.RequiredArgsConstructor;
 import lt.project.sklad._security.entities.Token;
 import lt.project.sklad._security.entities.User;
 import lt.project.sklad._security.repositories.UserRepository;
-import lt.project.sklad._security.services.HttpResponseService;
 import lt.project.sklad._security.services.TokenService;
 import lt.project.sklad._security.utils.MessagingUtils;
 import lt.project.sklad.entities.Company;
+import lt.project.sklad.entities.Image;
 import lt.project.sklad.entities.Item;
 import lt.project.sklad.entities.ItemColumn;
 import lt.project.sklad.repositories.CompanyRepository;
+import lt.project.sklad.repositories.ImageRepository;
 import lt.project.sklad.repositories.ItemColumnRepository;
 import lt.project.sklad.repositories.ItemRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -35,12 +40,14 @@ import static org.springframework.http.HttpStatus.*;
 public class ItemService {
     private final ItemRepository itemRepository;
     private final ItemColumnRepository itemColumnRepository;
-    private final HttpResponseService responseService;
     private final CompanyRepository companyRepository;
     private final UserRepository userRepository;
     private final TokenService tokenService;
     private final MessagingUtils msgUtils;
+    private final ImageRepository imageRepository;
     // TODO ItemService methods
+
+    private static Logger logger = LoggerFactory.getLogger(ItemService.class);
 
     @Transactional
     public ResponseEntity<?> createItem(
@@ -68,12 +75,23 @@ public class ItemService {
         if (!company.getUser().contains(token.getUser()))
             return msgUtils.error(FORBIDDEN, "Access denied");
 
+        Image image = null;
+
+        if (item.getImage() != null) {
+            Image tempImage = imageRepository.findByHash(item.getImage().getHash()).orElse(null);
+
+            if(tempImage != null && company.getId() == tempImage.getOwnedByCompany().getId()) {
+                image = tempImage;
+            }
+        }
+
         // Inserting new item
 
         Item resultItem = itemRepository.save(
                 new Item(
                         item.getCode(),
                         item.getName(),
+                        image,
                         item.getColor(),
                         item.getDescription(),
                         company
@@ -136,6 +154,7 @@ public class ItemService {
         return msgUtils.error(NOT_FOUND, "You don't have access to the company");
     }
 
+    @Transactional
     public ResponseEntity<?> updateItem(
             final Long itemId,
             final Item item,
@@ -175,13 +194,105 @@ public class ItemService {
             return msgUtils.error(FORBIDDEN, "You don't have access to the company");
         }
 
+        // Validating Image
+        if (item.getImage() != null) {
+            Image existingImage = imageRepository.findById(item.getImage().getId()).orElse(null);
+            // set new image if it exists in a gallery and owned by a company
+            if (existingImage != null &&
+                    user.getCompany().stream()
+                            .anyMatch(company -> company.getId().equals(existingImage.getOwnedByCompany().getId()))) {
+                itemOld.setImage(existingImage);
+            } else {
+                return msgUtils.error(BAD_REQUEST, "Image not found or not authorized");
+            }
+        } else {
+            // delete image if not provided
+            itemOld.setImage(null);
+        }
+
+        // clear duplicate columns in both items
+        deleteDuplicateColumns(item);
+        deleteDuplicateColumns(itemOld);
+
+//        List<Long> columns = new ArrayList<>();
+//        for(ItemColumn oldColumn : itemOld.getColumns()) {
+        Iterator<ItemColumn> oldColumnIterator = itemOld.getColumns().iterator();
+
+        while (oldColumnIterator.hasNext()) {
+            ItemColumn oldColumn = oldColumnIterator.next();
+            boolean contains = false;
+            for(ItemColumn newColumn : item.getColumns()) {
+                if (newColumn.getName().equals(oldColumn.getName())) {
+                    contains = true;
+                    break;
+                }
+            }
+            oldColumnIterator.remove();
+        }
+
+        if (itemOld == null)
+            return msgUtils.error(NOT_FOUND, "Error in updating items");
+
+        // Validating custom columns
+        if (item.getColumns() != null) {
+            if (itemOld.getColumns() == null) {
+                for (int i = 0; i < item.getColumns().size(); i++) {
+                    ItemColumn itemColumn = itemColumnRepository.save(
+                            new ItemColumn(
+                                    item.getColumns().get(i).getName(),
+                                    itemOld,
+                                    item.getColumns().get(i).getValue(),
+                                    item.getColumns().get(i).getColor(),
+                                    item.getColumns().get(i).getWidth()
+                            )
+                    );
+                    itemOld.getColumns().add(itemColumn);
+                }
+            } else {
+                for (ItemColumn newItemColumn : item.getColumns()) {
+                    boolean isUpdated = false;
+                    Iterator<ItemColumn> existingIterator = itemOld.getColumns().iterator();
+
+                    while (existingIterator.hasNext()) {
+                        ItemColumn existingColumn = existingIterator.next();
+                        if (existingColumn.getName().equals(newItemColumn.getName())) {
+                            if (!newItemColumn.getValue().isBlank()) {
+                                existingColumn.setValue(newItemColumn.getValue());
+                                existingColumn.setColor(newItemColumn.getColor());
+                                existingColumn.setWidth(newItemColumn.getWidth());
+                            } else {
+                                existingIterator.remove();
+                                logger.info("Removed - " + existingColumn.getName());
+                            }
+                            isUpdated = true;
+                            break;
+                        }
+                    }
+                    if (!isUpdated) {
+                        ItemColumn savedColumn = itemColumnRepository.save(
+                                new ItemColumn(
+                                        newItemColumn.getName(),
+                                        itemOld,
+                                        newItemColumn.getValue(),
+                                        newItemColumn.getColor(),
+                                        newItemColumn.getWidth()
+                                )
+                        );
+                        itemOld.getColumns().add(savedColumn);
+                    }
+                }
+            }
+        } else {
+            itemOld.getColumns().clear();
+        }
+
         itemOld.setCode(item.getCode());
         itemOld.setName(item.getName());
         itemOld.setDescription(item.getDescription());
 
         itemRepository.save(itemOld);
 
-        return ResponseEntity.ok().body(item);
+        return ResponseEntity.ok().body(itemOld);
     }
 
     @Transactional
@@ -244,5 +355,20 @@ public class ItemService {
         }
 
         return ResponseEntity.ok().body(items);
+    }
+
+    private void deleteDuplicateColumns(Item item) {
+        Iterator<ItemColumn> iterator = item.getColumns().iterator();
+        List<String> names = new ArrayList<>();
+
+        while (iterator.hasNext()) {
+            ItemColumn existingColumn = iterator.next();
+            if (names.contains(existingColumn.getName()) || existingColumn.getValue().isBlank()) {
+                logger.info("Removing - " + existingColumn.getName());
+                iterator.remove();
+            } else {
+                names.add(existingColumn.getName());
+            }
+        }
     }
 }

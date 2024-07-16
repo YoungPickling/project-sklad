@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, HostListener, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
 import { MatIconModule} from '@angular/material/icon';
 import { ActivatedRoute, NavigationEnd, Params, Router, RouterModule, RouterOutlet } from '@angular/router';
 import { Subscription, filter } from 'rxjs';
@@ -8,6 +8,7 @@ import { Company } from '../shared/models/company.model';
 import { AuthService } from '../frontpage/login/auth.service';
 import { ClickOutsideDirective } from '../shared/directives/clickOutside.directive';
 import { environment } from '../../environments/environment';
+import { ImageCacheDirective } from '../shared/directives/image.directive';
 
 @Component({
   selector: 'app-workspace',
@@ -17,7 +18,8 @@ import { environment } from '../../environments/environment';
     RouterModule,
     RouterOutlet, 
     MatIconModule,
-    ClickOutsideDirective
+    ClickOutsideDirective,
+    ImageCacheDirective
   ],
   providers: [WorkspaceService],
   templateUrl: './workspace.component.html',
@@ -173,6 +175,43 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
     const breadcrumb = ["Home", ...relevantSegments];
     // Join segments with a delimiter of your choice, e.g., ' > '
     return breadcrumb.join(" > ");
+  }
+
+  @HostListener('document:keydown', ['$event'])
+  handleKeyboardEvent(event: KeyboardEvent) {
+
+    if (event.altKey) {
+      switch(event.key) { 
+        case "h": { 
+          this.router.navigate(['/workspace', this.companyId]); 
+          break; 
+        } 
+        case "i": { 
+          this.router.navigate(['/workspace', this.companyId, 'items']); 
+          break; 
+        } 
+        case "s": { 
+          this.router.navigate(['/workspace', this.companyId, 'suppliers']);
+          break; 
+        } 
+        case "l": { 
+          this.router.navigate(['/workspace', this.companyId, 'locations']); 
+          break; 
+        } 
+        case "u": { 
+          this.router.navigate(['/workspace', this.companyId, 'users']); 
+          break; 
+        } 
+        case "g": { 
+          this.router.navigate(['/workspace', this.companyId, 'gallery']);
+          break; 
+        } 
+        case "b": { 
+          this.sideBarMaximized = !this.sideBarMaximized;
+          break; 
+       } 
+     } 
+    }
   }
 
   // ngAfterViewInit() {
