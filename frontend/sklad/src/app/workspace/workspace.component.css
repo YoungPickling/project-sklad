@@ -586,6 +586,11 @@ header a {
   margin-bottom: none;
 }
 
+.cell-image-context-menu-up {
+  top: unset;
+  bottom: 0px;
+}
+
 /* .workspace-table td > input[type=text]:focus-visible { */
 /* .workspace-table td > span { */
   /* border: none; */
@@ -620,6 +625,7 @@ header a {
   width: calc(100% - 1rem);
   display: flex;
   flex-wrap: wrap;
+  margin-bottom: 2rem;
 }
 
 .w-gallery-cell-container {
@@ -782,4 +788,22 @@ header a {
   color: #666;
   display: flex;
   justify-content: center;
+}
+
+.w-l {
+  margin-left: 1rem;
+}
+
+.w-r {
+  margin-right: 0.2rem;
+}
+
+.w-tag {
+  background-color: rebeccapurple;
+  color: white;
+  font-size:small;
+  padding: 0.15rem 0.4rem;
+  border-radius: 0.6rem;
+  margin: 0 0.2rem 0.2rem 0;
+  width: fit-content;
 }

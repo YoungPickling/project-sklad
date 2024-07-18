@@ -13,7 +13,7 @@
   (setItemImage)="onUpdateItemImage($event)"
 ></app-alert>
 
-<div style="margin-left: 1rem">
+<div class="w-l">
   <div class="w-title-bar">
     <h1 class="w-title">Items</h1>
     <span *ngIf="isLoading" class="loader-round"></span>
@@ -144,26 +144,32 @@
             class="ws-icon-cell"
           >
             <div>
-              <mat-icon style="margin-right: 0.2rem;">warehouse</mat-icon>
+              <mat-icon class="w-r">warehouse</mat-icon>
               {{ location?.name }}
             </div>
           </th>
 
-          <th
+          <!-- <th
             *ngFor="let supplier of company?.suppliers"
             class="ws-icon-cell ws-even-cell"
           >
             <div>
-              <mat-icon style="margin-right: 0.2rem;">local_shipping</mat-icon>
+              <mat-icon class="w-r">local_shipping</mat-icon>
               {{ supplier?.name }}
             </div>
+          </th> -->
+
+          <th class="ws-icon-cell ws-even-cell">
+            <div>
+              <mat-icon class="w-r">local_shipping</mat-icon>
+              Suppliers
+            </div>
           </th>
-          <!-- *ngFor="let location of company?.locations" -->
-          <!-- ><mat-icon>warehouse</mat-icon>{{ location }}</th> -->
+
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let item of items; let i = index">
+        <tr *ngFor="let item of items; let i = index; let last = last">
           <td *ngIf="removeButtonActive">
             <input 
               type="checkbox" 
@@ -193,19 +199,22 @@
                 class="cell-empty-image"
                 [cacheSrc]="link + item?.image?.hash"
               ></div>
-              
 
               <div (clickOutside)="onClickOutsideImageContextMenu(i)">
                 <div 
                   title="Change image" 
                   (click)="onOpenImageContext(i)"
                   [ngClass]="{'to-block': rowImageContextMenu[i]}" 
-                  class="cell-image-hover-button" 
+                  class="cell-image-hover-button"
                 >
                   <mat-icon>expand_more</mat-icon>
                 </div>
 
-                <div class="cell-image-context-menu" *ngIf="rowImageContextMenu[i]">
+                <div 
+                  *ngIf="rowImageContextMenu[i]"
+                  class="cell-image-context-menu"
+                  [ngClass]="{'cell-image-context-menu-up': last}"
+                  >
                   <div (click)="onClickSelectImageFromGallery(i)">select from gallery</div>
                   <div *ngIf="item?.image?.hash" (click)="onClickRemoveItemImage(i)">remove</div>
                 </div>
@@ -302,7 +311,7 @@
             ></span>
           </td>
 
-          <td
+          <!-- <td
             *ngFor="let supplier of company?.suppliers; let ii = index"
             (click)="doubleClickCell(i, ii + supplierPostfix)"
             [ngClass]="{'cell-edit-border':cellEditMode[i + '-' + (ii + supplierPostfix)]}"
@@ -319,6 +328,31 @@
               (keydown.enter)="updateCellValue(i, ii + supplierPostfix)"
               contenteditable
             ></span>
+          </td> -->
+
+          <td
+            (click)="doubleClickCell(i, supplierPostfix)"
+            [ngClass]="{'cell-edit-border':cellEditMode[i + '-' +  supplierPostfix]}"
+          >
+            <!-- <div
+              [id]="i + '-' + supplierPostfix"
+              *ngIf="!cellEditMode[i + '-' + supplierPostfix]"
+            ></div> -->
+            <div class="w-tag">
+              2 daugavpils
+            </div>
+            <div class="w-tag">
+              5 berlin
+            </div>
+
+            <span
+              [id]="i + '-' + supplierPostfix + 'f'"
+              *ngIf="cellEditMode[i + '-' + supplierPostfix]" 
+              [(inputValue)]="tempCellValue"
+              (clickOutside)="onClickOutsideCell(i + '-' + supplierPostfix)"
+              (keydown.enter)="updateCellValue(i, supplierPostfix)"
+              contenteditable
+            ></span>
           </td>
 
         </tr>
@@ -327,9 +361,11 @@
   </div>
 </ng-template>
 
-<button
-  *ngIf="removeButtonActive"
-  class="button-42" 
-  [disabled]="isLoading || itemsToDelete.size == 0"
-  (click)="onRemoveRows()"
->Submit Removal</button>
+<div class="w-l">
+  <button
+    *ngIf="removeButtonActive"
+    class="button-42" 
+    [disabled]="isLoading || itemsToDelete.size == 0"
+    (click)="onRemoveRows()"
+  >Submit Removal</button>
+</div>

@@ -8,7 +8,7 @@
   (addSupplier)="onAddSupplier($event)"
 ></app-alert>
 
-<div style="margin-left: 1rem">
+<div class="w-l">
   <div class="w-title-bar">
     <h1 class="w-title">Suppliers</h1>
     <span *ngIf="isLoading" class="loader-round"></span>
@@ -229,9 +229,11 @@
   </div>
 </ng-template>
 
-<button
-  *ngIf="removeButtonActive"
-  class="button-42" 
-  [disabled]="isLoading || suppliersToDelete.size < 1"
-  (click)="onRemoveRows()"
->Submit Removal</button>
+<div class="w-l">
+  <button
+    *ngIf="removeButtonActive"
+    class="button-42" 
+    [disabled]="isLoading || suppliersToDelete.size < 1"
+    (click)="onRemoveRows()"
+  >Submit Removal</button>
+</div>
