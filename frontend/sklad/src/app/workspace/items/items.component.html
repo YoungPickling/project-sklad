@@ -330,29 +330,43 @@
             ></span>
           </td> -->
 
+
+          <!-- <div
+              [id]="i + '-' + supplierPostfix"
+              *ngIf="!cellEditMode[i + '-' + supplierPostfix]"
+            ></div> -->
           <td
             (click)="doubleClickCell(i, supplierPostfix)"
             [ngClass]="{'cell-edit-border':cellEditMode[i + '-' +  supplierPostfix]}"
           >
-            <!-- <div
+            <div 
               [id]="i + '-' + supplierPostfix"
               *ngIf="!cellEditMode[i + '-' + supplierPostfix]"
-            ></div> -->
-            <div class="w-tag">
-              2 daugavpils
+              class="w-tag-space" 
+              >
+              <div 
+                class="w-tag"
+                *ngFor="let supplier of item.suppliers"
+              >
+                {{supplier.name}}
+              </div>
             </div>
-            <div class="w-tag">
-              5 berlin
-            </div>
-
             <span
               [id]="i + '-' + supplierPostfix + 'f'"
-              *ngIf="cellEditMode[i + '-' + supplierPostfix]" 
-              [(inputValue)]="tempCellValue"
+              *ngIf="cellEditMode[i + '-' + supplierPostfix]"
               (clickOutside)="onClickOutsideCell(i + '-' + supplierPostfix)"
-              (keydown.enter)="updateCellValue(i, supplierPostfix)"
-              contenteditable
-            ></span>
+            >
+              <div class="w-tag-space" >
+                <div 
+                  class="w-tag w-cursor"
+                  *ngFor="let supplier of suppliers; let ii = index;"
+                  [ngClass]="{'w-tag-off': !supplierCheckList[supplier.id]} "
+                  (click)="supplierCheckList[supplier.id] = !supplierCheckList[supplier.id]"
+                >
+                  {{supplier.name}}
+                </div>
+              </div>
+            </span>
           </td>
 
         </tr>

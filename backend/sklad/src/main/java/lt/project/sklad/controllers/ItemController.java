@@ -51,4 +51,13 @@
         ) {
             return itemService.deleteItem(items, request);
         }
+
+        @PostMapping("suppliers/{itemId}")
+        public ResponseEntity<?> setItemSuppliers(
+                @PathVariable @NotNull long itemId,
+                @RequestParam("s") @NotNull List<Long> suppliers,
+                HttpServletRequest request
+        ) {
+            return itemService.addItemSupplier(itemId, suppliers, request);
+        }
     }

@@ -7,14 +7,8 @@ import lt.project.sklad._security.entities.User;
 import lt.project.sklad._security.repositories.UserRepository;
 import lt.project.sklad._security.services.TokenService;
 import lt.project.sklad._security.utils.MessagingUtils;
-import lt.project.sklad.entities.Company;
-import lt.project.sklad.entities.Image;
-import lt.project.sklad.entities.Item;
-import lt.project.sklad.entities.ItemColumn;
-import lt.project.sklad.repositories.CompanyRepository;
-import lt.project.sklad.repositories.ImageRepository;
-import lt.project.sklad.repositories.ItemColumnRepository;
-import lt.project.sklad.repositories.ItemRepository;
+import lt.project.sklad.entities.*;
+import lt.project.sklad.repositories.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
@@ -45,6 +39,8 @@ public class ItemService {
     private final TokenService tokenService;
     private final MessagingUtils msgUtils;
     private final ImageRepository imageRepository;
+    private final SupplierRepository supplierRepository;
+
     // TODO ItemService methods
 
     private static Logger logger = LoggerFactory.getLogger(ItemService.class);
@@ -325,7 +321,7 @@ public class ItemService {
         boolean hasAccess = user.getCompany().stream()
                 .anyMatch(userCompany ->
                         foundItems.stream()
-                                .anyMatch(item -> item.getCompany().getName().equals(userCompany.getName()))
+                                .anyMatch(item -> item.getCompany().getId().equals(userCompany.getId()))
                 );
 
         if (!hasAccess) {
@@ -355,6 +351,55 @@ public class ItemService {
         }
 
         return ResponseEntity.ok().body(items);
+    }
+
+    @Transactional
+    public ResponseEntity<?> addItemSupplier(
+        final Long itemId,
+        final List<Long> suppliers,
+        final HttpServletRequest request
+    ) {
+        String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+
+        if (msgUtils.isBearer(authHeader))
+            return msgUtils.error(UNAUTHORIZED, "Bad credentials");
+
+        String jwt = authHeader.substring(7);
+        Token token = tokenService.findByToken(jwt).orElse(null);
+
+        if (token == null)
+            return msgUtils.error(UNAUTHORIZED, "Token not found");
+
+        final User user = userRepository.findById(token.getUser().getId()).orElse(null);
+
+        if (user == null) {
+            return msgUtils.error(NOT_FOUND, "User not found");
+        }
+
+        Item item = itemRepository.findById(itemId).orElse(null);
+
+        if (item == null )
+            return msgUtils.error(NOT_FOUND, "Items not found");
+
+        if (user.getCompany().stream().noneMatch(c -> c.getId().equals(item.getCompany().getId()))) {
+            return msgUtils.error(FORBIDDEN, "Access to the item denied");
+        }
+
+        List<Supplier> foundsuppliers = supplierRepository.findAllById(suppliers);
+
+        if (foundsuppliers == null || foundsuppliers.isEmpty())
+            return msgUtils.error(NOT_FOUND, "Suppliers not found");
+
+        boolean hasAccess = foundsuppliers.stream().anyMatch(
+                s -> s.getOwner().getId().equals(item.getCompany().getId())
+        );
+
+        if (!hasAccess)
+            return msgUtils.error(FORBIDDEN, "Access to the suppliers denied");
+
+        item.setSuppliers(foundsuppliers);
+
+        return ResponseEntity.ok().body(foundsuppliers);
     }
 
     private void deleteDuplicateColumns(Item item) {

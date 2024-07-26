@@ -12,7 +12,7 @@
         </div>
       </div>
 
-      <li class="frontpage-navigation-buttons" style="min-width:4rem;align-items: center;flex-direction: row;">
+      <li class="frontpage-navigation-buttons" style="min-width:4rem;flex-direction: row;">
         <ng-template [ngIf]="isLoggedIn">
           <a [routerLink]="['/profile']" *ngIf="userImageHash.length === 0; else profilePicture">
             <div class="frontpage-icon">

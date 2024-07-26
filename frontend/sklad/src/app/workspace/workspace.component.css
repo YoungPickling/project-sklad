@@ -4,7 +4,7 @@ html {
 }
 
 .workspace-page {
-  overflow: hidden;
+  position: fixed;
   margin: 0;
   width: 100vw;
   height: 100svh;
@@ -18,7 +18,7 @@ html {
   height: 4.5rem;
   display: flex;
   justify-content: space-between;
-  flex: 1 0;
+  flex: 1 0 auto;
   flex-wrap: nowrap;
   flex-direction: row;
   /* height: var(--header-height); */
@@ -74,7 +74,7 @@ html {
   border-bottom: 1px solid #0000;
 }
 
-.w-max .w-max-element {
+.w-max .w-max-element, .w-cursor {
   cursor: pointer;
 }
 
@@ -798,12 +798,31 @@ header a {
   margin-right: 0.2rem;
 }
 
+.w-tag-space {
+  display: flex;
+  max-height: 3.2rem;
+  width: max-content;
+  flex-wrap: wrap;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+  align-content: stretch;
+}
+
 .w-tag {
   background-color: rebeccapurple;
   color: white;
-  font-size:small;
+  font-size: small;
   padding: 0.15rem 0.4rem;
   border-radius: 0.6rem;
   margin: 0 0.2rem 0.2rem 0;
-  width: fit-content;
+  /* width: calc(50% - 0.4rem); */
+  /* flex: 1 1 auto; */
+  box-sizing: border-box;
+  user-select: none;
+}
+
+.w-tag-off {
+  background-color:lightgray;
+  color: grey;
 }

@@ -451,6 +451,44 @@ export class WorkspaceService {
     );
   }
 
+  updateItemSuppliers(itemId: number, supplierIds: number[]) {
+    if (typeof localStorage === 'undefined')
+      return;
+
+    const userBriefData: BriefUserModel = JSON.parse(localStorage.getItem('userBriefData'));
+
+    if (!userBriefData)
+      return;
+
+    this.http.post<any>(
+      environment.API_SERVER + this.API_PATH + "item/suppliers/" + this.companyDetails.value.id,
+      null,
+      {
+        headers: {
+          "Authorization": `Bearer ${userBriefData.token}`
+        },
+        params : {
+          "s": supplierIds
+        }
+      }
+    ).subscribe(
+      {
+        next: result => {
+          this.getLatestUpdates(result);
+        },
+        error: error => {
+          this.errorResponse.next(error);
+          this.isLoading.next(false);
+          console.error('Error assigning Suppliers to an Item:', error);
+        },
+        complete: () => {
+          this.isLoading.next(false);
+          this.closeAlert.next(false);
+        }
+      }
+    );
+  }
+
   // removeItemImage() {
   //   this.isLoading.next(false); 
   // }
