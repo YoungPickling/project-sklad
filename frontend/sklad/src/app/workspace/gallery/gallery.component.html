@@ -14,7 +14,7 @@
   (confirmDeleteImage)="onClickConfirmDeleteImage()"
 ></app-alert>
 
-<div style="margin-left: 1rem">
+<div class="w-l">
   <div class="w-title-bar">
     <h1 class="w-title">Gallery</h1>
     <span *ngIf="isLoading" class="loader-round"></span>
@@ -39,6 +39,7 @@
 
   <h1 class="w-empty" *ngIf="company?.imageData?.length === 0 else view">No images are found</h1>
 </div>
+
 <ng-template #view>
   <div class="w-gallery-table">
       <ng-container *ngFor="let image of images">

@@ -1,5 +1,5 @@
 <div class="backdrop" ></div>
-<div class="alert-box-wraper">
+<div class="alert-box-wraper" [ngClass]="{'w-long-alert': isUpdateItemImage()}">
   <div class="alert-box">
     
     <ng-template [ngIf]="isAddCompay() || isEditCompay()">
@@ -274,6 +274,85 @@
             <button class="button" (click)="onClose()">Cancel</button>
           </div>
         </form>
+      </ng-template>
+    </ng-template>
+
+    <!-- isAddParent() -->
+
+    <ng-template [ngIf]="isAddParent()">
+      <div class="box-title">
+        <h1 style="margin:0">Set parrents</h1>
+      </div>
+      <span class="loader" *ngIf="isLoading else parentTable"></span>
+
+      <ng-template #parentTable>  
+        <!-- <div class="error-box" *ngIf="error">
+          <b>Error:</b>{{ error?.status }} <b>Message:</b>{{ error?.error?.error }}
+        </div> -->
+          <!-- max-height:85svh;overflow-y: scroll; -->
+          <div style="display:flex;flex-direction:column;overflow: overlay;">
+            <table class="workspace-table">
+              <thead>
+                <tr>
+                  <th></th>
+                  <th>code</th>
+                  <th>name</th>
+                  <th>description</th>
+                  <th style="color:black" class="ws-even-cell">amount</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr 
+                  *ngFor="let item of items; let i = index" 
+                  [ngStyle]="{'background-color': getQuantity(item.id) > 0 ? 'revert' : '#ddd'}"
+                >
+                  <td style="padding:0;width:60px">
+                    <div class="cell-image-wrap">
+                      <ng-container *ngIf="item?.image; then imageBlock else noImageBlock"></ng-container>
+
+                      <ng-template #noImageBlock>
+                        <div 
+                          class="cell-empty-image" 
+                          [ngStyle]="{
+                            'background-color': colorByOrder(i),
+                            'filter': getQuantity(item.id) > 0 ? 'none' : 'grayscale(100%)'
+                          }"
+                        >
+                          <mat-icon>add_a_photo</mat-icon>
+                        </div>
+                      </ng-template>
+
+                      <ng-template #imageBlock>
+                        <div 
+                          class="cell-empty-image"
+                          [cacheSrc]="link + 'image/' + item?.image?.hash"
+                          [ngStyle]="{'filter': getQuantity(item.id) > 0 ? 'none' : 'grayscale(100%)'}"
+                        ></div>
+                      </ng-template>
+                    </div>
+                  </td>
+                  <td>{{item.code}}</td>
+                  <td>{{item.name}}</td>
+                  <td>{{item.description}}</td>
+                  <td style="width:1rem">
+                    <input 
+                      *ngIf="item.id != itemSelected"
+                      type="number"
+                      class="w-number-input-cell"
+                      [id]="'q' + i" 
+                      name="quantity{{i}}" 
+                      min="0"
+                      [ngModel]="getQuantity(item.id)"
+                      (ngModelChange)="setQuantity(item.id, $event)">
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="alert-box-actions">
+            <button class="button" (click)="onSetParents()">Update</button>
+            <button class="button" (click)="onClose()">Cancel</button>
+          </div>
       </ng-template>
     </ng-template>
 

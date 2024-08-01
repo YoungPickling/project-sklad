@@ -7,6 +7,7 @@ import { UsersComponent } from "./users/users.component";
 import { LocationsComponent } from "./locations/locations.component";
 import { SuppliersComponent } from "./suppliers/suppliers.component";
 import { ItemsComponent } from "./items/items.component";
+import { DiagramsComponent } from "./diagrams/diagrams.component";
 
 export default [
   {
@@ -49,6 +50,10 @@ export default [
       {
         path: 'gallery',
         component: GalleryComponent,
+      },
+      {
+        path: 'diagrams',
+        component: DiagramsComponent,
       },
     ]
   }

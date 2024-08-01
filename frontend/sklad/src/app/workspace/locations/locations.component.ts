@@ -207,8 +207,11 @@ export class LocationsComponent implements OnInit, OnDestroy {
       case 6: { tempLocation.phone_number_two = this.tempCellValue; break; }
       case 7: { tempLocation.description = this.tempCellValue; break; }
     }
-    this.workspaceService.updateLocation(tempLocation);
-
-    console.log(this.tempCellValue, x + '-' + y);
+    try {
+      this.workspaceService.updateLocation(tempLocation);
+      console.log(this.tempCellValue, x + '-' + y);
+    } catch (error) {
+      console.error(error)
+    }
   }
 }

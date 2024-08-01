@@ -62,9 +62,9 @@ public class Item {
      * Item's children classes.
      * Parts from which this one is made out of.
      */
-    @JsonIgnoreProperties({"children","parents", "columns", "quantity", "supplier", "description", "company", "code"})
-    @ManyToMany(mappedBy = "parents", fetch = FetchType.EAGER)
-    private Set<Item> children;
+//    @JsonIgnoreProperties({"children","parents", "columns", "quantity", "supplier", "description", "company", "code"})
+//    @ManyToMany(mappedBy = "parents", fetch = FetchType.EAGER)
+//    private Set<Item> children;
 
 //    @ManyToMany
 //    @JoinTable(name="join_items",
@@ -86,18 +86,24 @@ public class Item {
      * Item's children classes.
      * Parts from which this one is made out of.
      */
-    @JsonIgnoreProperties({"children","parents", "columns", "quantity", "supplier", "description", "company", "code"})
-    @ManyToMany(fetch = FetchType.EAGER)
-    private Set<Item> parents;
+//    @JsonIgnoreProperties({"children","parents", "columns", "quantity", "supplier", "description", "company", "code"})
+//    @ManyToMany(fetch = FetchType.EAGER)
+//    private Set<Item> parents;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    private Map<Long, Long> parents;
 
     /**
      * Made to keeps track of which location
      * has what amount of this Item.
      */
     @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "quantity_mapping", joinColumns = @JoinColumn(name = "item_table_id"))
-    @MapKeyColumn(name = "location_id", unique = true)
-    private Map<Long, Integer> quantity;
+//    @CollectionTable(name = "location_quantity_mapping", joinColumns = @JoinColumn(name = "item_id"))
+//    @MapKeyJoinColumn(name = "location_id")
+//    @Column(name = "quantity")
+//    @JsonIgnoreProperties({"owner", "website", "description", "streetAndNumber", "cityOrTown", "postalCode", "phoneNumber", "phoneNumberTwo"})
+//    @JsonSerialize(using = LocationQuantitySerializer.class)
+    private Map<Long, Long> quantity;
 
     /**
      * Company this item belongs to.
@@ -111,8 +117,12 @@ public class Item {
     /**
      * Suppliers of this item
      */
-    @OneToMany(fetch = FetchType.EAGER)
-    @JoinColumn(name = "item_id")
+//    @OneToMany(fetch = FetchType.EAGER)
+//    @JoinColumn(name = "item_id")
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "item_supplier",
+            joinColumns = @JoinColumn(name = "item_id"),
+            inverseJoinColumns = @JoinColumn(name = "supplier_id"))
     @JsonIgnoreProperties({"owner", "website", "description", "streetAndNumber", "cityOrTown", "postalCode", "phoneNumber", "phoneNumberTwo"})
     private List<Supplier> suppliers;
 

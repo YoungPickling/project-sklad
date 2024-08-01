@@ -42,7 +42,7 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
   private userDetailsSubscription: Subscription;
   
   company: Company;
-  currentRoute: string;
+  currentRoute: string[][];
   // breadcrum: {name: string, url: string[]}[];
 
   private routeParamsSub: Subscription;
@@ -87,7 +87,11 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
     this.routeParamsSub = this.route.params.subscribe({
       next: (params: Params) => {
         this.companyId = params['companyId'];
-        this.workspaceService.getCompany(this.companyId);
+        try {
+          this.workspaceService.getCompany(this.companyId);
+        } catch(error) {
+          console.error(error);
+        }
       },
       error: (error) => {
         console.log(error);
@@ -153,9 +157,9 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
   //   this.showLeftBar = !this.showLeftBar;
   // }
 
-  isActive(route: string): boolean {
-    return this.currentRoute === route;
-  }
+  // isActive(route: string): boolean {
+  //   return this.currentRoute === route;
+  // }
 
   closeLoginMenu() {
     this.loginMenu = false;
@@ -167,14 +171,24 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
     this.router.navigate(['']);
   }
 
-  onBreadcrumbUpdate(route: string): string {
+  onBreadcrumbUpdate(route: string): string[][] {
     const pathSegments = route.split("/");
     // Remove the first two segments
     const relevantSegments = pathSegments.slice(3);
-    // Add "Home" at the beginning
-    const breadcrumb = ["Home", ...relevantSegments];
-    // Join segments with a delimiter of your choice, e.g., ' > '
-    return breadcrumb.join(" > ");
+
+    const breadcrumb: string[][] = [];
+    breadcrumb.push(["Home", "/workspace/" + this.companyId]);
+
+    if(relevantSegments) {
+      const modedSegments = relevantSegments.map(
+        str => str.charAt(0).toUpperCase() + str.slice(1)
+      )
+
+      for (let i = 0; i < relevantSegments.length; i++) {
+        breadcrumb.push([modedSegments[i], breadcrumb[i][1] + '/' + relevantSegments[i]])
+      }
+    }
+    return breadcrumb;
   }
 
   @HostListener('document:keydown', ['$event'])
@@ -204,6 +218,10 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
         } 
         case "g": { 
           this.router.navigate(['/workspace', this.companyId, 'gallery']);
+          break; 
+        } 
+        case "d": { 
+          this.router.navigate(['/workspace', this.companyId, 'diagrams']);
           break; 
         } 
         case "b": { 

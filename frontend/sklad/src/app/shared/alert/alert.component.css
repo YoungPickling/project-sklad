@@ -13,11 +13,12 @@
   position: fixed;
   top: 0;
   left: 0;
-  width: 100vw;
+  width: 100svw;
   height: 100svh;
   display: flex;
   justify-content: center;
   align-items: center;
+  flex-grow: 0;
   z-index: 99;
 }
 
@@ -26,7 +27,10 @@
   padding: 16px;
   z-index: 100;
   background: white;
+  max-height: calc(100svh - 32px);
   /* box-shadow: 0 2px 8px rbga(0, 0, 0, 0.26); */
+  display: flex;
+  flex-direction: column;
 }
 
 .alert-box-actions {
@@ -117,9 +121,22 @@ span {
 }
 
 .w-gallery-table {
-  height: 77svh;
+  /* height: 77svh; */
   overflow-y: scroll;
   border: 1px solid #333;
   margin-top: 1rem;
   align-content: flex-start
+}
+
+.w-number-input-cell {
+  background: initial;
+  height: 3rem;
+  width: 3.3rem;
+  border: none;
+  font-size: large;
+}
+
+.w-long-alert {
+  max-height: none;
+  height: calc(100svh - 32px);
 }

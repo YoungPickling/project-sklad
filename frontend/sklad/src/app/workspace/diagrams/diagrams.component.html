@@ -1,0 +1,11 @@
+
+<div class="w-l">
+  <div class="w-title-bar">
+    <h1 class="w-title">Diagrams</h1>
+    <span *ngIf="isLoading" class="loader-round"></span>
+  </div>
+  <ng-template #view></ng-template>
+</div>
+
+<h1 class="w-empty" *ngIf="noTies else view">No Relations Between Items Found</h1>
+

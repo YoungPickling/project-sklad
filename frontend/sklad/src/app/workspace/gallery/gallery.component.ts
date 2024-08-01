@@ -126,7 +126,11 @@ export class GalleryComponent implements OnInit, OnDestroy {
 
   onAddGalleryImage(event: { image: File }) {
     this.isLoading = true;
-    this.workspaceService.addGalleryImage(event.image, this.company.id);
+
+    const formData = new FormData();
+    formData.append('image', event.image, event.image.name);
+
+    this.workspaceService.addGalleryImage(formData, this.company.id);
   }
 
   onClickOpenImage(image: Image) {

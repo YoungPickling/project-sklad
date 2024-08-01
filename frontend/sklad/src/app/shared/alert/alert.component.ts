@@ -1,10 +1,13 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, AfterViewInit } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Image } from '../models/image.model';
 import { environment } from '../../../environments/environment';
 import { ImageCacheDirective } from '../directives/image.directive';
 import { HttpErrorResponse } from '@angular/common/http';
+import { Item } from '../models/item.model';
+import Utils from '../utils.service';
+import { MatIconModule } from '@angular/material/icon';
 
 export enum AlertPresets {
   addCompany,
@@ -14,19 +17,25 @@ export enum AlertPresets {
   removeItemImage,
   updateItemImage,
   addSupplier,
-  addLocation
+  addLocation,
+  addParents
 }
 
 @Component({
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule, ImageCacheDirective],
+  imports: [
+    CommonModule, 
+    ReactiveFormsModule, 
+    FormsModule, 
+    ImageCacheDirective,
+    MatIconModule
+  ],
   selector: 'app-alert',
   templateUrl: './alert.component.html',
   styleUrls: ['./alert.component.css']
 })
-export class AlertComponent implements OnInit {
+export class AlertComponent implements OnInit, AfterViewInit {
   @Input() isLoading: boolean;
-  // @Input() preset: string;
   @Input() preset: AlertPresets;
   @Input() message: string; // deprecated
   @Input() error: HttpErrorResponse;
@@ -58,6 +67,10 @@ export class AlertComponent implements OnInit {
     hone_number_two: string,
     description: string
   }>();
+
+  @Input() itemSelected: number;
+  @Input() parentsMap: Map<number,number>;
+  @Output() setParents = new EventEmitter<any>();
   
   @Output() deleteImage = new EventEmitter<void>();
   @Output() confirmDeleteImage = new EventEmitter<void>();
@@ -72,6 +85,10 @@ export class AlertComponent implements OnInit {
   @Input() confirmMessage: string;
   confirmField = '';
   @Output() confirmWindowClose = new EventEmitter<void>();
+
+  @Input() items: Item[];
+
+  ItemAmountMap: Map<number, number>;
 
   link = environment.API_SERVER + "/api/rest/v1/secret/";
 
@@ -340,6 +357,8 @@ export class AlertComponent implements OnInit {
   ngOnInit() {
     this.lastMessage = this.message;
 
+    this.ngAfterViewInit()
+
     // if(this.preset === 'addCompany' || this.preset === 'editCompany') {
     if(this.preset === AlertPresets.addCompany || this.preset === AlertPresets.editCompany) {
       this.formGroup = new FormGroup({
@@ -379,6 +398,24 @@ export class AlertComponent implements OnInit {
         'phone_number_two': new FormControl(null),
         'description': new FormControl(null)
       });
+    }
+  }
+
+  ngAfterViewInit() {
+    if(this.items) {
+      this.ItemAmountMap = new Map<number, number>();
+
+      if(this.parentsMap) {
+        this.items.forEach(x => {
+          if(this.parentsMap[x.id])
+            this.ItemAmountMap.set(x.id, this.parentsMap[x.id]);
+          else
+            this.ItemAmountMap.set(x.id, 0);
+        });
+      } else {
+        this.items.forEach(x => this.ItemAmountMap.set(x.id, 0));
+      }
+      this.ItemAmountMap.delete(this.itemSelected);
     }
   }
 
@@ -425,35 +462,39 @@ export class AlertComponent implements OnInit {
   }
 
   isAddCompay() {
-    return this.preset === AlertPresets.addCompany;
+    return this.preset == AlertPresets.addCompany;
   }
 
   isEditCompay() {
-    return this.preset === AlertPresets.editCompany;
+    return this.preset == AlertPresets.editCompany;
   }
 
   isAddImage() {
-    return this.preset === AlertPresets.addGalleryImage;
+    return this.preset == AlertPresets.addGalleryImage;
   }
 
   isShowImage() {
-    return this.preset === AlertPresets.showGalleryImage;
+    return this.preset == AlertPresets.showGalleryImage;
   }
   
   isRemoveItemImage() {
-    return this.preset === AlertPresets.removeItemImage;
+    return this.preset == AlertPresets.removeItemImage;
   }
 
   isUpdateItemImage() {
-    return this.preset === AlertPresets.updateItemImage;
+    return this.preset == AlertPresets.updateItemImage;
   }
 
   isAddSupplier() {
-    return this.preset === AlertPresets.addSupplier;
+    return this.preset == AlertPresets.addSupplier;
   }
 
   isAddLocation() {
-    return this.preset === AlertPresets.addLocation;
+    return this.preset == AlertPresets.addLocation;
+  }
+
+  isAddParent() {
+    return this.preset == AlertPresets.addParents;
   }
 
   uploadImage(event: Event) {
@@ -466,11 +507,11 @@ export class AlertComponent implements OnInit {
   }
 
   onDeleteImage() {
-    this.deleteImage.emit()
+    this.deleteImage.emit();
   }
   
   onConfirmDeleteImage() {
-    this.confirmDeleteImage.emit()
+    this.confirmDeleteImage.emit();
   }
 
   onRemoveItemImage() {
@@ -478,8 +519,35 @@ export class AlertComponent implements OnInit {
     this.removeItemImage.emit();
   }
 
+  getQuantity(itemId: number): number {
+    return this.ItemAmountMap.get(itemId) || 0;
+  }
+
+  setQuantity(itemId: number, value: number): void {
+    this.ItemAmountMap.set(itemId, value);
+  }
+
+  onSetParents() {
+    for (let [key, value] of this.ItemAmountMap.entries()) {
+      if (value === 0 || value === null)
+        this.ItemAmountMap.delete(key);
+    }
+
+    const plainObject = {};
+    this.ItemAmountMap.forEach((value, key) => {
+      plainObject[key] = value;
+    });
+    
+    console.log(plainObject);
+    this.setParents.emit(plainObject);
+  }
+
   onFilter(): Image[] {
     return this.imageList.filter(image => image.name.toLowerCase().indexOf(this.confirmField.trim().toLowerCase()) !== -1 );
+  }
+
+  colorByOrder(i: number): string {
+    return Utils.colorByOrder(i);
   }
 
   onSetItemImage() {

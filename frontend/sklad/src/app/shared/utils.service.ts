@@ -57,4 +57,14 @@ export default class Utils {
     // Using a threshold of 0.179 for luminance to decide font color
     return luminance > 0.179 ? 'black' : 'white';
   }
+
+  
+  static colorByOrder(i: number): string {
+    return i % 6 === 0 ? 'crimson' : 
+    i % 6 === 1 ? 'gold' : 
+    i % 6 === 2 ? 'limegreen' :  
+    i % 6 === 3 ? 'lightskyblue' : 
+    i % 6 === 4 ? 'royalblue' : 'darkviolet'
+  }
+
 }

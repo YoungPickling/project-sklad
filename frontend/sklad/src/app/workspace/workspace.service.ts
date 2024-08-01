@@ -23,21 +23,9 @@ export class WorkspaceService {
   ) {}
 
   getCompany(id: number): void {
-    if (typeof localStorage === 'undefined')
-      return;
-
-    const userBriefData: BriefUserModel = JSON.parse(localStorage.getItem('userBriefData'));
-
-    if (!userBriefData)
-      return;
-
     this.http.get<any>(
       environment.API_SERVER + this.API_PATH + "company/" + id,
-      {
-        headers: {
-          "Authorization": `Bearer ${userBriefData.token}`
-        }
-      }
+      { ...this.getHeaders() }
     ).subscribe(
       {
         next: (result: Company) => {
@@ -48,7 +36,7 @@ export class WorkspaceService {
         error: error => {
           this.errorResponse.next(error);
           this.isLoading.next(false);
-          console.error('Error getting a company:', error);
+          console.error('Error getting a Company:', error);
         },
         complete: () => {
           this.isLoading.next(false);
@@ -59,396 +47,123 @@ export class WorkspaceService {
   }
 
   addItem(item: Item): void {
-    if (typeof localStorage === 'undefined')
-      return;
-
-    const userBriefData: BriefUserModel = JSON.parse(localStorage.getItem('userBriefData'));
-
-    if (!userBriefData)
-      return;
-
     this.http.post<Item>(
       environment.API_SERVER + this.API_PATH + "item/" + this.companyDetails.value.id,
       item,
-      {
-        headers: {
-          "Authorization": `Bearer ${userBriefData.token}`
-        }
-      }
-    ).subscribe(
-      {
-        next: result => {
-          this.getLatestUpdates(result);
-        },
-        error: error => {
-          this.errorResponse.next(error);
-          this.isLoading.next(false);
-          console.error('Error inserting new item:', error);
-        },
-        complete: () => {
-          this.isLoading.next(false);
-          this.closeAlert.next(false);
-        }
-      }
-    );
+      { ...this.getHeaders() }
+    ).subscribe(this.subscriptionTemplate('Error inserting new item:'));
   }
 
   updateItem(item: Item): void {
-    if (typeof localStorage === 'undefined')
-      return;
-
-    const userBriefData: BriefUserModel = JSON.parse(localStorage.getItem('userBriefData'));
-
-    if (!userBriefData)
-      return;
-
     this.http.put<Item>(
       environment.API_SERVER + this.API_PATH + "item/" + item.id,
       item,
-      {
-        headers: {
-          "Authorization": `Bearer ${userBriefData.token}`
-        }
-      }
-    ).subscribe(
-      {
-        next: result => {
-          this.getLatestUpdates(result);
-        },
-        error: error => {
-          this.errorResponse.next(error);
-          this.isLoading.next(false);
-          console.error('Error updating existing item:', error);
-        },
-        complete: () => {
-          this.isLoading.next(false);
-          this.closeAlert.next(false);
-        }
-      }
-    );
+      { ...this.getHeaders() }
+    ).subscribe(this.subscriptionTemplate('Error updating existing item:'));
   }
 
   removeItems(items: number[]): void {
-    if (typeof localStorage === 'undefined')
-      return;
-
-    const userBriefData: BriefUserModel = JSON.parse(localStorage.getItem('userBriefData'));
-
-    if (!userBriefData)
-      return;
-
     this.http.delete<number[]>(
       environment.API_SERVER + this.API_PATH + "item",
       {
-        headers: {
-          "Authorization": `Bearer ${userBriefData.token}`
-        },
-        params : {
-          "delete": items
-        }
+        ...this.getHeaders(),
+        params : { "delete": items }
       }
-    ).subscribe(
-      {
-        next: result => {
-          this.getLatestUpdates(result);
-        },
-        error: error => {
-          this.errorResponse.next(error);
-          this.isLoading.next(false);
-          console.error('Error removing items:', error);
-        },
-        complete: () => {
-          this.isLoading.next(false);
-          this.closeAlert.next(false);
-        }
-      }
-    );
+    ).subscribe(this.subscriptionTemplate('Error removing items:'));
   }
 
-  addGalleryImage(image: File, companyId: number): void {
-    const userBriefData: BriefUserModel = JSON.parse(localStorage.getItem('userBriefData'));
-
-    if (!userBriefData) {
-      console.error('User data not available in localStorage');
-      this.isLoading.next(false);
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append('image', image, image.name);
-
+  addGalleryImage(image: FormData, companyId: number): void {
     this.http.post<any>(
       environment.API_SERVER + this.API_PATH + "image/" + companyId,
-      formData,
-      {
-        headers: {
-          "Authorization": `Bearer ${userBriefData.token}`
-        }
-      }
-    ).subscribe(
-      {
-        next: result => {
-          this.getLatestUpdates(result);
-        },
-        error: error => {
-          this.errorResponse.next(error);
-          this.isLoading.next(false);
-          console.error('Error uploading image to Gallery:', error);
-        },
-        complete: () => {
-          this.isLoading.next(false);
-          this.closeAlert.next(false);
-        }
-      }
-    );
+      image,
+      { ...this.getHeaders() }
+    ).subscribe(this.subscriptionTemplate('Error uploading image to Gallery:'));
   }
 
   removeGalleryImage(hash: string): void {
-    const userBriefData: BriefUserModel = JSON.parse(localStorage.getItem('userBriefData'));
-
-    if (!userBriefData) {
-      console.error('User data not available in localStorage');
-      this.isLoading.next(false);
-      return;
-    }
-
     this.http.delete<any>(
       environment.API_SERVER + this.API_PATH + "image/" + hash,
-      {
-        headers: {
-          "Authorization": `Bearer ${userBriefData.token}`
-        }
-      }
-    ).subscribe(
-      {
-        next: result => {
-          this.getLatestUpdates(result);
-        },
-        error: error => {
-          this.errorResponse.next(error);
-          this.isLoading.next(false);
-          console.error('Error removing gallery image:', error);
-        },
-        complete: () => {
-          this.isLoading.next(false);
-          this.closeAlert.next(false);
-        }
-      }
-    );
+      { ...this.getHeaders() }
+    ).subscribe(this.subscriptionTemplate('Error removing gallery image:'));
   }
 
   addSupplier(supplier): void {
-    if (typeof localStorage === 'undefined')
-      return;
-
-    const userBriefData: BriefUserModel = JSON.parse(localStorage.getItem('userBriefData'));
-
-    if (!userBriefData)
-      return;
-
     this.http.post<Supplier>(
       environment.API_SERVER + this.API_PATH + "supplier/" + this.companyDetails.value.id,
       supplier,
-      {
-        headers: {
-          "Authorization": `Bearer ${userBriefData.token}`
-        }
-      }
-    ).subscribe(
-      {
-        next: result => {
-          this.getLatestUpdates(result);
-        },
-        error: error => {
-          this.errorResponse.next(error);
-          this.isLoading.next(false);
-          console.error('Error inserting new Supplier:', error);
-        },
-        complete: () => {
-          this.isLoading.next(false);
-          this.closeAlert.next(false);
-        }
-      }
-    );
+      { ...this.getHeaders() }
+    ).subscribe(this.subscriptionTemplate('Error inserting new Supplier:'));
   }
 
   updateSupplier(supplier: Supplier): void {
-    if (typeof localStorage === 'undefined')
-      return;
-
-    const userBriefData: BriefUserModel = JSON.parse(localStorage.getItem('userBriefData'));
-
-    if (!userBriefData)
-      return;
-
     this.http.put<Supplier>(
       environment.API_SERVER + this.API_PATH + "supplier/" + this.companyDetails.value.id,
       supplier,
-      {
-        headers: {
-          "Authorization": `Bearer ${userBriefData.token}`
-        }
-      }
-    ).subscribe(
-      {
-        next: result => {
-          this.getLatestUpdates(result);
-        },
-        error: error => {
-          this.errorResponse.next(error);
-          this.isLoading.next(false);
-          console.error('Error updating existing Supplier:', error);
-        },
-        complete: () => {
-          this.isLoading.next(false);
-          this.closeAlert.next(false);
-        }
-      }
-    );
+      { ...this.getHeaders() }
+    ).subscribe(this.subscriptionTemplate('Error removing suppliers:'));
   }
 
   removeSuppliers(suppliers: number[]): void {
-    if (typeof localStorage === 'undefined')
-      return;
-
-    const userBriefData: BriefUserModel = JSON.parse(localStorage.getItem('userBriefData'));
-
-    if (!userBriefData)
-      return;
-
     this.http.delete<number[]>(
       environment.API_SERVER + this.API_PATH + "supplier/" + this.companyDetails.value.id,
       {
-        headers: {
-          "Authorization": `Bearer ${userBriefData.token}`
-        },
-        params : {
-          "delete": suppliers
-        }
+        ...this.getHeaders(),
+        params : {"delete": suppliers}
       }
-    ).subscribe(
-      {
-        next: result => {
-          this.getLatestUpdates(result);
-        },
-        error: error => {
-          this.errorResponse.next(error);
-          this.isLoading.next(false);
-          console.error('Error removing suppliers:', error);
-        },
-        complete: () => {
-          this.isLoading.next(false);
-          this.closeAlert.next(false);
-        }
-      }
-    );
+    ).subscribe(this.subscriptionTemplate('Error removing suppliers:'));
   }
 
   addLocation(location): void {
-    if (typeof localStorage === 'undefined')
-      return;
-
-    const userBriefData: BriefUserModel = JSON.parse(localStorage.getItem('userBriefData'));
-
-    if (!userBriefData)
-      return;
-
     this.http.post<Location>(
       environment.API_SERVER + this.API_PATH + "location/" + this.companyDetails.value.id,
       location,
-      {
-        headers: {
-          "Authorization": `Bearer ${userBriefData.token}`
-        }
-      }
-    ).subscribe(
-      {
-        next: result => {
-          this.getLatestUpdates(result);
-        },
-        error: error => {
-          this.errorResponse.next(error);
-          this.isLoading.next(false);
-          console.error('Error inserting new Location:', error);
-        },
-        complete: () => {
-          this.isLoading.next(false);
-          this.closeAlert.next(false);
-        }
-      }
-    );
+      { ...this.getHeaders() }
+    ).subscribe(this.subscriptionTemplate('Error inserting new Location:'));
   }
 
   updateLocation(location: Location): void {
-    if (typeof localStorage === 'undefined')
-      return;
-
-    const userBriefData: BriefUserModel = JSON.parse(localStorage.getItem('userBriefData'));
-
-    if (!userBriefData)
-      return;
-
     this.http.put<Location>(
       environment.API_SERVER + this.API_PATH + "location/" + this.companyDetails.value.id,
       location,
-      {
-        headers: {
-          "Authorization": `Bearer ${userBriefData.token}`
-        }
-      }
-    ).subscribe(
-      {
-        next: result => {
-          this.getLatestUpdates(result);
-        },
-        error: error => {
-          this.errorResponse.next(error);
-          this.isLoading.next(false);
-          console.error('Error updating existing Location:', error);
-        },
-        complete: () => {
-          this.isLoading.next(false);
-          this.closeAlert.next(false);
-        }
-      }
-    );
+      { ...this.getHeaders() }
+    ).subscribe(this.subscriptionTemplate('Error updating existing Location:'));
   }
 
   removeLocations(locations: number[]): void {
-    if (typeof localStorage === 'undefined')
-      return;
-
-    const userBriefData: BriefUserModel = JSON.parse(localStorage.getItem('userBriefData'));
-
-    if (!userBriefData)
-      return;
-
     this.http.delete<number[]>(
       environment.API_SERVER + this.API_PATH + "location/" + this.companyDetails.value.id,
       {
-        headers: {
-          "Authorization": `Bearer ${userBriefData.token}`
-        },
-        params : {
-          "delete": locations
-        }
+        ...this.getHeaders(),
+        params : {"delete": locations}
       }
-    ).subscribe(
+    ).subscribe(this.subscriptionTemplate('Error removing locations:'));
+  }
+
+  updateItemSuppliers(itemId: number, supplierIds: number[]) {
+    this.http.post<any>(
+      environment.API_SERVER + this.API_PATH + "item/suppliers/" + itemId,
+      null,
       {
-        next: result => {
-          this.getLatestUpdates(result);
-        },
-        error: error => {
-          this.errorResponse.next(error);
-          this.isLoading.next(false);
-          console.error('Error removing locations:', error);
-        },
-        complete: () => {
-          this.isLoading.next(false);
-          this.closeAlert.next(false);
-        }
+        ...this.getHeaders(),
+        params : {"s": supplierIds}
       }
-    );
+    ).subscribe(this.subscriptionTemplate('Error assigning Suppliers to an Item:'));
+  }
+
+  updateItemLocations(itemId: number, locationId: number, quantity: number) {
+    this.http.put<any>(
+      `${environment.API_SERVER + this.API_PATH}item/location/${itemId}/${locationId}`,
+      Number.isNaN(quantity) ? -1 : quantity,
+      { ...this.getHeaders() }
+    ).subscribe(this.subscriptionTemplate('Error assigning Suppliers to an Item:'));
+  }
+
+  updateItemParents(parents: any, itemId: number) {
+    this.http.put<any>(
+      `${environment.API_SERVER + this.API_PATH}item/parents/${itemId}`,
+      parents,
+      { ...this.getHeaders() }
+    ).subscribe(this.subscriptionTemplate('Error assigning Parents to an Item:'));
   }
 
   // removeItemImage() {
@@ -464,5 +179,41 @@ export class WorkspaceService {
 
   private reset(): void {
     this.companyDetails.next(null);
+  }
+
+  private subscriptionTemplate(msg: string) {
+    return {
+      next: result => {
+        this.getLatestUpdates(result);
+      },
+      error: error => {
+        this.errorResponse.next(error);
+        this.isLoading.next(false);
+        console.error(msg, error);
+      },
+      complete: () => {
+        this.isLoading.next(false);
+        this.closeAlert.next(false);
+      }
+    }
+  }
+
+  private getToken(): string {
+    if (typeof localStorage === 'undefined')
+      throw "No local storage";
+
+    const userBriefData: BriefUserModel = JSON.parse(localStorage.getItem('userBriefData'));
+
+    if (!userBriefData)
+      throw "No authentication data found";
+
+    return userBriefData.token;
+  }
+
+  private getHeaders() {
+    return { headers: {
+        "Authorization": `Bearer ${this.getToken()}`
+      }
+    }
   }
 }

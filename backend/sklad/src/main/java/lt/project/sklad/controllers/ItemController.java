@@ -6,16 +6,22 @@
     import lombok.RequiredArgsConstructor;
     import lt.project.sklad.entities.Item;
     import lt.project.sklad.services.ItemService;
+    import org.slf4j.Logger;
+    import org.slf4j.LoggerFactory;
     import org.springframework.http.ResponseEntity;
     import org.springframework.web.bind.annotation.*;
 
+    import java.util.HashMap;
     import java.util.List;
+
+
 
     @RestController
     @RequestMapping("/api/rest/v1/secret/item")
     @RequiredArgsConstructor
     public class ItemController {
         private final ItemService itemService;
+        private static Logger logger = LoggerFactory.getLogger(ItemController.class);
         // TODO ItemController POST, GET, PUT, DELETE
 
         @PostMapping("/{companyId}")
@@ -50,5 +56,34 @@
                 HttpServletRequest request
         ) {
             return itemService.deleteItem(items, request);
+        }
+
+        @PostMapping("/suppliers/{itemId}")
+        public ResponseEntity<?> setItemSuppliers(
+                @PathVariable @NotNull long itemId,
+                @RequestParam(name = "s", required = false) List<Long> suppliers,
+                HttpServletRequest request
+        ) {
+            return itemService.addItemSupplier(itemId, suppliers, request);
+        }
+
+        @PutMapping("/location/{itemId}/{locationId}")
+        public ResponseEntity<?> updateItemStock(
+                @PathVariable @NotNull long itemId,
+                @PathVariable @NotNull long locationId,
+                @RequestBody String quantity,
+                HttpServletRequest request
+        ) {
+            return itemService.putItemLocation(itemId, locationId, quantity, request);
+        }
+
+        @PutMapping("/parents/{itemId}")
+        public ResponseEntity<?> updateItemParents(
+                @PathVariable @NotNull Long itemId,
+                @RequestBody HashMap<Long, Long> quantity,
+                HttpServletRequest request
+        ) {
+//            logger.info(quantity.toString());
+            return itemService.putItemParents(itemId, quantity, request);
         }
     }
