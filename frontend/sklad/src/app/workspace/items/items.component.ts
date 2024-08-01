@@ -48,7 +48,7 @@ export class ItemsComponent implements OnInit, OnDestroy, AfterViewChecked {
   editCellMode: boolean = false;
   tempCellValue: string = '';
 
-  supplierCheckList: { [key: number]: boolean } = {};
+  checkList: { [key: number]: boolean } = {};
   
   lastCellClickedX: number;
   lastCellClickedY: number;
@@ -64,6 +64,9 @@ export class ItemsComponent implements OnInit, OnDestroy, AfterViewChecked {
   confirmField: string;
   imageList: Image[];
   errorResponse: HttpErrorResponse;
+
+  itemParentsToUpdate: number;
+  parentsMap: Map<number,number>;
 
   link = environment.API_SERVER + "/api/rest/v1/secret/image/";
 
@@ -118,12 +121,12 @@ export class ItemsComponent implements OnInit, OnDestroy, AfterViewChecked {
 
   ngAfterViewChecked() {
     if (this.focusCellKey) {
-      const inputElement = <HTMLInputElement>document.getElementById(this.focusCellKey);
-      if (inputElement) {
-        inputElement.focus();
+      const inputElement: HTMLInputElement = <HTMLInputElement>document.getElementById(this.focusCellKey);
+      if (inputElement !== undefined) {
+        this.focusCellKey = null;
         inputElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
         window.getSelection().selectAllChildren(inputElement);
-        this.focusCellKey = null;
+        inputElement.focus();
       }
     }
   }
@@ -134,6 +137,22 @@ export class ItemsComponent implements OnInit, OnDestroy, AfterViewChecked {
 
   get suppliers() {
     return this.company?.suppliers.sort((a, b) => a.id - b.id);
+  }
+
+  get columns() {
+    return this.addItemForm.get('columns') as FormArray;
+  }
+
+  get locationPostfix() {
+    return 3 + Object.keys(this.customColumns).length;
+  }
+
+  get supplierPostfix() {
+    return 3 + Object.keys(this.customColumns).length + this.company.locations.length;
+  }
+
+  get parentPostfix() {
+    return 4 + Object.keys(this.customColumns).length + this.company.locations.length;
   }
 
   onClickAddBtn() {
@@ -163,8 +182,12 @@ export class ItemsComponent implements OnInit, OnDestroy, AfterViewChecked {
       body.columns[i].color = Utils.hexToInteger(body.columns[i].color + '');
     }
 
-    this.workspaceService.addItem(body);
-    // this.addItemForm.reset();
+    try {
+      this.workspaceService.addItem(body);
+    } catch(error) {
+      console.error(error)
+      this.isLoading = false;
+    }
     this.resetForm();
   }
   
@@ -172,19 +195,25 @@ export class ItemsComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.isLoading = true;
     this.addButtonActive = false;
     this.removeButtonActive = false;
-    this.workspaceService.removeItems(Array.from(this.itemsToDelete.values()));
+    try {
+      this.workspaceService.removeItems(Array.from(this.itemsToDelete.values()));
+    } catch(error) {
+      console.error(error)
+      this.isLoading = false;
+    }
   }
 
-  get columns() {
-    return this.addItemForm.get('columns') as FormArray;
+
+  getItemById(id: number) {
+    return this.company.items.filter(i => i?.id == id)[0] || {};
   }
 
-  get locationPostfix() {
-    return 3 + Object.keys(this.customColumns).length;
+  colorByOrder(i: number): string {
+    return Utils.colorByOrder(i)
   }
 
-  get supplierPostfix() {
-    return 3 + Object.keys(this.customColumns).length + this.company.locations.length;
+  isNotNumber(number: any) {
+    return isNaN(Number(number));
   }
 
   addColumn() {
@@ -235,10 +264,10 @@ export class ItemsComponent implements OnInit, OnDestroy, AfterViewChecked {
   doubleClickCell(x: number, y: number) {
     const cellKey = x + '-' + y;
     if (
+      !this.cellEditMode[cellKey] &&
       this.isCellFirstClicked && 
       this.lastCellClickedX === x && 
-      this.lastCellClickedY === y && 
-      !this.cellEditMode[cellKey]
+      this.lastCellClickedY === y
     ) {
       console.log('double clicked!' + cellKey) // HTMLInputElement
 
@@ -248,11 +277,11 @@ export class ItemsComponent implements OnInit, OnDestroy, AfterViewChecked {
       } else {
 
         this.company.suppliers.forEach(sup => {
-          this.supplierCheckList[sup.id] = false;
+          this.checkList[sup.id] = false;
         });
 
         this.items[x].suppliers.forEach(sup => {
-          this.supplierCheckList[sup.id] = true;
+          this.checkList[sup.id] = true;
         });
       }
 
@@ -263,7 +292,7 @@ export class ItemsComponent implements OnInit, OnDestroy, AfterViewChecked {
       this.isCellFirstClicked = true;
       if(this.lastCellClickedX !== x || this.lastCellClickedY !== y) {
         this.cellEditMode = {};
-        this.supplierCheckList = {};
+        this.checkList = {};
       }
       this.lastCellClickedX = x;
       this.lastCellClickedY = y;
@@ -285,25 +314,20 @@ export class ItemsComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.isLoading = true;
     this.cellEditMode[x + '-' + y] = false;
 
-    // let tempItem: Item = { ...this.company.items[x - 1] };
-
-    // Create a deep copy of the item
-    let tempItem: Item = { 
-      ...this.company.items[x],
-      columns: this.company.items[x].columns.map(col => ({ ...col }))
-    };
-
     if (y === 0) {
+      let tempItem: Item = this.copyItem(x);
       tempItem.code = this.tempCellValue;
-      this.workspaceService.updateItem(tempItem);
+      this.updateItem(tempItem);
     } else if (y === 1) {
+      let tempItem: Item = this.copyItem(x);
       tempItem.name = this.tempCellValue;
-      this.workspaceService.updateItem(tempItem);
+      this.updateItem(tempItem);
     } else if (y === 2) {
+      let tempItem: Item = this.copyItem(x);
       tempItem.description = this.tempCellValue;
-      this.workspaceService.updateItem(tempItem);
-    } 
-    else if (y >= 3 && y < this.locationPostfix) {
+      this.updateItem(tempItem);
+    } else if (y >= 3 && y < this.locationPostfix) {
+      let tempItem: Item = this.copyItemColumns(x);
       // The Angluar 'keyvalue' pipeline in a template and Javascript sorts keys differently
       // So make sure the key order is the same everywhere
       const keyStore: string[] = Object.keys(this.customColumns).sort();
@@ -319,26 +343,37 @@ export class ItemsComponent implements OnInit, OnDestroy, AfterViewChecked {
       if (!itemColumnObject) {
         const newItem = {name: customColumnKey, value: this.tempCellValue};
         tempItem.columns.push(newItem);
-        this.workspaceService.updateItem(tempItem);
       } else {
         tempItem.columns.find(col => col.name === customColumnKey).value = this.tempCellValue;
-        this.workspaceService.updateItem(tempItem);
-        // this.company.items[x - 1].columns.push(newItem)
+      }
+      this.updateItem(tempItem);
+    } else if (y >= this.locationPostfix && y < this.supplierPostfix) {
+      try {
+        this.workspaceService.updateItemLocations(
+          this.company.items[x].id, 
+          this.company.locations[y - this.locationPostfix].id, 
+          parseInt(this.tempCellValue)
+        );
+      } catch (error) {
+        console.log(error);
+        this.isLoading = false;
       }
     } else if (y == this.supplierPostfix) {
       // const keyStore: string[] = Object.keys(this.customColumns).filter(s => this.customColumns[s])
       // console.log(keyStore)
-      const keyStore: string[] = Object.keys(this.supplierCheckList).filter(s => this.supplierCheckList[s])
+      const keyStore: string[] = Object.keys(this.checkList).filter(s => this.checkList[s])
 
       let numStore: number[] = [];
       for (let i = 0; i < keyStore.length; i++)
         numStore.push(parseInt(keyStore[i]));
 
-      console.log(numStore)
-      this.workspaceService.updateItemSuppliers(this.items[x].id, numStore);
+      try {
+        this.workspaceService.updateItemSuppliers(this.items[x].id, numStore);
+      } catch (error) {
+        console.error(error);
+        this.isLoading = false;
+      }
     }
-
-    // console.log(x + '-' + y);
   }
 
   onOpenImageContext(index: number) {
@@ -357,10 +392,11 @@ export class ItemsComponent implements OnInit, OnDestroy, AfterViewChecked {
     if (event.key === "Escape") {
       this.alertOpen = false;
       this.rowImageContextMenu.fill(false);
-    } else if (event.key === "Enter" && Object.keys(this.supplierCheckList).length) {
+    } else if (event.key === "Enter" && Object.keys(this.checkList).length) {
       let coordinates: string[] = Object.keys(this.cellEditMode).at(0).split('-');
-      // console.log(coordinates)
+      console.log(parseInt(coordinates[0]) + '' + parseInt(coordinates[1]))
       this.updateCellValue(parseInt(coordinates[0]), parseInt(coordinates[1]))
+      this.checkList = {};
     }
   }
 
@@ -369,7 +405,6 @@ export class ItemsComponent implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   onClickRemoveItemImage(index: number) {
-    // console.log(image);
     this.tempId = index;
     this.alertItemName = this.company?.items[index]?.name;
     this.alertPreset = AlertPresets.removeItemImage
@@ -388,12 +423,38 @@ export class ItemsComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.alertOpen = true;
   }
 
+  onClickSetParents(index: number): void {
+    this.confirmField = "";
+    this.alertPreset = AlertPresets.addParents;
+    this.itemParentsToUpdate = this.items[index].id;
+    this.parentsMap = this.items[index].parents;
+    this.alertOpen = true;
+  }
+  /*
   onRemoveItemImage() {
     this.alertOpen = false;
     this.addButtonActive = false;
     this.removeButtonActive = false;
     this.isLoading = true;
     // this.workspaceService.removeItemImage();
+  }
+  */
+  onUpdateParents(parents: any) {
+    this.alertOpen = false;
+    this.isLoading = true;
+    this.addButtonActive = false;
+    this.removeButtonActive = false;
+    // console.log(this.itemParentsToUpdate);
+    try {
+      this.workspaceService.updateItemParents(parents, this.itemParentsToUpdate);
+    } catch (error) {
+      console.error(error)
+      this.isLoading = false;
+    }
+  }
+
+  log(log: any) {
+    console.log(log)
   }
 
   onUpdateItemImage(imageId: number) {
@@ -413,6 +474,27 @@ export class ItemsComponent implements OnInit, OnDestroy, AfterViewChecked {
     }
     
     console.log(tempItem);
-    this.workspaceService.updateItem(tempItem);
+    this.updateItem(tempItem);
+  }
+
+  private updateItem(item: Item) {
+    try{
+      this.workspaceService.updateItem(item);
+    } catch (error) {
+      console.error(error);
+      this.isLoading = false;
+    }
+  }
+
+  private copyItemColumns(x): Item {
+    // Create a deep copy of the item
+    return { 
+      ...this.company.items[x],
+      columns: this.company.items[x].columns.map(col => ({ ...col }))
+    };
+  }
+
+  private copyItem(x): Item {
+    return {...this.company.items[x]};
   }
 }

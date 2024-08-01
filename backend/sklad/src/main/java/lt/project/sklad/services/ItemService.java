@@ -16,10 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.springframework.http.HttpStatus.*;
@@ -40,8 +37,7 @@ public class ItemService {
     private final MessagingUtils msgUtils;
     private final ImageRepository imageRepository;
     private final SupplierRepository supplierRepository;
-
-    // TODO ItemService methods
+    private final LocationRepository locationRepository;
 
     private static Logger logger = LoggerFactory.getLogger(ItemService.class);
 
@@ -170,6 +166,12 @@ public class ItemService {
         if (token == null)
             return msgUtils.error(UNAUTHORIZED, "Token not found");
 
+        final User user = userRepository.findById(token.getUser().getId()).orElse(null);
+
+        if (user == null) {
+            return msgUtils.error(NOT_FOUND, "User not found");
+        }
+
         final Item itemOld = itemRepository.findById(itemId).orElse(null);
 
         if (itemOld == null)
@@ -178,10 +180,6 @@ public class ItemService {
         if (itemOld.getId() != item.getId())
             return msgUtils.error(BAD_REQUEST, "IDs don't match");
 
-        final User user = userRepository.findById(token.getUser().getId()).orElse(null);
-
-        if (user == null)
-            return msgUtils.error(NOT_FOUND, "User not found");
 
         boolean hasAccess = user.getCompany().stream()
                 .anyMatch(company -> company.getName().equals(itemOld.getCompany().getName()));
@@ -385,31 +383,143 @@ public class ItemService {
             return msgUtils.error(FORBIDDEN, "Access to the item denied");
         }
 
-        List<Supplier> foundsuppliers = supplierRepository.findAllById(suppliers);
+        if(suppliers != null && !suppliers.isEmpty()) {
+            List<Supplier> foundsuppliers = supplierRepository.findAllById(suppliers);
 
-        if (foundsuppliers == null || foundsuppliers.isEmpty())
-            return msgUtils.error(NOT_FOUND, "Suppliers not found");
+            if (foundsuppliers.isEmpty())
+                return msgUtils.error(NOT_FOUND, "Suppliers not found");
 
-        boolean hasAccess = foundsuppliers.stream().anyMatch(
-                s -> s.getOwner().getId().equals(item.getCompany().getId())
-        );
+            boolean hasAccess = foundsuppliers.stream().anyMatch(
+                    s -> s.getOwner().getId().equals(item.getCompany().getId())
+            );
 
-        if (!hasAccess)
-            return msgUtils.error(FORBIDDEN, "Access to the suppliers denied");
+            if (!hasAccess)
+                return msgUtils.error(FORBIDDEN, "Access to the suppliers denied");
 
-        item.setSuppliers(foundsuppliers);
+            item.setSuppliers(foundsuppliers);
+            return ResponseEntity.ok().body(foundsuppliers);
+        }
 
-        return ResponseEntity.ok().body(foundsuppliers);
+        item.setSuppliers(null);
+
+        return ResponseEntity.ok().build();
     }
 
-    private void deleteDuplicateColumns(Item item) {
+    @Transactional
+    public ResponseEntity<?> putItemLocation(
+            final long itemId,
+            final long locationId,
+            final String quantity,
+            final HttpServletRequest request
+    ) {
+        String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+
+        if (msgUtils.isBearer(authHeader))
+            return msgUtils.error(UNAUTHORIZED, "Bad credentials");
+
+        String jwt = authHeader.substring(7);
+        Token token = tokenService.findByToken(jwt).orElse(null);
+
+        if (token == null)
+            return msgUtils.error(UNAUTHORIZED, "Token not found");
+
+        final User user = userRepository.findById(token.getUser().getId()).orElse(null);
+
+        if (user == null) {
+            return msgUtils.error(NOT_FOUND, "User not found");
+        }
+
+        Item item = itemRepository.findById(itemId).orElse(null);
+
+        if (item == null )
+            return msgUtils.error(NOT_FOUND, "Items not found");
+
+        if (user.getCompany().stream().noneMatch(c -> c.getId().equals(item.getCompany().getId()))) {
+            return msgUtils.error(FORBIDDEN, "Access to the item denied");
+        }
+
+        Location location = locationRepository.findById(locationId).orElse(null);
+
+        if (location == null )
+            return msgUtils.error(NOT_FOUND, "Location not found");
+
+        if (user.getCompany().stream().noneMatch(c -> c.getId().equals(location.getOwner().getId()))) {
+            return msgUtils.error(FORBIDDEN, "Access to the location denied");
+        }
+
+        Long quantityNumber;
+        try {
+            quantityNumber = Long.parseLong(quantity);
+        } catch (NumberFormatException e) {
+            item.getQuantity().remove(location.getId());
+            return ResponseEntity.ok().body(quantity);
+        }
+
+        if(quantityNumber < 0) {
+            item.getQuantity().remove(location.getId());
+        } else {
+            item.getQuantity().put(location.getId(), quantityNumber);
+        }
+
+        itemRepository.save(item);
+
+        return ResponseEntity.ok().body(quantity);
+    }
+
+    @Transactional
+    public ResponseEntity<?> putItemParents(
+            final Long itemId,
+            final Map<Long,Long> parents,
+            final HttpServletRequest request
+    ) {
+        String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+
+        if (msgUtils.isBearer(authHeader))
+            return msgUtils.error(UNAUTHORIZED, "Bad credentials");
+
+        String jwt = authHeader.substring(7);
+        Token token = tokenService.findByToken(jwt).orElse(null);
+
+        if (token == null)
+            return msgUtils.error(UNAUTHORIZED, "Token not found");
+
+        final User user = userRepository.findById(token.getUser().getId()).orElse(null);
+
+        if (user == null) {
+            return msgUtils.error(NOT_FOUND, "User not found");
+        }
+
+        Item item = itemRepository.findById(itemId).orElse(null);
+
+        if (item == null )
+            return msgUtils.error(NOT_FOUND, "Items not found");
+
+        if (user.getCompany().stream().noneMatch(c -> c.getId().equals(item.getCompany().getId())))
+            return msgUtils.error(FORBIDDEN, "Access to the item denied");
+
+        List<Item> toEdit = itemRepository.findAllById(parents.keySet());
+
+        if(parents.isEmpty()) {
+            item.setParents(new HashMap<>());
+            itemRepository.save(item);
+            return ResponseEntity.ok().body(parents);
+        } else if(toEdit.stream().anyMatch(x -> !x.getCompany().getId().equals(item.getCompany().getId())) ) {
+            return msgUtils.error(FORBIDDEN, "Items must be from the same company");
+        }
+
+        item.setParents(parents);
+        itemRepository.save(item);
+        return ResponseEntity.ok().body(parents);
+    }
+
+    private void deleteDuplicateColumns(final Item item) {
         Iterator<ItemColumn> iterator = item.getColumns().iterator();
         List<String> names = new ArrayList<>();
 
         while (iterator.hasNext()) {
             ItemColumn existingColumn = iterator.next();
             if (names.contains(existingColumn.getName()) || existingColumn.getValue().isBlank()) {
-                logger.info("Removing - " + existingColumn.getName());
+//                logger.info("Removing - " + existingColumn.getName());
                 iterator.remove();
             } else {
                 names.add(existingColumn.getName());

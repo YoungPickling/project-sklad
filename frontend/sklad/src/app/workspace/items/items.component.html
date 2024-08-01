@@ -8,9 +8,13 @@
   [confirmField]="confirmField"
   [tempId]="tempId"
   [imageList]="imageList"
+  [items]="company.items"
+  [parentsMap]="parentsMap"
+  [itemSelected]="itemParentsToUpdate"
   (close)="onCloseAlert()"
   (removeItemImage)="onUpdateItemImage(-1)"
   (setItemImage)="onUpdateItemImage($event)"
+  (setParents)="onUpdateParents($event)"
 ></app-alert>
 
 <div class="w-l">
@@ -149,20 +153,17 @@
             </div>
           </th>
 
-          <!-- <th
-            *ngFor="let supplier of company?.suppliers"
-            class="ws-icon-cell ws-even-cell"
-          >
-            <div>
-              <mat-icon class="w-r">local_shipping</mat-icon>
-              {{ supplier?.name }}
-            </div>
-          </th> -->
-
           <th class="ws-icon-cell ws-even-cell">
             <div>
               <mat-icon class="w-r">local_shipping</mat-icon>
               Suppliers
+            </div>
+          </th>
+
+          <th class="ws-icon-cell">
+            <div>
+              <mat-icon class="w-r">account_tree</mat-icon>
+              Parents
             </div>
           </th>
 
@@ -180,25 +181,23 @@
           </td>
           <td style="padding:0;">
             <div class="cell-image-wrap">
-              <div 
-                *ngIf="!item?.image" 
-                class="cell-empty-image" 
-                [ngStyle]="{'background-color': 
-                  i % 6 === 0 ? 'crimson' : 
-                  i % 6 === 1 ? 'gold' : 
-                  i % 6 === 2 ? 'limegreen' :  
-                  i % 6 === 3 ? 'lightskyblue' : 
-                  i % 6 === 4 ? 'royalblue' : 'darkviolet'}"
-              >
-                <mat-icon>add_a_photo</mat-icon>
-              </div>
+              <ng-container *ngIf="item?.image; then imageBlock else noImageBlock"></ng-container>
 
-              <!-- [ngStyle]="{'background-image': 'url(' + link + item?.image?.hash + ')'}" -->
-              <div 
-                *ngIf="item?.image"
-                class="cell-empty-image"
-                [cacheSrc]="link + item?.image?.hash"
-              ></div>
+              <ng-template #noImageBlock>
+                <div 
+                  class="cell-empty-image" 
+                  [ngStyle]="{'background-color': colorByOrder(i)}"
+                >
+                  <mat-icon>add_a_photo</mat-icon>
+                </div>
+              </ng-template>
+
+              <ng-template #imageBlock>
+                <div 
+                  class="cell-empty-image"
+                  [cacheSrc]="link + item?.image?.hash"
+                ></div>
+              </ng-template>
 
               <div (clickOutside)="onClickOutsideImageContextMenu(i)">
                 <div 
@@ -221,6 +220,7 @@
               </div>
             </div>
           </td>
+
           <td 
             [ngClass]="{'cell-edit-border': cellEditMode[i + '-0']}"
             (click)="doubleClickCell(i,0)"
@@ -238,6 +238,7 @@
               contenteditable
             ></span>
           </td>
+
           <td 
             [ngClass]="{'cell-edit-border': cellEditMode[i + '-1']}"
             (click)="doubleClickCell(i,1)"
@@ -255,6 +256,7 @@
               contenteditable
             ></span>
           </td>
+
           <td 
             [ngClass]="{'cell-edit-border': cellEditMode[i + '-2']}"
             (click)="doubleClickCell(i,2)"
@@ -272,7 +274,7 @@
               contenteditable
             ></span>
           </td>
-          <!--  -->
+
           <td 
             *ngFor="let el of customColumns | keyvalue; let ii = index"
             (click)="doubleClickCell(i,ii+3)"
@@ -293,48 +295,25 @@
           </td>
 
           <td
-            *ngFor="let location of company?.locations; let ii = index"
+            *ngFor="let location of company?.locations; let ii = index" 
             (click)="doubleClickCell(i, ii + locationPostfix)"
             [ngClass]="{'cell-edit-border':cellEditMode[i + '-' + (ii + locationPostfix)]}"
+            [ngStyle]="{'outline': isNotNumber(tempCellValue) && cellEditMode[i + '-' + (ii + locationPostfix)] ? '2px solid rgb(255, 0, 0)' : 'revert-layer'}"
           >
             <div
               [id]="i + '-' + (ii + locationPostfix)"
-              *ngIf="!cellEditMode[i + '-' + ii + locationPostfix]"
-            ></div>
+              *ngIf="!cellEditMode[i + '-' + (ii + locationPostfix)]" 
+              >{{ item.quantity[location.id] }}</div>
             <span
               [id]="i + '-' + (ii + locationPostfix) + 'f'"
               *ngIf="cellEditMode[i + '-' + (ii + locationPostfix)]" 
               [(inputValue)]="tempCellValue"
               (clickOutside)="onClickOutsideCell(i + '-' + (ii + locationPostfix))"
-              (keydown.enter)="updateCellValue(i, ii + locationPostfix)"
+              (keydown.enter)="isNotNumber(tempCellValue)? false : updateCellValue(i, ii + locationPostfix)"
               contenteditable
             ></span>
           </td>
 
-          <!-- <td
-            *ngFor="let supplier of company?.suppliers; let ii = index"
-            (click)="doubleClickCell(i, ii + supplierPostfix)"
-            [ngClass]="{'cell-edit-border':cellEditMode[i + '-' + (ii + supplierPostfix)]}"
-          >
-            <div
-              [id]="i + '-' + (ii + supplierPostfix)"
-              *ngIf="!cellEditMode[i + '-' + ii + supplierPostfix]"
-            ></div>
-            <span
-              [id]="i + '-' + (ii + supplierPostfix) + 'f'"
-              *ngIf="cellEditMode[i + '-' + (ii + supplierPostfix)]" 
-              [(inputValue)]="tempCellValue"
-              (clickOutside)="onClickOutsideCell(i + '-' + (ii + supplierPostfix))"
-              (keydown.enter)="updateCellValue(i, ii + supplierPostfix)"
-              contenteditable
-            ></span>
-          </td> -->
-
-
-          <!-- <div
-              [id]="i + '-' + supplierPostfix"
-              *ngIf="!cellEditMode[i + '-' + supplierPostfix]"
-            ></div> -->
           <td
             (click)="doubleClickCell(i, supplierPostfix)"
             [ngClass]="{'cell-edit-border':cellEditMode[i + '-' +  supplierPostfix]}"
@@ -359,14 +338,40 @@
               <div class="w-tag-space" >
                 <div 
                   class="w-tag w-cursor"
-                  *ngFor="let supplier of suppliers; let ii = index;"
-                  [ngClass]="{'w-tag-off': !supplierCheckList[supplier.id]} "
-                  (click)="supplierCheckList[supplier.id] = !supplierCheckList[supplier.id]"
+                  *ngFor="let supplier of suppliers;"
+                  [ngClass]="{'w-tag-off': !checkList[supplier.id]} "
+                  (click)="checkList[supplier.id] = !checkList[supplier.id]"
                 >
                   {{supplier.name}}
                 </div>
               </div>
             </span>
+          </td>
+
+          <td
+            class="cell-wrap"
+            [ngClass]="{'cell-edit-border':cellEditMode[i + '-' +  parentPostfix]}"
+          >
+            <div 
+              [id]="i + '-' + parentPostfix"
+              *ngIf="!cellEditMode[i + '-' + parentPostfix]"
+              class="w-tag-space" 
+            >
+              <div 
+                class="w-tag w-tag-two"
+                *ngFor="let parent of item.parents | keyvalue"
+              >
+                {{ getItemById(parent.key)?.name + ' - ' + parent.value }}
+              </div>
+
+              <div 
+                title="Change parents"
+                class="cell-image-hover-button cell-parent-hover-button"
+                (click)="onClickSetParents(i)"
+              >
+                <mat-icon>build</mat-icon>
+              </div>
+            </div>
           </td>
 
         </tr>

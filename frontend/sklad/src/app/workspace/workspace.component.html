@@ -97,6 +97,14 @@
         <div 
           class="w-max-element"
           routerLinkActive="w-max-element-selected"
+          [routerLink]="['/workspace', companyId, 'diagrams']"
+        >
+          <mat-icon>account_tree</mat-icon>
+          <p>diagrams</p>
+        </div>
+        <div 
+          class="w-max-element"
+          routerLinkActive="w-max-element-selected"
           [routerLink]="['/workspace', companyId, 'suppliers']"
         >
           <mat-icon>local_shipping</mat-icon>
@@ -129,7 +137,15 @@
       </nav>
 
       <div class="w-main-window">
-        <b style="margin-left: 1rem">{{ currentRoute }}</b>
+        <!-- <b style="margin-left: 1rem">{{ currentRoute }}</b> -->
+        <div class="w-l">
+          <ng-container *ngFor="let route of currentRoute; let l = last">
+            <b><a *ngIf="!l" [routerLink]="[route[1]]">{{route[0]}}</a></b>
+            <b *ngIf="l">{{route[0]}}</b>
+            <b *ngIf="!l"> > </b>
+          </ng-container>
+        </div>
+
         <router-outlet></router-outlet>
       </div>
     </div>
