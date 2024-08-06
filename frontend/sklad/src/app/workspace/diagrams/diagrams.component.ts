@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { AlertComponent } from '../../shared/alert/alert.component';
 import { ImageCacheDirective } from '../../shared/directives/image.directive';
@@ -22,7 +22,7 @@ import { environment } from '../../../environments/environment';
   templateUrl: './diagrams.component.html',
   styleUrl: './diagrams.component.css'
 })
-export class DiagramsComponent implements OnInit {
+export class DiagramsComponent implements OnInit, OnDestroy, AfterViewInit {
   company: Company;
   isLoading = false;
   errorResponse: HttpErrorResponse;
@@ -43,15 +43,21 @@ export class DiagramsComponent implements OnInit {
     this.companyDetailSub = this.workspaceService.companyDetails.subscribe(
       company => {
         this.company = company;
-        
+        // console.log(company?.items?.length)
         let tempNoTies = true;
-        for (let i = 0; i < company.items?.length; i++) {
-          if(company.items[i].parents?.size > 0) {
+        const empty: {} = {};
+
+        for (let i = 0; i < company?.items?.length; i++) {
+          const parents = company.items[i].parents;
+          // console.log(company?.items[i]?.parents)
+          // console.log(Object.keys(parents).length > 0)
+          if(Object.keys(parents).length > 0) {
             tempNoTies = false;
             break;
           }
         }
         this.noTies = tempNoTies;
+        // console.log(this.noTies)
       }
     );
 
@@ -66,6 +72,16 @@ export class DiagramsComponent implements OnInit {
         this.errorResponse = error;
       }
     );
+  }
+
+  ngAfterViewInit(): void {
+    
+  }
+
+  ngOnDestroy(): void {
+    this.workspaceService.errorResponse.next(null);
+    this.companyDetailSub.unsubscribe();
+    this.loadingSubscription.unsubscribe();
   }
 
 

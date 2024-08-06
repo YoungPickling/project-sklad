@@ -1,0 +1,36 @@
+.w-button-bar {
+  height: 5.3rem;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  align-content: flex-start
+}
+
+.w-button-bar > div,
+.w-button-bar .w-max-element {
+  /* background-color: #888; */
+  /* padding: 0 1rem; */
+  padding: 0.2rem 0.4rem;
+  height: 2rem;
+  margin: 2px 0 0 2px;
+  /* width: calc(100% - 2rem); */
+  /* margin-top: 1rem; */
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  border-bottom: 1px solid #0000;
+  font-weight: 700;
+  background-color: #ddd;
+}
+
+/* .w-button-bar .w-max-element:nth-child(odd) {
+  background-color: #ddd;
+} */
+
+.w-button-bar .w-max-element {
+  cursor: pointer;
+}
+
+.w-button-bar .w-max-element:hover {
+  background-color: #ccc;
+}

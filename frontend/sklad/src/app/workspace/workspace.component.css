@@ -22,7 +22,7 @@ html {
   flex-wrap: nowrap;
   flex-direction: row;
   /* height: var(--header-height); */
-  width: calc(100% - 3vw);
+  /* width: calc(100% - 3vw); */
   padding: 0 0.6rem;
   box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 5px 0px, rgba(0, 0, 0, 0.1) 0px 0px 1px 0px;
 }
