@@ -29,8 +29,8 @@ import { ImageCacheDirective } from '../shared/directives/image.directive';
 export class WorkspaceComponent implements OnInit, OnDestroy {
   companyId: number;
   isLoading = false; // not implemented
-  showLeftBar = true;
-  sideBarMaximized = true;
+  // showLeftBar = true;
+  sideBarMaximized = false;
 
   loginMenu = false;
   isLoggedIn = false;

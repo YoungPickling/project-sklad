@@ -1,6 +1,58 @@
 <div style="margin-left: 1rem">
   <h1 class="w-title">{{ company?.name }}</h1>
   <small>{{ company?.description }}</small>
+
+  <div class="w-button-bar">
+    <div 
+          class="w-max-element"
+          routerLinkActive="w-max-element-selected"
+          [routerLink]="['/workspace', companyId, 'items']"
+        >
+          <mat-icon>inventory_2</mat-icon>
+          <p>items({{ company?.items?.length }})</p>
+        </div>
+        <div 
+          class="w-max-element"
+          routerLinkActive="w-max-element-selected"
+          [routerLink]="['/workspace', companyId, 'diagrams']"
+        >
+          <mat-icon>account_tree</mat-icon>
+          <p>diagrams</p>
+        </div>
+        <div 
+          class="w-max-element"
+          routerLinkActive="w-max-element-selected"
+          [routerLink]="['/workspace', companyId, 'suppliers']"
+        >
+          <mat-icon>local_shipping</mat-icon>
+          <p>suppliers({{ company?.suppliers?.length }})</p>
+        </div>
+        <div 
+          class="w-max-element"
+          routerLinkActive="w-max-element-selected"
+          [routerLink]="['/workspace', companyId, 'locations']"
+        >
+          <mat-icon>warehouse</mat-icon>
+          <p>locations({{ company?.locations?.length }})</p>
+        </div>
+        <div 
+          [routerLink]="['/workspace', companyId, 'users']"
+          class="w-max-element" 
+          routerLinkActive="w-max-element-selected"
+        >
+          <mat-icon>group</mat-icon>
+          <p>users({{ company?.user?.length }})</p>
+        </div>
+        <div 
+          class="w-max-element" 
+          routerLinkActive="w-max-element-selected"
+          [routerLink]="['/workspace', companyId, 'gallery']" 
+        >
+          <mat-icon>photo_library</mat-icon>
+          <p>gallery({{ company?.imageData?.length }})</p>
+        </div>
+  </div>
+
 </div>
 
 <!-- <p>id: {{ company?.id }}</p>
