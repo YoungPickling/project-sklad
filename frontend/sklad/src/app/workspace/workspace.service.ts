@@ -22,6 +22,10 @@ export class WorkspaceService {
     private http: HttpClient
   ) {}
 
+  get companyId() {
+    return this.companyDetails.value.id;
+  }
+
   getCompany(id: number): void {
     this.http.get<any>(
       environment.API_SERVER + this.API_PATH + "company/" + id,
@@ -48,7 +52,7 @@ export class WorkspaceService {
 
   addItem(item: Item): void {
     this.http.post<Item>(
-      environment.API_SERVER + this.API_PATH + "item/" + this.companyDetails.value.id,
+      environment.API_SERVER + this.API_PATH + "item/" + this.companyId,
       item,
       { ...this.getHeaders() }
     ).subscribe(this.subscriptionTemplate('Error inserting new item:'));
@@ -87,9 +91,9 @@ export class WorkspaceService {
     ).subscribe(this.subscriptionTemplate('Error removing gallery image:'));
   }
 
-  addSupplier(supplier): void {
+  addSupplier(supplier: Supplier): void {
     this.http.post<Supplier>(
-      environment.API_SERVER + this.API_PATH + "supplier/" + this.companyDetails.value.id,
+      environment.API_SERVER + this.API_PATH + "supplier/" + this.companyId,
       supplier,
       { ...this.getHeaders() }
     ).subscribe(this.subscriptionTemplate('Error inserting new Supplier:'));
@@ -97,7 +101,7 @@ export class WorkspaceService {
 
   updateSupplier(supplier: Supplier): void {
     this.http.put<Supplier>(
-      environment.API_SERVER + this.API_PATH + "supplier/" + this.companyDetails.value.id,
+      environment.API_SERVER + this.API_PATH + "supplier/" + this.companyId,
       supplier,
       { ...this.getHeaders() }
     ).subscribe(this.subscriptionTemplate('Error removing suppliers:'));
@@ -105,7 +109,7 @@ export class WorkspaceService {
 
   removeSuppliers(suppliers: number[]): void {
     this.http.delete<number[]>(
-      environment.API_SERVER + this.API_PATH + "supplier/" + this.companyDetails.value.id,
+      environment.API_SERVER + this.API_PATH + "supplier/" + this.companyId,
       {
         ...this.getHeaders(),
         params : {"delete": suppliers}
@@ -115,7 +119,7 @@ export class WorkspaceService {
 
   addLocation(location): void {
     this.http.post<Location>(
-      environment.API_SERVER + this.API_PATH + "location/" + this.companyDetails.value.id,
+      environment.API_SERVER + this.API_PATH + "location/" + this.companyId,
       location,
       { ...this.getHeaders() }
     ).subscribe(this.subscriptionTemplate('Error inserting new Location:'));
@@ -123,7 +127,7 @@ export class WorkspaceService {
 
   updateLocation(location: Location): void {
     this.http.put<Location>(
-      environment.API_SERVER + this.API_PATH + "location/" + this.companyDetails.value.id,
+      environment.API_SERVER + this.API_PATH + "location/" + this.companyId,
       location,
       { ...this.getHeaders() }
     ).subscribe(this.subscriptionTemplate('Error updating existing Location:'));
@@ -131,7 +135,7 @@ export class WorkspaceService {
 
   removeLocations(locations: number[]): void {
     this.http.delete<number[]>(
-      environment.API_SERVER + this.API_PATH + "location/" + this.companyDetails.value.id,
+      environment.API_SERVER + this.API_PATH + "location/" + this.companyId,
       {
         ...this.getHeaders(),
         params : {"delete": locations}
@@ -166,15 +170,11 @@ export class WorkspaceService {
     ).subscribe(this.subscriptionTemplate('Error assigning Parents to an Item:'));
   }
 
-  // removeItemImage() {
-  //   this.isLoading.next(false); 
-  // }
-
   private getLatestUpdates(result: any): void {
     if(result) {
       console.log(result)
     }
-    this.getCompany(this.companyDetails.value.id);
+    this.getCompany(this.companyId);
   }
 
   private reset(): void {
