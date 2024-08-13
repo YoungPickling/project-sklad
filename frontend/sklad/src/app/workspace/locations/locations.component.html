@@ -213,7 +213,7 @@
   <button
     *ngIf="removeButtonActive"
     class="button-42" 
-    [disabled]="isLoading || suppliersToDelete.size < 1"
+    [disabled]="isLoading"
     (click)="onRemoveRows()"
   >Submit Removal</button>
 </div>
