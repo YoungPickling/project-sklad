@@ -44,8 +44,10 @@ export class LoginComponent {
       },
       error: errorMessage => {
         console.log(errorMessage);
-        if(errorMessage.error?.error) {
-          this.error = errorMessage.error?.error;
+        if(errorMessage.status == 0) {
+          this.error = 'Error connecting to the server, please try later'
+        } else if(errorMessage.status == 403) {
+          this.error = 'Wrong username or password';
         } else {
           this.error = 'Something went wrong';
         }
