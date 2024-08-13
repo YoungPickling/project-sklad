@@ -844,3 +844,51 @@ header a {
 .w-tag-two {
   background-color: rgb(102, 74, 4);
 }
+
+.w-header-button-wrapper {
+  display: flex;
+  flex-direction: row;
+}
+
+.w-header-box {
+  align-content: center;
+  cursor: pointer;
+  transition: 0ms ease;
+}
+
+.w-header-box:hover {
+  background-color: #3DA1A1;
+  transition: 200ms ease;
+}
+
+.w-header-button {
+  border-radius: 50%;
+  min-width: 3rem;
+  margin: 0 0.3rem;
+  /* min-height: 3rem; */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.w-header-button p {
+  margin: 0;
+  user-select: none;
+}
+
+.w-header-button-selected {
+  background-color: #2F7C7C;
+  
+}
+
+.w-header-button-selected .mat-icon {
+  color: #000;
+  text-shadow: #fff 0 0 2px, #fff 1px 0 4px;
+}
+
+.w-header-button-selected p {
+  color: #000;
+  text-shadow: #fff 0 0 2px, #fff -1px 0 5px, #fff 1px 0 9px;
+}
