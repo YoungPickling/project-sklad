@@ -14,8 +14,6 @@
       <option *ngFor="let item of items" [value]="item.id">{{item.name}}</option>
     </select>
 
-    <p>Selected Item: {{ selectedItem }}</p>
-
     <app-tree 
       *ngIf="selectedItem >= 0"
       [data]="treeData"
