@@ -19,4 +19,7 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
     @Transactional
     @Query("UPDATE Item i SET i.image = null WHERE i.image.id = :imageId")
     void setImageIdToNull(@Param("imageId") final Long imageId);
+
+    @Query("SELECT i FROM Item i WHERE i.company.id = :Id")
+    List<Item> findAllByCompanyId(@Param("Id") final Long id);
 }

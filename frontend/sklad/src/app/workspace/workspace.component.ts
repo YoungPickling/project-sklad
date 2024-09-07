@@ -193,7 +193,6 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
 
   @HostListener('document:keydown', ['$event'])
   handleKeyboardEvent(event: KeyboardEvent) {
-
     if (event.altKey) {
       switch(event.key) { 
         case "h": { 
@@ -220,10 +219,10 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
           this.router.navigate(['/workspace', this.companyId, 'gallery']);
           break; 
         } 
-        case "d": { 
-          this.router.navigate(['/workspace', this.companyId, 'diagrams']);
-          break; 
-        } 
+        // case "d": { 
+        //   this.router.navigate(['/workspace', this.companyId, 'diagrams']);
+        //   break; 
+        // } 
         case "b": { 
           this.sideBarMaximized = !this.sideBarMaximized;
           break; 

@@ -4,9 +4,25 @@
     <h1 class="w-title">Diagrams</h1>
     <span *ngIf="isLoading" class="loader-round"></span>
   </div>
-  <ng-template #view></ng-template>
 </div>
 
 <h1 class="w-empty" *ngIf="noTies else view">No Relations Between Items Found</h1>
+
+<ng-template #view>
+  <div class="w-l">
+    <select [(ngModel)]="selectedItem" (ngModelChange)="onItemChange($event)">
+      <option *ngFor="let item of items" [value]="item.id">{{item.name}}</option>
+    </select>
+
+    <p>Selected Item: {{ selectedItem }}</p>
+
+    <app-tree 
+      *ngIf="selectedItem >= 0"
+      [data]="treeData"
+      [selectedItem]="selectedItem"
+    ></app-tree>
+  </div>
+
+</ng-template>
 
 

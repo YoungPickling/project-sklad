@@ -1,0 +1,9 @@
+.w-loading-page {
+  width: 100svw; 
+  height: 100svh;
+  margin: 0 auto; 
+  display: flex; 
+  flex-direction: column; 
+  align-items: center; 
+  justify-content: center; 
+}

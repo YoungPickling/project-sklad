@@ -14,7 +14,7 @@
     <span *ngIf="isLoading" class="loader-round"></span>
   </div>
 
-  <div>
+  <div class="w-button-bar">
     <button
       class="button-42" 
       (click)="onClickAddBtn()"
@@ -23,6 +23,7 @@
     <button 
       class="button-42" 
       (click)="onClickRemoveBtn()"
+      [ngClass]="{'button-42-active': removeButtonActive}"
       [disabled]="company?.suppliers?.length === 0"
     >Delete Row</button>
   </div>

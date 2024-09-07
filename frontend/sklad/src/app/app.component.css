@@ -1,9 +1,9 @@
 /* <span class="frontpage-loader"></span> */
 
-:root, * {
+/* :root, * {
   color: #222;
   font-family: "Trebuchet MS", Helvetica, sans-serif;
-}
+} */
 
 .frontpage-loader {
   position: relative;
@@ -180,8 +180,8 @@ mat-icon .frontpage-arrow {
 }
 
 .loader-round {
-  width: 3rem;
-  height: 3rem;
+  width: 2.8rem;
+  height: 2.8rem;
   border: 0.5rem dotted #000;
   border-radius: 50%;
   display: inline-block;
@@ -198,3 +198,63 @@ mat-icon .frontpage-arrow {
     transform: rotate(360deg);
   }
 } 
+
+.button-42 {
+  background-color: #ffffff;
+  box-shadow: rgba(0, 0, 0, 0.1) 0 2px 4px;
+  cursor: pointer;
+  display: flex;
+  min-width: min-content;
+  outline: 0;
+  overflow: hidden;
+  padding: 0 1rem;
+  margin: 0.3rem 0.6rem 0 0;
+  pointer-events: auto;
+  position: relative;
+  text-align: center;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+  vertical-align: top;
+  font-size: 0.83rem;
+  white-space: nowrap;
+  border: 1px solid rgb(0, 0, 0);
+  transition: box-shadow .2s;
+  align-items: center;
+  justify-content: center;
+  line-height: 2.25rem;
+  min-height: 2.25rem;
+}
+
+.button-42 > p {
+  margin: 0;
+}
+
+.button-42:hover {
+  box-shadow: rgba(253, 76, 0, 0.5) 0 3px 8px;
+}
+
+.button-42:disabled {
+  color: black;
+  background-image: linear-gradient(-180deg, #c0c0c0, #8d8d8d);
+}
+
+.button-42:hover:disabled {
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+.button-42-active {
+  /* background-color: #7FC7D9; */
+  color:#fff;
+  background-image: linear-gradient(-180deg, #7FC7D9, #365486);
+  /* background-image: linear-gradient(-180deg, #3191ff, #0312e6); */
+}
+
+.button-42-active:hover {
+  box-shadow: #0004fd80 0 3px 8px;
+}
+
+.button-42-icon {
+  padding: 0 0.37rem;
+}

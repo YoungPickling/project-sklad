@@ -11,8 +11,6 @@ export class Item {
     public image?: Image,
     public color?: number,
     public columns?: ItemColumn[],
-    // public children: Item[],
-    // public parents: Item[],
     public parents?: Map<number, number>, // key: item id, value: quantity
     public quantity?: Map<number, number>, // key: location id, value: quantity
     public company?: Company,

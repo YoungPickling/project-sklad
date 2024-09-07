@@ -98,6 +98,7 @@ export class LocationsComponent implements OnInit, OnDestroy {
     }
     this.loadingSubscription.unsubscribe();
     this.alertWindowSubscription.unsubscribe();
+    this.errorSubscription.unsubscribe();
   }
 
   get locations() {

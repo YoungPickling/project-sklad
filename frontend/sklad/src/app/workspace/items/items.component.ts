@@ -16,6 +16,17 @@ import { ItemColumn } from '../../shared/models/item-column.model';
 import { ImageCacheDirective } from '../../shared/directives/image.directive';
 import { HttpErrorResponse } from '@angular/common/http';
 
+type FilterSet = {
+  image: boolean;
+  code: boolean;
+  name: boolean;
+  description: boolean;
+  parameters: boolean
+  locations: boolean;
+  suppliers: boolean;
+  parents: boolean;
+};
+
 @Component({
   selector: 'app-items',
   standalone: true,
@@ -36,7 +47,21 @@ export class ItemsComponent implements OnInit, OnDestroy, AfterViewChecked {
   company: Company;
   addButtonActive = false;
   removeButtonActive = false;
+  filterButtonActive = false;
+  filterFirstClicked = false;
   isLoading = false;
+
+  activeFilterSet: FilterSet = {
+    image: true,
+    code: true,
+    name: true,
+    description: true,
+    parameters: true,
+    locations: true,
+    suppliers: true,
+    parents: true
+  };
+  // variableFilterSet: FilterSet = this.activeFilterSet;
   
   itemsToDelete: Set<number> = new Set();
   
@@ -156,9 +181,13 @@ export class ItemsComponent implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   onClickAddBtn() {
+    if(this.removeButtonActive) {
+      this.itemsToDelete = new Set();
+    }
     this.itemsToDelete = new Set();
     this.addButtonActive = !this.addButtonActive;
     this.removeButtonActive = false;
+    this.filterButtonActive = false;
   }
 
   onClickRemoveBtn() {
@@ -167,7 +196,26 @@ export class ItemsComponent implements OnInit, OnDestroy, AfterViewChecked {
     }
     this.removeButtonActive = !this.removeButtonActive;
     this.addButtonActive = false;
+    this.filterButtonActive = false;
     this.resetForm();
+  }
+
+  onClickFilterBtn() {
+    this.filterButtonActive = !this.filterButtonActive;
+    if(this.removeButtonActive) {
+      this.itemsToDelete = new Set();
+    }
+    this.addButtonActive = false;
+    this.removeButtonActive = false;
+  }
+
+  onClickOutsideFilter() {
+    if(!this.filterFirstClicked) {
+      this.filterFirstClicked = true;
+    } else {
+      this.filterButtonActive = false;
+      this.filterFirstClicked = false;
+    }
   }
 
   onSubmitAddItem() {

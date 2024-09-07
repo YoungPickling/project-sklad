@@ -119,7 +119,7 @@ public class Item {
      */
 //    @OneToMany(fetch = FetchType.EAGER)
 //    @JoinColumn(name = "item_id")
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(name = "item_supplier",
             joinColumns = @JoinColumn(name = "item_id"),
             inverseJoinColumns = @JoinColumn(name = "supplier_id"))
