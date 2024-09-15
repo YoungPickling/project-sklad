@@ -8,7 +8,6 @@ import { ProfileComponent } from "./profile/profile.component";
 import { AuthGuard } from "./login/auth.guard";
 import { RegisterComponent } from "./register/register.component";
 import { SettingsComponent } from "./settings/settings.component";
-
 // export const frontpageRoutes: Routes = [
 export default [
   {
@@ -16,6 +15,14 @@ export default [
     component: FrontpageComponent,
     children: [
       { path: '', component: MainComponent, pathMatch: 'full'},
+      // {
+      // path: 'loading',
+        // pathMatch: 'full',
+      // component: LoadingComponent,
+        // loadComponent: () => 
+        //   import('./workspace/loading/loading.component')
+        //   .then((mod) => mod.LoadingComponent),
+      // }, 
       { path: 'about', component: AboutComponent },
       { path: 'login', component: LoginComponent },
       { path: 'join', component: RegisterComponent },

@@ -304,7 +304,7 @@
               <tbody>
                 <tr 
                   *ngFor="let item of items; let i = index" 
-                  [ngStyle]="{'background-color': getQuantity(item.id) > 0 ? 'revert' : '#ddd'}"
+                  [ngStyle]="{'background-color': allowEditParrent(item.id) ? getQuantity(item.id) > 0 ? 'revert' : '#ddd' : '#909399'}"
                 >
                   <td style="padding:0;width:60px">
                     <div class="cell-image-wrap">
@@ -336,7 +336,7 @@
                   <td>{{item.description}}</td>
                   <td style="width:1rem">
                     <input 
-                      *ngIf="item.id != itemSelected"
+                      *ngIf="allowEditParrent(item.id)"
                       type="number"
                       class="w-number-input-cell"
                       [id]="'q' + i" 

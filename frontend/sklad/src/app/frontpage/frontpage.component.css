@@ -213,3 +213,9 @@
   border: 1px solid #0009;
   background-color: #00000044;
 }
+
+@media (max-width: 740px) {
+  .not-for-mobile {
+    display:none;
+  }
+}

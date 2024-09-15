@@ -1,6 +1,5 @@
 import { HttpClient, HttpErrorResponse } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-// import { Router } from "@angular/router";
 import { catchError, switchMap, tap } from "rxjs/operators";
 import { BehaviorSubject, throwError } from "rxjs";
 import { environment } from "../../../environments/environment";
@@ -22,7 +21,7 @@ export interface RegisterData {
 
 @Injectable({providedIn: 'root'})
 export class AuthService {
-  user = new BehaviorSubject<BriefUserModel>(null); // BehaviorSubject
+  user = new BehaviorSubject<BriefUserModel>(null);
   userDetails = new BehaviorSubject<User>(null);
   // private tokenExpirationTimer: any;
 

@@ -23,7 +23,7 @@
     <span *ngIf="isLoading" class="loader-round"></span>
   </div>
 
-  <div>
+  <div class="w-button-bar">
     <button
       class="button-42" 
       [ngClass]="{'button-42-active': addButtonActive}"
@@ -36,6 +36,66 @@
       [disabled]="company?.items?.length === 0"
       (click)="onClickRemoveBtn()"
     >Delete Row</button>
+    
+    <div style="position: relative;">
+      <div 
+        class="button-42"
+        [ngClass]="{'button-42-active': filterButtonActive}"
+        (click)="onClickFilterBtn()"
+      >Filter</div>
+      <!-- [ngStyle]="{'display': filterButtonActive ? 'block' : 'none'}" -->
+      <!-- <div 
+        class="w-filter" 
+        style="display: block"
+        *ngIf="filterButtonActive"
+        (clickOutside)="onClickOutsideFilter()"
+      > -->
+        <!-- <form> -->
+          
+          <!-- <input type="submit" value="Submit"> -->
+        <!-- </form> -->
+      <!-- </div> -->
+    </div>
+      
+  </div>
+
+  <div class="w-filter-bar" *ngIf="filterButtonActive">
+    <div>
+      <input type="checkbox" class="ui-checkbox" id="image" name="image" [(ngModel)]="activeFilterSet.image">
+      <label for="image"> image</label><br>
+    </div>
+    <div>
+      <input type="checkbox" class="ui-checkbox" id="code" name="code" [(ngModel)]="activeFilterSet.code">
+      <label for="code"> code</label><br>
+    </div>
+    <div>
+      <input type="checkbox" class="ui-checkbox" id="name" name="name" [(ngModel)]="activeFilterSet.name">
+      <label for="name"> name</label><br><br>
+    </div>
+    <div>
+      <input type="checkbox" class="ui-checkbox" id="description" name="description" [(ngModel)]="activeFilterSet.description">
+      <label for="description"> description</label><br><br>
+    </div>
+    <div>
+      <input type="checkbox" class="ui-checkbox" id="parameters" name="parameters" [(ngModel)]="activeFilterSet.parameters">
+      <label for="parameters"> parameters</label><br><br>
+    </div>
+    <div>
+      <input type="checkbox" class="ui-checkbox" id="locations" name="locations" [(ngModel)]="activeFilterSet.locations">
+      <label for="locations"> locations</label><br><br>
+    </div>
+    <div>
+      <input type="checkbox" class="ui-checkbox" id="suppliers" name="suppliers" [(ngModel)]="activeFilterSet.suppliers">
+      <label for="suppliers"> suppliers</label><br><br>
+    </div>
+    <div>
+      <input type="checkbox" class="ui-checkbox" id="parents" name="parents" [(ngModel)]="activeFilterSet.parents">
+      <label for="parents"> parents</label><br><br>
+    </div>
+    <div>
+      <input type="checkbox" class="ui-checkbox" id="product" name="product" [(ngModel)]="activeFilterSet.product">
+      <label for="product"> product</label><br><br>
+    </div>
   </div>
 
   <div *ngIf="!isLoading && addButtonActive">
@@ -54,10 +114,10 @@
           <span class="input-highlight"></span>
         </div>
 
-        <div class="input-container" style="margin-right:0;">
+        <!-- <div class="input-container" style="margin-right:0;">
           <input type="color" value="#ffffff" formControlName="color" class="input-color" />
           <label for="color" class="input-label">color</label>
-        </div>
+        </div> -->
         
         <div class="input-container">
           <input placeholder="description" formControlName="description" class="input-field" type="text" autocomplete="false" />
@@ -128,44 +188,61 @@
               <mat-icon>delete</mat-icon>
             </div>
           </th>
-          <th></th>
-          <th>code</th>
-          <th>name</th>
-          <th>description</th>
-          <th 
-            *ngFor="let el of customColumns | keyvalue"
-            [ngStyle]="{
-              'background-color': 'khaki', 
-              'color': 'black',
-              'min-width': el.value?.width + 'px'
-              }"
-          >{{ el.key }}</th>
+          <th *ngIf="activeFilterSet.image"></th>
+          <th *ngIf="activeFilterSet.code">code</th>
+          <th *ngIf="activeFilterSet.name">name</th>
+          <th *ngIf="activeFilterSet.description">description</th>
+          <div 
+            *ngIf="activeFilterSet.parameters"
+            style="display: contents;"
+          >
+            <th 
+              *ngFor="let el of customColumns | keyvalue"
+              [ngStyle]="{
+                'background-color': 'khaki', 
+                'color': 'black',
+                'min-width': el.value?.width + 'px'
+                }"
+            >{{ el.key }}</th>
+          </div>
           <!-- 'background-color': el.value?.color, 
               'color': onFontColor(el.value?.color), 
               class="w-suppliers" -->
-          <th
-            *ngFor="let location of company?.locations"
-            class="ws-icon-cell"
-          >
-            <div>
-              <mat-icon class="w-r">warehouse</mat-icon>
-              {{ location?.name }}
-            </div>
-          </th>
 
-          <th class="ws-icon-cell ws-even-cell">
+          <div 
+            *ngIf="activeFilterSet.locations"
+            style="display: contents;"
+          >
+            <th
+              *ngFor="let location of company?.locations"
+              class="ws-icon-cell"
+            >
+              <div>
+                <mat-icon class="w-r">warehouse</mat-icon>
+                {{ location?.name }}
+              </div>
+            </th>
+          </div>
+
+          <th 
+            *ngIf="activeFilterSet.suppliers"
+            class="ws-icon-cell ws-even-cell">
             <div>
               <mat-icon class="w-r">local_shipping</mat-icon>
               Suppliers
             </div>
           </th>
 
-          <th class="ws-icon-cell">
+          <th 
+            *ngIf="activeFilterSet.parents"
+            class="ws-icon-cell">
             <div>
               <mat-icon class="w-r">account_tree</mat-icon>
               Parents
             </div>
           </th>
+
+          <th *ngIf="activeFilterSet.product">product</th>
 
         </tr>
       </thead>
@@ -179,7 +256,10 @@
               class="ws-check-box"
               (change)="onCheckboxChange($event, item?.id)"/>
           </td>
-          <td style="padding:0;">
+          <td 
+            *ngIf="activeFilterSet.image"
+            style="padding:0;"
+          >
             <div class="cell-image-wrap">
               <ng-container *ngIf="item?.image; then imageBlock else noImageBlock"></ng-container>
 
@@ -222,6 +302,7 @@
           </td>
 
           <td 
+            *ngIf="activeFilterSet.code"
             [ngClass]="{'cell-edit-border': cellEditMode[i + '-0']}"
             (click)="doubleClickCell(i,0)"
           >
@@ -239,7 +320,8 @@
             ></span>
           </td>
 
-          <td 
+          <td
+            *ngIf="activeFilterSet.name"
             [ngClass]="{'cell-edit-border': cellEditMode[i + '-1']}"
             (click)="doubleClickCell(i,1)"
           >
@@ -257,7 +339,8 @@
             ></span>
           </td>
 
-          <td 
+          <td
+            *ngIf="activeFilterSet.description"
             [ngClass]="{'cell-edit-border': cellEditMode[i + '-2']}"
             (click)="doubleClickCell(i,2)"
           >
@@ -275,103 +358,132 @@
             ></span>
           </td>
 
-          <td 
-            *ngFor="let el of customColumns | keyvalue; let ii = index"
-            (click)="doubleClickCell(i,ii+3)"
-            [ngClass]="{'cell-edit-border':cellEditMode[i + '-' + (ii+3)]}"
+          <div 
+            *ngIf="activeFilterSet.parameters"
+            style="display: contents"
           >
-            <div
-              [id]="i + '-' + (ii+3)"
-              *ngIf="!cellEditMode[i + '-' + (ii+3)]"
-            >{{ getItemColumnValue(item, el.key) }}</div>
-            <span
-              [id]="i + '-' + (ii+3) + 'f'"
-              *ngIf="cellEditMode[i + '-' + (ii+3)]" 
-              [(inputValue)]="tempCellValue"
-              (clickOutside)="onClickOutsideCell(i + '-' + (ii+3))"
-              (keydown.enter)="updateCellValue(i, ii+3)"
-              contenteditable
-            ></span>
-          </td>
-
-          <td
-            *ngFor="let location of company?.locations; let ii = index" 
-            (click)="doubleClickCell(i, ii + locationPostfix)"
-            [ngClass]="{'cell-edit-border':cellEditMode[i + '-' + (ii + locationPostfix)]}"
-            [ngStyle]="{'outline': isNotNumber(tempCellValue) && cellEditMode[i + '-' + (ii + locationPostfix)] ? '2px solid rgb(255, 0, 0)' : 'revert-layer'}"
-          >
-            <div
-              [id]="i + '-' + (ii + locationPostfix)"
-              *ngIf="!cellEditMode[i + '-' + (ii + locationPostfix)]" 
-              >{{ item.quantity[location.id] }}</div>
-            <span
-              [id]="i + '-' + (ii + locationPostfix) + 'f'"
-              *ngIf="cellEditMode[i + '-' + (ii + locationPostfix)]" 
-              [(inputValue)]="tempCellValue"
-              (clickOutside)="onClickOutsideCell(i + '-' + (ii + locationPostfix))"
-              (keydown.enter)="isNotNumber(tempCellValue)? false : updateCellValue(i, ii + locationPostfix)"
-              contenteditable
-            ></span>
-          </td>
-
-          <td
-            (click)="doubleClickCell(i, supplierPostfix)"
-            [ngClass]="{'cell-edit-border':cellEditMode[i + '-' +  supplierPostfix]}"
-          >
-            <div 
-              [id]="i + '-' + supplierPostfix"
-              *ngIf="!cellEditMode[i + '-' + supplierPostfix]"
-              class="w-tag-space" 
-              >
-              <div 
-                class="w-tag"
-                *ngFor="let supplier of item.suppliers"
-              >
-                {{supplier.name}}
-              </div>
-            </div>
-            <span
-              [id]="i + '-' + supplierPostfix + 'f'"
-              *ngIf="cellEditMode[i + '-' + supplierPostfix]"
-              (clickOutside)="onClickOutsideCell(i + '-' + supplierPostfix)"
+            <td 
+              *ngFor="let el of customColumns | keyvalue; let ii = index"
+              (click)="doubleClickCell(i,ii+3)"
+              [ngClass]="{'cell-edit-border':cellEditMode[i + '-' + (ii+3)]}"
             >
-              <div class="w-tag-space" >
+              <div
+                [id]="i + '-' + (ii+3)"
+                *ngIf="!cellEditMode[i + '-' + (ii+3)]"
+              >{{ getItemColumnValue(item, el.key) }}</div>
+              <span
+                [id]="i + '-' + (ii+3) + 'f'"
+                *ngIf="cellEditMode[i + '-' + (ii+3)]" 
+                [(inputValue)]="tempCellValue"
+                (clickOutside)="onClickOutsideCell(i + '-' + (ii+3))"
+                (keydown.enter)="updateCellValue(i, ii+3)"
+                contenteditable
+              ></span>
+            </td>
+          </div>
+
+          <div 
+            *ngIf="activeFilterSet.locations"
+            style="display: contents"
+          >
+            <td
+              *ngFor="let location of company?.locations; let ii = index" 
+              (click)="doubleClickCell(i, ii + locationPostfix)"
+              [ngClass]="{'cell-edit-border':cellEditMode[i + '-' + (ii + locationPostfix)]}"
+              [ngStyle]="{'outline': isNotNumber(tempCellValue) && cellEditMode[i + '-' + (ii + locationPostfix)] ? '2px solid rgb(255, 0, 0)' : 'revert-layer'}"
+            >
+              <div
+                [id]="i + '-' + (ii + locationPostfix)"
+                *ngIf="!cellEditMode[i + '-' + (ii + locationPostfix)]" 
+                >{{ item.quantity[location.id] }}</div>
+              <span
+                [id]="i + '-' + (ii + locationPostfix) + 'f'"
+                *ngIf="cellEditMode[i + '-' + (ii + locationPostfix)]" 
+                [(inputValue)]="tempCellValue"
+                (clickOutside)="onClickOutsideCell(i + '-' + (ii + locationPostfix))"
+                (keydown.enter)="isNotNumber(tempCellValue)? false : updateCellValue(i, ii + locationPostfix)"
+                contenteditable
+              ></span>
+            </td>
+          </div>
+
+          <div 
+            *ngIf="activeFilterSet.suppliers"
+            style="display: contents"
+          >
+            <td
+              (click)="doubleClickCell(i, supplierPostfix)"
+              [ngClass]="{'cell-edit-border':cellEditMode[i + '-' +  supplierPostfix]}"
+            >
+              <div 
+                [id]="i + '-' + supplierPostfix"
+                *ngIf="!cellEditMode[i + '-' + supplierPostfix]"
+                class="w-tag-space" 
+                >
                 <div 
-                  class="w-tag w-cursor"
-                  *ngFor="let supplier of suppliers;"
-                  [ngClass]="{'w-tag-off': !checkList[supplier.id]} "
-                  (click)="checkList[supplier.id] = !checkList[supplier.id]"
+                  class="w-tag"
+                  *ngFor="let supplier of item.suppliers"
                 >
                   {{supplier.name}}
                 </div>
               </div>
-            </span>
-          </td>
+              <span
+                [id]="i + '-' + supplierPostfix + 'f'"
+                *ngIf="cellEditMode[i + '-' + supplierPostfix]"
+                (clickOutside)="onClickOutsideCell(i + '-' + supplierPostfix)"
+              >
+                <div class="w-tag-space" >
+                  <div 
+                    class="w-tag w-cursor"
+                    *ngFor="let supplier of suppliers;"
+                    [ngClass]="{'w-tag-off': !checkList[supplier.id]} "
+                    (click)="checkList[supplier.id] = !checkList[supplier.id]"
+                  >
+                    {{supplier.name}}
+                  </div>
+                </div>
+              </span>
+            </td>
+          </div>
 
-          <td
-            class="cell-wrap"
-            [ngClass]="{'cell-edit-border':cellEditMode[i + '-' +  parentPostfix]}"
+          <div 
+            *ngIf="activeFilterSet.parents"
+            style="display: contents"
           >
-            <div 
-              [id]="i + '-' + parentPostfix"
-              *ngIf="!cellEditMode[i + '-' + parentPostfix]"
-              class="w-tag-space" 
+            <td
+              class="cell-wrap"
+              [ngClass]="{'cell-edit-border':cellEditMode[i + '-' +  parentPostfix]}"
             >
               <div 
-                class="w-tag w-tag-two"
-                *ngFor="let parent of item.parents | keyvalue"
+                [id]="i + '-' + parentPostfix"
+                *ngIf="!cellEditMode[i + '-' + parentPostfix]"
+                class="w-tag-space" 
               >
-                {{ getItemById(parent.key)?.name + ' - ' + parent.value }}
-              </div>
+                <div 
+                  class="w-tag w-tag-two"
+                  *ngFor="let parent of item.parents | keyvalue"
+                >
+                  {{ getItemById(parent.key)?.name + ' - ' + parent.value }}
+                </div>
 
-              <div 
-                title="Change parents"
-                class="cell-image-hover-button cell-parent-hover-button"
-                (click)="onClickSetParents(i)"
-              >
-                <mat-icon>build</mat-icon>
+                <div 
+                  title="Change parents"
+                  class="cell-image-hover-button cell-parent-hover-button"
+                  (click)="onClickSetParents(i)"
+                >
+                  <mat-icon>build</mat-icon>
+                </div>
               </div>
-            </div>
+            </td>
+          </div>
+
+          <td *ngIf="activeFilterSet.product">
+            <input 
+              type="checkbox" 
+              name="remove"
+              class="ws-check-box"
+              [(ngModel)]="item.product"
+              />
           </td>
 
         </tr>

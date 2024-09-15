@@ -1,0 +1,23 @@
+.w-loading-page {
+  width: 100svw; 
+  height: 100svh;
+  margin: 0 auto; 
+  display: flex; 
+  flex-direction: column; 
+  align-items: center; 
+  justify-content: center;
+  /* animation-duration: 1s; */
+}
+
+.w-a {
+  animation: example 1s;
+}
+
+@keyframes example {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

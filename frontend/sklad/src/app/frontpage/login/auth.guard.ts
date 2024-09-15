@@ -5,7 +5,7 @@ import { Observable } from 'rxjs';
 import { map, take } from 'rxjs/operators';
 
 @Injectable({ providedIn: 'root' })
-export class AuthGuard implements CanActivate, CanActivateChild  {
+export class AuthGuard implements CanActivate, CanActivateChild {
   constructor(
     private authService: AuthService, 
     private router: Router
@@ -22,11 +22,13 @@ export class AuthGuard implements CanActivate, CanActivateChild  {
     return this.authService.user.pipe(
       take(1),
       map(user => {
+        // console.log('User in guard:', user);
         const isAuth = !!user;
         if (isAuth) {
           return true;
         }
-        return this.router.createUrlTree(['/login']);
+        // console.log('returning login page')
+        return this.router.createUrlTree(['loading']);
       })
     );
   }

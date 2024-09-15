@@ -1,6 +1,4 @@
 import { Routes } from '@angular/router';
-import { WorkspaceComponent } from './workspace/workspace.component';
-import { FrontpageComponent } from './frontpage/frontpage.component';
 
 export const routes: Routes = [
   { 
@@ -10,6 +8,12 @@ export const routes: Routes = [
     //   import('./workspace/workspace.component').then((mod) => mod.WorkspaceComponent)
     loadChildren: () =>
       import('./workspace/workspace.routes')
+  },
+  { 
+    path: "loading", 
+    // component: WorkspaceComponent,
+    loadComponent: () =>
+      import('./loading/loading.component').then((mod) => mod.LoadingComponent),
   }, 
   { 
     path: "", 

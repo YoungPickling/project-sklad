@@ -8,6 +8,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Item } from '../models/item.model';
 import Utils from '../utils.service';
 import { MatIconModule } from '@angular/material/icon';
+import { TreeNode } from '../../workspace/diagrams/tree/tree.component';
 
 export enum AlertPresets {
   addCompany,
@@ -89,6 +90,8 @@ export class AlertComponent implements OnInit, AfterViewInit {
   @Input() items: Item[];
 
   ItemAmountMap: Map<number, number>;
+
+  selectedItemChildren: number[] = [];
 
   link = environment.API_SERVER + "/api/rest/v1/secret/";
 
@@ -402,6 +405,24 @@ export class AlertComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
+    /*
+    if(this.items) {
+      this.ItemAmountMap = new Map<number, number>();
+   
+      if(this.parentsMap) {
+        this.items.forEach(x => {
+          if(this.parentsMap[x.id])
+            this.ItemAmountMap.set(x.id, this.parentsMap[x.id]);
+          else
+            this.ItemAmountMap.set(x.id, 0);
+        });
+      } else {
+        this.items.forEach(x => this.ItemAmountMap.set(x.id, 0));
+      }
+      this.ItemAmountMap.delete(this.itemSelected);
+    }
+    */
+
     if(this.items) {
       this.ItemAmountMap = new Map<number, number>();
 
@@ -415,8 +436,40 @@ export class AlertComponent implements OnInit, AfterViewInit {
       } else {
         this.items.forEach(x => this.ItemAmountMap.set(x.id, 0));
       }
+
+      this.selectedItemChildren = [this.itemSelected];
+      let iterate: boolean;
+      let iterateTimes = 20;
+
+      do {
+        if(iterateTimes < 1) {
+          console.error("Stockoverflow")
+          break;
+        }
+          
+        iterate = false;
+
+        for(let item of this.items.filter((x) => !this.selectedItemChildren.includes(x.id))) {
+          Object.entries(item.parents)?.forEach((map) => 
+            {
+              if(this.selectedItemChildren.includes(+map[0])) {
+                this.selectedItemChildren.push(item.id);
+                iterate = true;
+                iterateTimes--;
+              }
+            }
+          );
+        }
+      } while(iterate)
       this.ItemAmountMap.delete(this.itemSelected);
     }
+  }
+
+  allowEditParrent(id: number): boolean {
+    // if(id === this.itemSelected) {
+    //   return false
+    // }
+    return !this.selectedItemChildren.includes(id);
   }
 
   inputValidation(s: string) {

@@ -6,9 +6,12 @@ import lt.project.sklad._security.entities.Token;
 import lt.project.sklad._security.services.TokenService;
 import lt.project.sklad._security.utils.MessagingUtils;
 import lt.project.sklad.entities.Company;
+import lt.project.sklad.entities.Item;
 import lt.project.sklad.entities.Supplier;
 import lt.project.sklad.repositories.CompanyRepository;
+import lt.project.sklad.repositories.ItemRepository;
 import lt.project.sklad.repositories.SupplierRepository;
+import org.apache.commons.lang3.function.Suppliers;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -29,6 +32,7 @@ import static org.springframework.http.HttpStatus.*;
 public class SupplierService {
     private final SupplierRepository supplierRepository;
     private final CompanyRepository companyRepository;
+    private final ItemRepository itemRepository;
     private final TokenService tokenService;
     private final MessagingUtils msgUtils;
 
@@ -150,11 +154,30 @@ public class SupplierService {
         boolean wrongCompany = foundSuppliers.stream().anyMatch(
                 x -> x.getOwner().getId() != companyId);
 
-        if(wrongCompany)
+        if(wrongCompany) {
             return msgUtils.error(NOT_FOUND, "Alien supplier in the list");
+        }
+
+        List<Item> items = itemRepository.findAllByCompanyId(companyId);
+
+        if(items == null || items.isEmpty()) {
+            return msgUtils.error(NOT_FOUND, "No items found");
+        }
+
+        // Remove supplier associations from items
+        for (Item item : items) {
+            for (Supplier supplier : foundSuppliers) {
+                if (item.getSuppliers().contains(supplier)) {
+                    item.getSuppliers().remove(supplier);
+                    itemRepository.save(item); // Save the item after modifying its suppliers
+                }
+            }
+        }
 
         company.getSuppliers().removeAll(foundSuppliers);
+        supplierRepository.deleteAll(foundSuppliers);
 
+        // Verify if suppliers are deleted
         List<Supplier> postDeleteSuppliers = supplierRepository.findAllById(suppliers);
         if (!postDeleteSuppliers.isEmpty()) {
             System.err.println("Suppliers not deleted: " + postDeleteSuppliers.stream().map(Supplier::getId).collect(Collectors.toList()));

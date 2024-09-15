@@ -1,0 +1,12 @@
+<div class="w-loading-page">
+  <span class="frontpage-loader"></span>
+  <h1>Loading workspace...</h1>
+  <div style="height:1rem">
+    <button 
+      class="button-42" 
+      *ngIf="toggleMenu" 
+      [routerLink]="['/']"
+      [ngClass]="{'w-a': toggleMenu}"
+    >Go back</button>
+  </div>
+</div>

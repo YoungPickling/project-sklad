@@ -13,6 +13,10 @@
   --header-height: 80px;
 }
 
+:root, * {
+  color: #222;
+}
+
 html {
   /* overflow: hidden; */
   margin: 0;  
@@ -21,9 +25,10 @@ html {
 body {
   /* display: block; */
   background-color: var(--s-background);
-  /* font-family: "Inter",-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif; */
-  font-family: GT Walsheim LC, Segoe UI, Helvetica Neue, Helvetica, Arial, sans-serif;
   margin: 0;
+  font-family: "Trebuchet MS", Helvetica, sans-serif;
+  /* font-family: "Inter",-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif; */
+  /* font-family: GT Walsheim LC, Segoe UI, Helvetica Neue, Helvetica, Arial, sans-serif; */
 }
 
 p {
