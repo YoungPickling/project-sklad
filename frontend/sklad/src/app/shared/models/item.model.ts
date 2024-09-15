@@ -15,6 +15,7 @@ export class Item {
     public quantity?: Map<number, number>, // key: location id, value: quantity
     public company?: Company,
     public suppliers?: Supplier[],
+    public product?: boolean,
     public description?: string
   ) {}
 }

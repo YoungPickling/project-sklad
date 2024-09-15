@@ -31,6 +31,8 @@ export class DiagramsComponent implements OnInit, OnDestroy, AfterViewInit {
   isLoading = false;
   errorResponse: HttpErrorResponse;
 
+  treeLoading: boolean;
+
   noTies: boolean;
   selectedItem: number = -1;
   treeData: TreeNode = null;
@@ -77,8 +79,6 @@ export class DiagramsComponent implements OnInit, OnDestroy, AfterViewInit {
         this.errorResponse = error;
       }
     );
-
-    // this.createBarChart();
   }
 
   ngAfterViewInit(): void {
@@ -92,9 +92,9 @@ export class DiagramsComponent implements OnInit, OnDestroy, AfterViewInit {
   // }
 
   onItemChange(itemId: number): void {
-    console.log('Selected Item ID:', itemId);
+    // console.log('Selected Item ID:', itemId);
     const selectedItem = this.findItemById(itemId);
-    console.log(selectedItem)
+    // console.log(selectedItem)
     
     if(selectedItem) {
       // Build the tree starting from the selected item
@@ -102,16 +102,15 @@ export class DiagramsComponent implements OnInit, OnDestroy, AfterViewInit {
       
       // Update the treeData with the constructed tree
       this.treeData = tree;
-      console.log('Tree data updated:', this.treeData);
+      // console.log('Tree data updated:', this.treeData);
     } else {
-      console.error('Item not found');
+      // console.error('Item not found');
     }
   }
 
   buildTreeNode(item: Item): TreeNode {
-    console.log('inside item ', item.name, !!item.parents, item.parents.size > 0, Object.keys(item.parents).length);
     const treeNode: TreeNode = {
-      item: item,  // Set the current item as the node's name (or identifier)
+      item: item,
       children: []
     };
   
@@ -132,7 +131,6 @@ export class DiagramsComponent implements OnInit, OnDestroy, AfterViewInit {
 
   findItemById(id: number): Item | undefined {
     return this.company.items?.find(item => item.id == id);
-    // return this.company.items.filter(i => i?.id == id)[0];
   }
 
   get items() {
@@ -145,6 +143,4 @@ export class DiagramsComponent implements OnInit, OnDestroy, AfterViewInit {
     this.loadingSubscription.unsubscribe();
     this.errorSubscription.unsubscribe();
   }
-
-
 }

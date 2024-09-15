@@ -25,6 +25,7 @@ type FilterSet = {
   locations: boolean;
   suppliers: boolean;
   parents: boolean;
+  product: boolean;
 };
 
 @Component({
@@ -59,7 +60,8 @@ export class ItemsComponent implements OnInit, OnDestroy, AfterViewChecked {
     parameters: true,
     locations: true,
     suppliers: true,
-    parents: true
+    parents: true,
+    product: false,
   };
   // variableFilterSet: FilterSet = this.activeFilterSet;
   

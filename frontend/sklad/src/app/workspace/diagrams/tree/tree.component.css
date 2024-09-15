@@ -11,6 +11,21 @@
 
 .link {
   fill: none;
-  stroke: #ccc;
-  stroke-width: 2px;
+  stroke: #111;
+  stroke-width: 0.1rem;
+}
+
+.w-quantity {
+  position: absolute; 
+  top: -0.5rem; 
+  right: auto; 
+  background-color: #a3aa44;
+  border: solid 0.0625rem;
+  border-radius: 100%;
+  min-width: 2rem;
+  height: 2rem;
+  z-index: 1111;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }

@@ -10,15 +10,27 @@
 
 <ng-template #view>
   <div class="w-l">
-    <select [(ngModel)]="selectedItem" (ngModelChange)="onItemChange($event)">
-      <option *ngFor="let item of items" [value]="item.id">{{item.name}}</option>
-    </select>
+
+    <div class="w-button-bar">
+      <div class="custom-select">
+        <select [(ngModel)]="selectedItem" (ngModelChange)="onItemChange($event)">
+          <option *ngFor="let item of items" [value]="item.id">{{item.name}}</option>
+        </select>
+      </div>
+    </div>
+
+    <div *ngIf="treeLoading" style="margin: 0 50%; position: absolute">
+      <span class="loader-round"></span>
+    </div>
 
     <app-tree 
       *ngIf="selectedItem >= 0"
       [data]="treeData"
       [selectedItem]="selectedItem"
+      (loading)="treeLoading = $event"
     ></app-tree>
+
+    
   </div>
 
 </ng-template>

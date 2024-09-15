@@ -5,5 +5,19 @@
   display: flex; 
   flex-direction: column; 
   align-items: center; 
-  justify-content: center; 
+  justify-content: center;
+  /* animation-duration: 1s; */
+}
+
+.w-a {
+  animation: example 1s;
+}
+
+@keyframes example {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }

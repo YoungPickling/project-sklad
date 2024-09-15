@@ -92,6 +92,10 @@
       <input type="checkbox" class="ui-checkbox" id="parents" name="parents" [(ngModel)]="activeFilterSet.parents">
       <label for="parents"> parents</label><br><br>
     </div>
+    <div>
+      <input type="checkbox" class="ui-checkbox" id="product" name="product" [(ngModel)]="activeFilterSet.product">
+      <label for="product"> product</label><br><br>
+    </div>
   </div>
 
   <div *ngIf="!isLoading && addButtonActive">
@@ -237,6 +241,8 @@
               Parents
             </div>
           </th>
+
+          <th *ngIf="activeFilterSet.product">product</th>
 
         </tr>
       </thead>
@@ -470,6 +476,15 @@
               </div>
             </td>
           </div>
+
+          <td *ngIf="activeFilterSet.product">
+            <input 
+              type="checkbox" 
+              name="remove"
+              class="ws-check-box"
+              [(ngModel)]="item.product"
+              />
+          </td>
 
         </tr>
       </tbody>

@@ -8,14 +8,8 @@ import { ProfileComponent } from "./profile/profile.component";
 import { AuthGuard } from "./login/auth.guard";
 import { RegisterComponent } from "./register/register.component";
 import { SettingsComponent } from "./settings/settings.component";
-import { LoadingComponent } from "../loading/loading.component";
 // export const frontpageRoutes: Routes = [
 export default [
-  // {
-  //   path: 'loading',
-  //   pathMatch: 'full',
-  //   component: LoadingComponent
-  // },
   {
     path: '',
     component: FrontpageComponent,
@@ -25,7 +19,6 @@ export default [
       // path: 'loading',
         // pathMatch: 'full',
       // component: LoadingComponent,
-      // pathMatch: 'full'
         // loadComponent: () => 
         //   import('./workspace/loading/loading.component')
         //   .then((mod) => mod.LoadingComponent),

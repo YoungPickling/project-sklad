@@ -59,37 +59,8 @@ public class Item {
     private List<ItemColumn> columns;
 
     /**
-     * Item's children classes.
-     * Parts from which this one is made out of.
+     * Item's parent item ids
      */
-//    @JsonIgnoreProperties({"children","parents", "columns", "quantity", "supplier", "description", "company", "code"})
-//    @ManyToMany(mappedBy = "parents", fetch = FetchType.EAGER)
-//    private Set<Item> children;
-
-//    @ManyToMany
-//    @JoinTable(name="join_items",
-//            joinColumns=@JoinColumn(name="itemId"),
-//            inverseJoinColumns=@JoinColumn(name="parentId")
-//    )
-//    @JsonIgnoreProperties({"children","parents", "columns", "quantity", "supplier", "description", "company", "code"})
-//    private List<Item> parents;
-//
-//    @ManyToMany
-//    @JoinTable(name="join_items",
-//            joinColumns=@JoinColumn(name="parentId"),
-//            inverseJoinColumns=@JoinColumn(name="itemId")
-//    )
-//    @JsonIgnoreProperties({"children","parents", "columns", "quantity", "supplier", "description", "company", "code"})
-//    private List<Item> children;
-
-    /**
-     * Item's children classes.
-     * Parts from which this one is made out of.
-     */
-//    @JsonIgnoreProperties({"children","parents", "columns", "quantity", "supplier", "description", "company", "code"})
-//    @ManyToMany(fetch = FetchType.EAGER)
-//    private Set<Item> parents;
-
     @ElementCollection(fetch = FetchType.EAGER)
     private Map<Long, Long> parents;
 
@@ -98,11 +69,6 @@ public class Item {
      * has what amount of this Item.
      */
     @ElementCollection(fetch = FetchType.EAGER)
-//    @CollectionTable(name = "location_quantity_mapping", joinColumns = @JoinColumn(name = "item_id"))
-//    @MapKeyJoinColumn(name = "location_id")
-//    @Column(name = "quantity")
-//    @JsonIgnoreProperties({"owner", "website", "description", "streetAndNumber", "cityOrTown", "postalCode", "phoneNumber", "phoneNumberTwo"})
-//    @JsonSerialize(using = LocationQuantitySerializer.class)
     private Map<Long, Long> quantity;
 
     /**
@@ -125,6 +91,8 @@ public class Item {
             inverseJoinColumns = @JoinColumn(name = "supplier_id"))
     @JsonIgnoreProperties({"owner", "website", "description", "streetAndNumber", "cityOrTown", "postalCode", "phoneNumber", "phoneNumberTwo"})
     private List<Supplier> suppliers;
+
+    private boolean product = false;
 
     @Lob
     private String description;
