@@ -12,7 +12,7 @@
   /* padding: 0 1rem; */
   /* margin: 0.3rem 0.6rem 0 0; */
   background-color: #fff;
-  border: 1px solid;
+  border: solid 0.0625rem;
   /* border-radius: 0.25rem; */
   color: #000;
   cursor: pointer;
@@ -52,9 +52,9 @@
   width: var(--w-popup-width);
   height: var(--w-popup-height);
   padding: 0.5rem;
-  border: solid 1px;
+  border: 0.0625rem solid;
   background-color: #fff;
-  position: absolute; /* absolute */
+  position: absolute;
   bottom: 0.3rem;
   left: 0.3rem;
 }
@@ -78,5 +78,10 @@
 }
 
 .w-number {
-  border: solid 1px;
+  border: solid 0.0625rem;
+  width: 10rem;
+}
+
+.w-number:focus-visible {
+  outline: -webkit-focus-ring-color solid 0.0625rem;
 }

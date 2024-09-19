@@ -10,14 +10,14 @@
 
 .w-block-selected {
   border-radius: 25px;
-  border: 1px solid #0F1035;
+  border: 0.0625rem solid #0F1035;
   padding: 0.5rem 0px;
   background-color: #7FC7D9;
 }
 
 .w-block-wrap {
   border-radius: 25px;
-  border: 1px solid #aaa;
+  border: 0.0625rem solid #aaa;
   padding: 0.5rem 0px;
   background: #fff;
 }

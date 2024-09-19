@@ -44,21 +44,28 @@
     [data]="treeData"
     [selectedItem]="selectedItem"
     [selectedLocation]="selectedLocation"
-    [(selection)]="editItem"
     (loading)="treeLoading = $event"
     [modifyAmount]="modifyAmount"
     [assembleAmount]="assembleAmount"
   ></app-tree> <!--(clickOutside)="onOutsideClick()"-->
 
   <div 
-    *ngIf="editItem >= 0 && !isLoading" 
+    *ngIf="editItem && !isLoading" 
     class="w-popup" 
-    [ngClass]="{'pop-up': editItem >= 0, 'pop-down': !editItem}"
+    [ngClass]="{'pop-up': editItem, 'pop-down': !editItem}"
   >
+    <u><b>{{editItemName}}</b></u><br/>
     <label for="a">Adjust Item Quantity:</label><br/>
     <input class="w-number" type="number" name="a" [(ngModel)]="modifyAmount"><br/>
     <label for="b">Assemble/Disassemble Item:</label><br/>
-    <input class="w-number" type="number" name="b" [(ngModel)]="assembleAmount" [max]="maxAssemble()"><br/>
+    <input 
+      class="w-number" 
+      type="number" 
+      name="b" 
+      [(ngModel)]="assembleAmount" 
+      [max]="maxAssembleAmount"
+      [min]="minAssembleAmount"
+      ><br/>
     <button class="button-42" type="button" (click)="onSubmitChanges()" [disabled]="canSubmit()">Submit</button>
   </div>
 

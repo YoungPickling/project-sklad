@@ -13,6 +13,7 @@ import { Item } from '../../shared/models/item.model';
 import { FormsModule } from '@angular/forms';
 import { Location } from '../../shared/models/location.model';
 import { ClickOutsideDirective } from '../../shared/directives/clickOutside.directive';
+import { DiagramService } from './diagram.service';
 
 @Component({
   selector: 'app-diagrams',
@@ -22,7 +23,6 @@ import { ClickOutsideDirective } from '../../shared/directives/clickOutside.dire
     FormsModule,
     MatIconModule,
     ImageCacheDirective,
-    AlertComponent,
     TreeComponent,
     ClickOutsideDirective
   ],
@@ -39,9 +39,13 @@ export class DiagramsComponent implements OnInit, OnDestroy {
   noTies: boolean;
   noLocations: boolean;
 
-  editItem: number;
+  editItem: number = null;
+  editItemName: string;
+  private editItemSub: Subscription;
   modifyAmount: number = 0;
   assembleAmount: number = 0;
+  maxAssembleAmount: number | null;
+  minAssembleAmount: number | null;
 
   selectedItem: number;
   selectedLocation: number;
@@ -55,11 +59,11 @@ export class DiagramsComponent implements OnInit, OnDestroy {
 
   private companyDetailSub: Subscription;
   private loadingSubscription: Subscription;
-  // private popUpSub: Subscription;
   private errorSubscription: Subscription;
 
   constructor(
     private workspaceService: WorkspaceService,
+    private diagramService: DiagramService
   ) {}
 
   ngOnInit(): void {
@@ -70,7 +74,7 @@ export class DiagramsComponent implements OnInit, OnDestroy {
         let tempNoTies = true;
         // const empty: {} = {};
 
-        this.noLocations = company.locations?.length === 0
+        this.noLocations = !company?.locations?.length
 
         if(this.noLocations) {
           return;
@@ -95,6 +99,18 @@ export class DiagramsComponent implements OnInit, OnDestroy {
       }
     );
 
+    this.editItemSub = this.diagramService.editItem.subscribe(
+      num => {
+        this.editItem = num;
+        const item = this.findItemById(num);
+        this.editItemName = item?.name || '';
+        this.modifyAmount = 0;
+        this.assembleAmount = 0;
+        this.maxAssembleAmount = this.maxAssemble();
+        this.minAssembleAmount = item?.quantity[this.selectedLocation] * -1
+      }
+    );
+
     // this.selectedItem
 
     this.loadingSubscription = this.workspaceService.isLoading.subscribe(
@@ -112,6 +128,8 @@ export class DiagramsComponent implements OnInit, OnDestroy {
   
   ngOnDestroy(): void {
     this.workspaceService.errorResponse.next(null);
+    this.diagramService.editItem.next(null);
+    this.editItemSub.unsubscribe();
     this.companyDetailSub.unsubscribe();
     this.loadingSubscription.unsubscribe();
     this.errorSubscription.unsubscribe();
@@ -141,7 +159,8 @@ export class DiagramsComponent implements OnInit, OnDestroy {
 
   private safeRemoveSelection() {
     if(this.editItem) {
-      this.editItem = null;
+      // this.editItem = null;
+      this.diagramService.editItem.next(null);
     }
   }
 
@@ -167,69 +186,27 @@ export class DiagramsComponent implements OnInit, OnDestroy {
     return treeNode;
   }
 
-  togglePopup() {
-    this.isPopupVisible = !this.isPopupVisible;
-  }
-
   findItemById(id: number): Item | undefined {
-    return this.company.items?.find(item => item.id == id);
+    return this.company?.items?.find(item => item.id == id);
   }
 
   findLocationById(id: number): Location | undefined {
-    return this.company.locations?.find(loc => loc.id == id);
+    return this.company?.locations?.find(loc => loc.id == id);
   }
 
   get items() {
-    return this.company.items?.sort((a, b) => a.id - b.id);
+    return this.company?.items?.sort((a, b) => a.id - b.id);
   }
 
   get locations() {
-    return this.company.locations?.sort((a, b) => a.id - b.id);
+    return this.company?.locations?.sort((a, b) => a.id - b.id);
   }
 
   canSubmit(): boolean {
     return !(this.modifyAmount !== 0 || this.assembleAmount !== 0);
   }
 
-  // maxAssemble() {
-  //   // TODO
-  //   if(this.editItem) {
-  //     if(this.treeData.item.id !== this.editItem) {
-  //       this.treeData.children.forEach(x => {
-  //         x.item.id === this.editItem;
-  //       });
-  //     }
-  //   }
-  // }
-
-  // maxAssemble(): number {
-  //   // Check if there's an item selected to be edited
-  //   if (this.editItem) {
-  //     const targetNode = this.findNodeById(this.treeData, this.editItem);
-      
-  //     if (targetNode) {
-  //       let maxAssemblies = Infinity;
-  
-  //       // Iterate over the child items and calculate the limiting factor
-  //       targetNode.children.forEach(childNode => {
-  //         const requiredAmount = childNode.amount; // The amount required for one assembly
-  //         const availableAmount = this.getAvailableAmount(childNode.item.id); // Assume you have this function that gets available stock
-  
-  //         // Calculate how many times we can assemble this item based on this child
-  //         const possibleAssemblies = Math.floor(availableAmount / requiredAmount);
-  
-  //         // Find the minimum assemblies we can perform (i.e., the limiting factor)
-  //         maxAssemblies = Math.min(maxAssemblies, possibleAssemblies);
-  //       });
-  
-  //       return maxAssemblies; // This will be the maximum number of assemblies
-  //     }
-  //   }
-  
-  //   return 0; // Default return value if no assemblies are possible
-  // }
-
-  maxAssemble() {
+  private maxAssemble() {
     if (!this.editItem || !this.treeData) {
       return 0; // No item selected or no tree data available
     }
@@ -247,7 +224,6 @@ export class DiagramsComponent implements OnInit, OnDestroy {
     currentNode.children.forEach(child => {
       const requiredAmount = child.amount; // Amount needed to assemble one parent item
       const availableAmount: number = child.item.quantity[this.selectedLocation] // Get available amount from stock
-      console.log("requiredAmount: " + requiredAmount, "availableAmount: " + availableAmount);
       // Calculate how many times we can assemble with this child component
       const assembliesWithThisChild = Math.floor(availableAmount / requiredAmount);
   
@@ -257,15 +233,6 @@ export class DiagramsComponent implements OnInit, OnDestroy {
     
     return maxAssemblies;
   }
-  
-  // private findNodeById(node: TreeNode, num: number): TreeNode {
-  //   if(node.item.id === num) {
-  //     return node
-  //   }
-  //   node.children.forEach(x => {
-  //     return this.findNodeById(node, num);
-  //   });
-  // }
 
   private findNodeById(node: TreeNode, num: number): TreeNode | undefined {
     if (node.item.id === num) {

@@ -1,9 +1,11 @@
-import { ChangeDetectorRef, Component, EventEmitter, Input, NgZone, OnChanges, Output, Renderer2, ViewEncapsulation } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, Renderer2, ViewEncapsulation } from '@angular/core';
 import * as d3 from 'd3';
 import { Item } from '../../../shared/models/item.model';
 import { environment } from '../../../../environments/environment';
 import { ImageService } from '../../../shared/image.service';
 import { CommonModule } from '@angular/common';
+import { DiagramService } from '../diagram.service';
+import { Subscription } from 'rxjs';
 
 export interface TreeNode {
   item: Item;
@@ -19,13 +21,15 @@ export interface TreeNode {
   styleUrls: ['./tree.component.css'],
   encapsulation: ViewEncapsulation.None
 })
-export class TreeComponent implements OnChanges {
+export class TreeComponent implements OnInit, OnChanges, OnDestroy {
   link = environment.API_SERVER + "/api/rest/v1/secret/image/";
   @Input() data: TreeNode;
   @Input() selectedItem: number;
   @Input() selectedLocation: number;
-  @Input() selection: number;
-  @Output() selectionChange: EventEmitter<number> = new EventEmitter<number>();
+  // @Input() selection: number;
+  // @Output() selectionChange: EventEmitter<number> = new EventEmitter<number>();
+  selection: number | null;
+  private selectionSub: Subscription;
   @Output() loading: EventEmitter<boolean> = new EventEmitter<boolean>();
 
   private _cachedHashes: Map<number, string> = new Map();
@@ -37,20 +41,35 @@ export class TreeComponent implements OnChanges {
 
   constructor(
     private imageService: ImageService,
-    private cd: ChangeDetectorRef,
+    private diagramService: DiagramService,
     private renderer: Renderer2
-    // private ngZone: NgZone
   ) {}
+
+  ngOnInit(): void {
+    this.selectionSub = this.diagramService.editItem.subscribe(
+      num => {
+        this.selection = num;
+        this.updateTree();
+      }
+    )
+  }
 
   ngOnChanges() {
     Promise.resolve().then(() => this.loading.emit(true))
-    
-      this.preloadImages(this.data).then(() => {
-        Promise.resolve().then(() => this.loading.emit(false))
-        this.updateTree();
-      });
-    // });
+
+    this.preloadImages(this.data).then(() => {
+      Promise.resolve().then(() => this.loading.emit(false))
+      this.updateTree();
+    });
   }
+
+  ngOnDestroy(): void {
+    this.selectionSub.unsubscribe();
+  }
+
+  // get selection() {
+  //   return this.diagramService.editItem.getValue()
+  // }
 
   private preloadImages(node: TreeNode): Promise<void> {
 
@@ -93,8 +112,9 @@ export class TreeComponent implements OnChanges {
   }
 
   changeSelection(value: number) {
-    this.selection = value;
-    this.selectionChange.emit(this.selection);
+    // this.selection = value;
+    // this.selectionChange.emit(this.selection);
+    this.diagramService.editItem.next(value)
   }
 
   // onOutsideClick() {
@@ -184,13 +204,13 @@ export class TreeComponent implements OnChanges {
           style="background-color:
           ${d.data.item.quantity[this.selectedLocation] !== 0 ? 
             d.data.item.quantity[this.selectedLocation] >= d.data.amount ? 
-            '#3e3': 'revert-layer' : '#d11'}"
+            '#3e3': 'revert-layer' : '#f33'}"
           >${d.data.item.quantity[this.selectedLocation]}</div>
           ${+d.data.item.id !== this.data.item.id ? 
             `<div class="w-needed">x${d.data.amount}</div>` : ''}
-          <img 
-            src="${this._cachedHashes.get(d.data.item.id)}" 
-            alt="${d.data.item.name}" 
+          <img
+            src="${this._cachedHashes.get(d.data.item.id)}"
+            alt="${d.data.item.name}"
             style="width:50px;height:50px"/>
           <p style="margin:0.2rem 0">${d.data.item.name}</p>
         </div>`
@@ -212,14 +232,6 @@ export class TreeComponent implements OnChanges {
         }
       );
     });
-
-    // d3.select('*').filter("foreignObject")
-    //   .on("click", (event) => {//d3.select(event.currentTarget)
-    //     // this.changeSelection(null)
-    //     this.selection = null;
-    //     this.selectionChange.emit(this.selection);
-    //   }
-    // );
 
     // Handle node updates and removal
     node.exit().remove();
