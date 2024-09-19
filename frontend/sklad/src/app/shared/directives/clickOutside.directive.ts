@@ -4,7 +4,6 @@ import { Subscription, filter, fromEvent } from "rxjs";
 
 @Directive({
   standalone: true,
-  // import: [],
   selector: '[clickOutside]'
 })
 export class ClickOutsideDirective implements AfterViewInit, OnDestroy{
@@ -34,5 +33,6 @@ export class ClickOutsideDirective implements AfterViewInit, OnDestroy{
   isInside(elementToCheck: HTMLElement): boolean {
     return elementToCheck === this.element.nativeElement ||
       this.element.nativeElement.contains(elementToCheck);
+    // return this.element.nativeElement.contains(elementToCheck);
   }
 }

@@ -15,6 +15,7 @@ html {
 .w-header {
   /* background-color: #7c2f2f; */
   background-color: #365486;
+  overflow-x: overlay;
   color: #fff;
   height: 4.5rem;
   display: flex;
@@ -26,6 +27,27 @@ html {
   /* width: calc(100% - 3vw); */
   padding: 0 0.6rem;
   box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 5px 0px, rgba(0, 0, 0, 0.1) 0px 0px 1px 0px;
+}
+
+/* width */
+.w-header::-webkit-scrollbar {
+  height: 2px;
+  display: none;
+}
+
+/* Track */
+.w-header::-webkit-scrollbar-track {
+  background: #f1f1f1; 
+}
+ 
+/* Handle */
+.w-header::-webkit-scrollbar-thumb {
+  background: #888; 
+}
+
+/* Handle on hover */
+.w-header::-webkit-scrollbar-thumb:hover {
+  background: #555; 
 }
 
 .w-body {
@@ -50,8 +72,7 @@ html {
 .w-max {
   display: block;
   padding: 0 1rem;
-  flex: 0 0 300px;
-  width: calc(300px - 2rem);
+  flex: 0 0 auto;
 }
 
 .w-max, .w-side-bar {

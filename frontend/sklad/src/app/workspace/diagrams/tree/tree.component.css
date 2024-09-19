@@ -1,8 +1,25 @@
 #tree-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  /* margin-top: 50px; */
+  display: grid;
+  place-items: center;
+}
+
+.w-block {
+  text-align: center;
+  position: relative;
+}
+
+.w-block-selected {
+  border-radius: 25px;
+  border: 1px solid #0F1035;
+  padding: 0.5rem 0px;
+  background-color: #7FC7D9;
+}
+
+.w-block-wrap {
+  border-radius: 25px;
+  border: 1px solid #aaa;
+  padding: 0.5rem 0px;
+  background: #fff;
 }
 
 .node {
@@ -19,9 +36,21 @@
   position: absolute; 
   top: -0.5rem; 
   right: auto; 
-  background-color: #a3aa44;
+  background-color: #dd1;
   border: solid 0.0625rem;
   border-radius: 100%;
+  min-width: 2rem;
+  height: 2rem;
+  z-index: 1111;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.w-needed {
+  position: absolute; 
+  top: -0.5rem; 
+  right: 0.2rem;
   min-width: 2rem;
   height: 2rem;
   z-index: 1111;

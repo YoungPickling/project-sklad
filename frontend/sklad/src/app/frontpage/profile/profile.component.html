@@ -1,4 +1,3 @@
- <!-- *ngIf="error"-->
 <app-alert
   *ngIf="alertOpen"
   [(isLoadig)]="isLoading"
@@ -46,7 +45,7 @@
           <button class="icon-display" (click)="companyButtonState[i] = !companyButtonState[i]">
             <mat-icon class="mat-icon-display">expand_{{ companyButtonState[i] ? 'less' : 'more' }}</mat-icon>
           </button>
-          <div class="frontpage-window-top-pfp" style="margin-right:1rem;background-color:black">
+          <div class="frontpage-window-top-pfp f-hide" style="margin-right:1rem;background-color:black">
             <mat-icon style="scale: 200%;">package_2</mat-icon>
           </div>
           <div class="frontpage-info-box">

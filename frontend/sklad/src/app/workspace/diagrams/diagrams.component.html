@@ -1,38 +1,65 @@
-
 <div class="w-l">
   <div class="w-title-bar">
     <h1 class="w-title">Diagrams</h1>
     <span *ngIf="isLoading" class="loader-round"></span>
+    <!-- <div>x{{editItem}}</div> -->
   </div>
 </div>
 
-<h1 class="w-empty" *ngIf="noTies else view">No Relations Between Items Found</h1>
+<h1 
+  class="w-empty" 
+  *ngIf="noLocations"
+>Create a Location First</h1>
+
+<h1 
+  class="w-empty" 
+  *ngIf="!noLocations && noTies else view"
+>No Relations Between Items Found</h1>
 
 <ng-template #view>
-  <div class="w-l">
-
+  
+  <div class="w-l" style="margin-bottom: 0.2rem">
     <div class="w-button-bar">
       <div class="custom-select">
         <select [(ngModel)]="selectedItem" (ngModelChange)="onItemChange($event)">
           <option *ngFor="let item of items" [value]="item.id">{{item.name}}</option>
         </select>
       </div>
+
+      <div class="custom-select">
+        <select [(ngModel)]="selectedLocation" (ngModelChange)="onLocationChange($event)">
+          <option *ngFor="let location of locations" [value]="location.id">{{location.name}}</option>
+        </select>
+      </div>
+
     </div>
+  </div>
 
-    <div *ngIf="treeLoading" style="margin: 0 50%; position: absolute">
-      <span class="loader-round"></span>
-    </div>
+  <div *ngIf="treeLoading" style="margin: 0 50%; position: absolute">
+    <span class="loader-round"></span>
+  </div>
 
-    <app-tree 
-      *ngIf="selectedItem >= 0"
-      [data]="treeData"
-      [selectedItem]="selectedItem"
-      (loading)="treeLoading = $event"
-    ></app-tree>
+  <app-tree 
+    *ngIf="selectedItem >= 0"
+    [data]="treeData"
+    [selectedItem]="selectedItem"
+    [selectedLocation]="selectedLocation"
+    [(selection)]="editItem"
+    (loading)="treeLoading = $event"
+    [modifyAmount]="modifyAmount"
+    [assembleAmount]="assembleAmount"
+  ></app-tree> <!--(clickOutside)="onOutsideClick()"-->
 
-    
+  <div 
+    *ngIf="editItem >= 0 && !isLoading" 
+    class="w-popup" 
+    [ngClass]="{'pop-up': editItem >= 0, 'pop-down': !editItem}"
+  >
+    <label for="a">Adjust Item Quantity:</label><br/>
+    <input class="w-number" type="number" name="a" [(ngModel)]="modifyAmount"><br/>
+    <label for="b">Assemble/Disassemble Item:</label><br/>
+    <input class="w-number" type="number" name="b" [(ngModel)]="assembleAmount" [max]="maxAssemble()"><br/>
+    <button class="button-42" type="button" (click)="onSubmitChanges()" [disabled]="canSubmit()">Submit</button>
   </div>
 
 </ng-template>
-
-

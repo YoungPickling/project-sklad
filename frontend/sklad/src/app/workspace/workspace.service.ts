@@ -8,6 +8,18 @@ import { Item } from "../shared/models/item.model";
 import { Supplier } from "../shared/models/supplier.model";
 import { Location } from "../shared/models/location.model";
 
+export type FilterSet = {
+  image: boolean;
+  code: boolean;
+  name: boolean;
+  description: boolean;
+  parameters: boolean
+  locations: boolean;
+  suppliers: boolean;
+  parents: boolean;
+  product: boolean;
+};
+
 @Injectable()
 export class WorkspaceService {
   companyDetails = new BehaviorSubject<Company>(null);
@@ -15,6 +27,18 @@ export class WorkspaceService {
 
   closeAlert = new BehaviorSubject<boolean>(false);
   errorResponse = new BehaviorSubject<HttpErrorResponse>(null);
+
+  itemFilter = new BehaviorSubject<FilterSet>({
+      image: true,
+      code: true,
+      name: true,
+      description: true,
+      parameters: true,
+      locations: true,
+      suppliers: true,
+      parents: true,
+      product: false,
+  });
 
   private API_PATH = "/api/rest/v1/secret/";
 

@@ -45,3 +45,38 @@
   border-top: var(--size) solid black;
   top: 55%;
 }
+
+.w-popup {
+  --w-popup-width: 400px;
+  --w-popup-height: 12rem;
+  width: var(--w-popup-width);
+  height: var(--w-popup-height);
+  padding: 0.5rem;
+  border: solid 1px;
+  background-color: #fff;
+  position: absolute; /* absolute */
+  bottom: 0.3rem;
+  left: 0.3rem;
+}
+
+.pop-up {
+  animation: popup-up 400ms forwards;
+}
+
+.pop-down {
+  animation: popup-down 400ms forwards;
+}
+
+@keyframes popup-up {
+  from {bottom: calc(-1 * (var(--w-popup-height) + 0.5rem));}
+  to {bottom: 0.3rem;}
+}
+
+@keyframes popup-down {
+  from {bottom: 0.3rem;}
+  to {bottom: calc(-1 * (var(--w-popup-height) + 0.5rem + 0.6rem));}
+}
+
+.w-number {
+  border: solid 1px;
+}

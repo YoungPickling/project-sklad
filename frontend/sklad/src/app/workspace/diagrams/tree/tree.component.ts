@@ -1,19 +1,20 @@
-import { ChangeDetectorRef, Component, EventEmitter, Input, NgZone, OnChanges, Output, ViewEncapsulation } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, NgZone, OnChanges, Output, Renderer2, ViewEncapsulation } from '@angular/core';
 import * as d3 from 'd3';
 import { Item } from '../../../shared/models/item.model';
 import { environment } from '../../../../environments/environment';
 import { ImageService } from '../../../shared/image.service';
-// import { ImageCacheDirective } from '../../../shared/directives/image.directive';
+import { CommonModule } from '@angular/common';
 
 export interface TreeNode {
   item: Item;
+  amount: number;
   children?: TreeNode[];
 }
 
 @Component({
   selector: 'app-tree',
   standalone: true,
-  imports: [],
+  imports: [CommonModule],
   templateUrl: './tree.component.html',
   styleUrls: ['./tree.component.css'],
   encapsulation: ViewEncapsulation.None
@@ -22,6 +23,9 @@ export class TreeComponent implements OnChanges {
   link = environment.API_SERVER + "/api/rest/v1/secret/image/";
   @Input() data: TreeNode;
   @Input() selectedItem: number;
+  @Input() selectedLocation: number;
+  @Input() selection: number;
+  @Output() selectionChange: EventEmitter<number> = new EventEmitter<number>();
   @Output() loading: EventEmitter<boolean> = new EventEmitter<boolean>();
 
   private _cachedHashes: Map<number, string> = new Map();
@@ -34,6 +38,7 @@ export class TreeComponent implements OnChanges {
   constructor(
     private imageService: ImageService,
     private cd: ChangeDetectorRef,
+    private renderer: Renderer2
     // private ngZone: NgZone
   ) {}
 
@@ -87,6 +92,24 @@ export class TreeComponent implements OnChanges {
     return Promise.all(imageRequests).then(() => {});
   }
 
+  changeSelection(value: number) {
+    this.selection = value;
+    this.selectionChange.emit(this.selection);
+  }
+
+  // onOutsideClick() {
+  //   if (this.selection !== null) {
+  //     this.changeSelection(null);
+  //   }
+  // }
+
+  onContainerClick(event: MouseEvent) {
+    const target = event.target as HTMLElement;
+    if (!target.closest('.w-block')) {
+      this.changeSelection(null);
+    }
+  }
+
   private updateTree() {
     const nodeWidth = 140;
     const nodeHeight = 100;
@@ -102,8 +125,8 @@ export class TreeComponent implements OnChanges {
     const minY = d3.min(root.descendants(), d => d.y) || 0;
     const maxY = d3.max(root.descendants(), d => d.y) || 0;
 
-    const width = maxY - minY + nodeWidth + 200;
-    const height = maxX - minX + nodeHeight + 200;
+    const width = maxY - minY + nodeWidth; //  + 200
+    const height = maxX - minX + nodeHeight + 50;
 
     // Create the SVG container for the tree
     this.svg = d3
@@ -152,27 +175,53 @@ export class TreeComponent implements OnChanges {
       .attr('width', nodeWidth)
       .attr('height', nodeHeight)
       .append('xhtml:div')
-      .style('border-radius', '25px')
-      .style('border', '1px solid #aaa')
-      .style('padding', '0.5rem 0px')
-      .style('background', '#fff')
+      .classed('w-block-selected', d => this.selection === d.data.item.id)
+      .classed('w-block-wrap', d => this.selection !== d.data.item.id)
       .html(d => `
-        <div style="text-align: center; position: relative;">
-          <div class="w-quantity">${this.getTotalQuantity(d.data.item.quantity)}</div>
-          <img src="${this._cachedHashes.get(d.data.item.id)}" alt="${d.data.item.name}" style="width:50px;height:50px" />
+        <div class="w-block">
+          <div 
+          class="w-quantity"
+          style="background-color:
+          ${d.data.item.quantity[this.selectedLocation] !== 0 ? 
+            d.data.item.quantity[this.selectedLocation] >= d.data.amount ? 
+            '#3e3': 'revert-layer' : '#d11'}"
+          >${d.data.item.quantity[this.selectedLocation]}</div>
+          ${+d.data.item.id !== this.data.item.id ? 
+            `<div class="w-needed">x${d.data.amount}</div>` : ''}
+          <img 
+            src="${this._cachedHashes.get(d.data.item.id)}" 
+            alt="${d.data.item.name}" 
+            style="width:50px;height:50px"/>
           <p style="margin:0.2rem 0">${d.data.item.name}</p>
         </div>`
       );
-      // <button onclick="alert('Clicked: ${d.data.item.name}')">Click Me</button>
+
+    nodeEnter.each((d, i, nodes) => {
+      const button = d3.select(nodes[i]).select('.w-block').node();
+      this.renderer.listen(button, 'click', (event) => {
+        event.stopPropagation(); // for OnClickOutside directive to work
+
+        const tempId = d.data.item.id
+        this.changeSelection(tempId)
+
+        d3.selectAll("foreignObject").selectChild()
+          .on("click", (event) => d3.select(event.currentTarget)
+            .classed('w-block-selected', 
+              (d: d3.HierarchyPointNode<TreeNode>) => tempId === d.data.item.id)
+          );
+        }
+      );
+    });
+
+    // d3.select('*').filter("foreignObject")
+    //   .on("click", (event) => {//d3.select(event.currentTarget)
+    //     // this.changeSelection(null)
+    //     this.selection = null;
+    //     this.selectionChange.emit(this.selection);
+    //   }
+    // );
 
     // Handle node updates and removal
     node.exit().remove();
-  }
-
-  private getTotalQuantity(keys: Map<number, number>) {
-    console.log(keys)
-    let res = 0;
-    Object.keys(keys).forEach(k => res += keys[k])
-    return res
   }
 }
