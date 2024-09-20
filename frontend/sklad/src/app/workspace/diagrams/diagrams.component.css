@@ -12,7 +12,7 @@
   /* padding: 0 1rem; */
   /* margin: 0.3rem 0.6rem 0 0; */
   background-color: #fff;
-  border: 1px solid;
+  border: solid 0.0625rem;
   /* border-radius: 0.25rem; */
   color: #000;
   cursor: pointer;
@@ -44,4 +44,44 @@
   border-right: var(--size) solid transparent;
   border-top: var(--size) solid black;
   top: 55%;
+}
+
+.w-popup {
+  --w-popup-width: 400px;
+  --w-popup-height: 12rem;
+  /* width: var(--w-popup-width); */
+  /* height: var(--w-popup-height); */
+  padding: 0.5rem;
+  border: 0.0625rem solid;
+  background-color: #fff;
+  position: absolute;
+  bottom: 0.3rem;
+  left: 0.3rem;
+}
+
+.pop-up {
+  animation: popup-up 400ms forwards;
+}
+
+.pop-down {
+  animation: popup-down 400ms forwards;
+}
+
+@keyframes popup-up {
+  from {bottom: calc(-1 * (var(--w-popup-height) + 0.5rem));}
+  to {bottom: 0.3rem;}
+}
+
+@keyframes popup-down {
+  from {bottom: 0.3rem;}
+  to {bottom: calc(-1 * (var(--w-popup-height) + 0.5rem + 0.6rem));}
+}
+
+.w-number {
+  border: solid 0.0625rem;
+  width: 10rem;
+}
+
+.w-number:focus-visible {
+  outline: -webkit-focus-ring-color solid 0.0625rem;
 }

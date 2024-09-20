@@ -15,18 +15,7 @@ import { environment } from '../../../environments/environment';
 import { ItemColumn } from '../../shared/models/item-column.model';
 import { ImageCacheDirective } from '../../shared/directives/image.directive';
 import { HttpErrorResponse } from '@angular/common/http';
-
-type FilterSet = {
-  image: boolean;
-  code: boolean;
-  name: boolean;
-  description: boolean;
-  parameters: boolean
-  locations: boolean;
-  suppliers: boolean;
-  parents: boolean;
-  product: boolean;
-};
+import { FilterSet } from '../workspace.service'
 
 @Component({
   selector: 'app-items',
@@ -52,17 +41,7 @@ export class ItemsComponent implements OnInit, OnDestroy, AfterViewChecked {
   filterFirstClicked = false;
   isLoading = false;
 
-  activeFilterSet: FilterSet = {
-    image: true,
-    code: true,
-    name: true,
-    description: true,
-    parameters: true,
-    locations: true,
-    suppliers: true,
-    parents: true,
-    product: false,
-  };
+  activeFilterSet: FilterSet;
   // variableFilterSet: FilterSet = this.activeFilterSet;
   
   itemsToDelete: Set<number> = new Set();
@@ -99,6 +78,7 @@ export class ItemsComponent implements OnInit, OnDestroy, AfterViewChecked {
 
   private companyDetailSub: Subscription;
   private loadingSubscription: Subscription;
+  private filterSubscription: Subscription;
   private errorSubscription: Subscription;
 
   constructor(
@@ -123,6 +103,12 @@ export class ItemsComponent implements OnInit, OnDestroy, AfterViewChecked {
       }
     );
 
+    this.filterSubscription = this.workspaceService.itemFilter.subscribe(
+      set => {
+        this.activeFilterSet = set;
+      }
+    );
+
     this.rowImageContextMenu = new Array<boolean>(this.company?.items?.length).fill(false);
 
     this.loadingSubscription = this.workspaceService.isLoading.subscribe(
@@ -144,6 +130,7 @@ export class ItemsComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.workspaceService.errorResponse.next(null);
     this.companyDetailSub.unsubscribe();
     this.loadingSubscription.unsubscribe();
+    this.filterSubscription.unsubscribe();
   }
 
   ngAfterViewChecked() {
@@ -151,7 +138,7 @@ export class ItemsComponent implements OnInit, OnDestroy, AfterViewChecked {
       const inputElement: HTMLInputElement = <HTMLInputElement>document.getElementById(this.focusCellKey);
       if (inputElement !== undefined) {
         this.focusCellKey = null;
-        inputElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        inputElement.scrollIntoView({ behavior: 'smooth', block: 'center' }); // { behavior: 'smooth', block: 'start' }
         window.getSelection().selectAllChildren(inputElement);
         inputElement.focus();
       }

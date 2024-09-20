@@ -36,6 +36,7 @@
   width: calc(100% - 2rem);
   height: 4rem;
   background-color: #fffacd;
+  overflow: hidden;
 }
 
 .frontpage-company-statistics {
@@ -69,4 +70,10 @@
 .frontpage-bar-box {
   display: flex;
   justify-content: flex-end;
+}
+
+@media(max-width: 533px) {
+  .f-hide {
+    display: none;
+  }
 }

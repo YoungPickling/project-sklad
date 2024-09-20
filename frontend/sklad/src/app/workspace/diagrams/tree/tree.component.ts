@@ -1,28 +1,39 @@
-import { ChangeDetectorRef, Component, EventEmitter, Input, NgZone, OnChanges, Output, ViewEncapsulation } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, Renderer2, ViewEncapsulation } from '@angular/core';
 import * as d3 from 'd3';
 import { Item } from '../../../shared/models/item.model';
 import { environment } from '../../../../environments/environment';
 import { ImageService } from '../../../shared/image.service';
-// import { ImageCacheDirective } from '../../../shared/directives/image.directive';
+import { CommonModule } from '@angular/common';
+import { DiagramService, NodeSelectParams } from '../diagram.service';
+import { Subscription } from 'rxjs';
+import { WorkspaceService } from '../../workspace.service';
 
 export interface TreeNode {
   item: Item;
+  amount: number;
   children?: TreeNode[];
 }
 
 @Component({
   selector: 'app-tree',
   standalone: true,
-  imports: [],
+  imports: [CommonModule],
   templateUrl: './tree.component.html',
   styleUrls: ['./tree.component.css'],
   encapsulation: ViewEncapsulation.None
 })
-export class TreeComponent implements OnChanges {
+export class TreeComponent implements OnInit, OnChanges, OnDestroy {
   link = environment.API_SERVER + "/api/rest/v1/secret/image/";
   @Input() data: TreeNode;
   @Input() selectedItem: number;
+  @Input() selectedLocation: number;
+  selection: number | null;
+  private selectionSub: Subscription;
   @Output() loading: EventEmitter<boolean> = new EventEmitter<boolean>();
+
+  selectParams: NodeSelectParams;
+  private selectParamsSub: Subscription;
+  private workspaceSub: Subscription;
 
   private _cachedHashes: Map<number, string> = new Map();
 
@@ -32,20 +43,48 @@ export class TreeComponent implements OnChanges {
     .separation(() => 1);
 
   constructor(
+    private workspace: WorkspaceService,
     private imageService: ImageService,
-    private cd: ChangeDetectorRef,
-    // private ngZone: NgZone
+    private diagramService: DiagramService,
+    private renderer: Renderer2
   ) {}
+
+  ngOnInit(): void {
+    this.selectionSub = this.diagramService.editItem.subscribe(
+      num => {
+        this.selection = num;
+        this.updateTree();
+      }
+    )
+
+    this.selectParamsSub = this.diagramService.params.subscribe(
+      parameters => {
+        this.selectParams = parameters;
+        this.updateTree();
+      }
+    )
+
+    this.workspaceSub = this.workspace.companyDetails.subscribe(() => this.updateTree())
+  }
 
   ngOnChanges() {
     Promise.resolve().then(() => this.loading.emit(true))
-    
-      this.preloadImages(this.data).then(() => {
-        Promise.resolve().then(() => this.loading.emit(false))
-        this.updateTree();
-      });
-    // });
+
+    this.preloadImages(this.data).then(() => {
+      Promise.resolve().then(() => this.loading.emit(false))
+      this.updateTree();
+    });
   }
+
+  ngOnDestroy(): void {
+    this.selectionSub.unsubscribe();
+    this.selectParamsSub.unsubscribe();
+    this.workspaceSub.unsubscribe();
+  }
+
+  // get selection() {
+  //   return this.diagramService.editItem.getValue()
+  // }
 
   private preloadImages(node: TreeNode): Promise<void> {
 
@@ -87,6 +126,25 @@ export class TreeComponent implements OnChanges {
     return Promise.all(imageRequests).then(() => {});
   }
 
+  changeSelection(value: number) {
+    // this.selection = value;
+    // this.selectionChange.emit(this.selection);
+    this.diagramService.editItem.next(value)
+  }
+
+  // onOutsideClick() {
+  //   if (this.selection !== null) {
+  //     this.changeSelection(null);
+  //   }
+  // }
+
+  onContainerClick(event: MouseEvent) {
+    const target = event.target as HTMLElement;
+    if (!target.closest('.w-block')) {
+      this.changeSelection(null);
+    }
+  }
+
   private updateTree() {
     const nodeWidth = 140;
     const nodeHeight = 100;
@@ -102,8 +160,8 @@ export class TreeComponent implements OnChanges {
     const minY = d3.min(root.descendants(), d => d.y) || 0;
     const maxY = d3.max(root.descendants(), d => d.y) || 0;
 
-    const width = maxY - minY + nodeWidth + 200;
-    const height = maxX - minX + nodeHeight + 200;
+    const width = maxY - minY + nodeWidth; //  + 200
+    const height = maxX - minX + nodeHeight + 50;
 
     // Create the SVG container for the tree
     this.svg = d3
@@ -152,27 +210,71 @@ export class TreeComponent implements OnChanges {
       .attr('width', nodeWidth)
       .attr('height', nodeHeight)
       .append('xhtml:div')
-      .style('border-radius', '25px')
-      .style('border', '1px solid #aaa')
-      .style('padding', '0.5rem 0px')
-      .style('background', '#fff')
+      .classed('w-block-selected', d => this.selection === d.data.item.id)
+      .classed('w-block-wrap', d => this.selection !== d.data.item.id)
       .html(d => `
-        <div style="text-align: center; position: relative;">
-          <div class="w-quantity">${this.getTotalQuantity(d.data.item.quantity)}</div>
-          <img src="${this._cachedHashes.get(d.data.item.id)}" alt="${d.data.item.name}" style="width:50px;height:50px" />
+        <div class="w-block">
+          <div 
+          class="w-quantity"
+          style="background-color:${this.amountColor(d)}"
+          >${this.amountNumber(d)}</div>
+          ${+d.data.item.id !== this.data.item.id ? `<div class="w-needed">x${d.data.amount}</div>` : ''}
+          <img
+            src="${this._cachedHashes.get(d.data.item.id)}"
+            alt="${d.data.item.name}"
+            style="width:50px;height:50px"/>
           <p style="margin:0.2rem 0">${d.data.item.name}</p>
         </div>`
       );
-      // <button onclick="alert('Clicked: ${d.data.item.name}')">Click Me</button>
+
+    nodeEnter.each((d, i, nodes) => {
+      const button = d3.select(nodes[i]).select('.w-block').node();
+      this.renderer.listen(button, 'click', (event) => {
+        event.stopPropagation(); // for OnClickOutside directive to work
+
+        const tempId = d.data.item.id
+        this.changeSelection(tempId)
+
+        d3.selectAll("foreignObject").selectChild()
+          .on("click", (event) => d3.select(event.currentTarget)
+            .classed('w-block-selected', 
+              (d: d3.HierarchyPointNode<TreeNode>) => tempId === d.data.item.id)
+          );
+        }
+      );
+    });
 
     // Handle node updates and removal
     node.exit().remove();
   }
 
-  private getTotalQuantity(keys: Map<number, number>) {
-    console.log(keys)
-    let res = 0;
-    Object.keys(keys).forEach(k => res += keys[k])
-    return res
+  quantity(d: d3.HierarchyPointNode<TreeNode>) {
+    // console.log(this.selectParams?.modifyAmount)
+    return d.data.item.quantity[this.selectedLocation] + this.selectParams?.modifyAmount + this.selectParams?.assembleAmount;
+  }
+
+  isNodeSelected(d: d3.HierarchyPointNode<TreeNode>) {
+    return /*this.selectParams.itemParents.includes(+d.data.item.id) && this.selectParams.assembleAmount ||*/ +d.data.item.id === this.selection;
+  }
+  
+  isParent(d: d3.HierarchyPointNode<TreeNode>) {
+    return this.selectParams.itemParents.includes(+d.data.item.id) && this.selectParams.assembleAmount !== 0;
+  }
+
+  amountColor(d: d3.HierarchyPointNode<TreeNode>): string {
+    if(this.isParent(d) || this.isNodeSelected(d) && (this.selectParams.modifyAmount !== 0 || this.selectParams.assembleAmount !== 0)) { 
+      return 'white' 
+    } else if(d.data.item.quantity[this.selectedLocation] !== 0) {
+      if(d.data.item.quantity[this.selectedLocation] >= d.data.amount) {
+        return '#3e3'
+      }
+      return 'revert-layer'
+    }
+    return '#f33'
+  }
+
+  amountNumber(d: d3.HierarchyPointNode<TreeNode>) {
+    return !this.isNodeSelected(d) ? this.isParent(d) ? d.data.item.quantity[this.selectedLocation] - (this.selectParams.assembleAmount * d.data.amount):
+      d.data.item.quantity[this.selectedLocation] : this.quantity(d) 
   }
 }

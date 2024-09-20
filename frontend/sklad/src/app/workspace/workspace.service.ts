@@ -8,6 +8,24 @@ import { Item } from "../shared/models/item.model";
 import { Supplier } from "../shared/models/supplier.model";
 import { Location } from "../shared/models/location.model";
 
+export type FilterSet = {
+  image: boolean;
+  code: boolean;
+  name: boolean;
+  description: boolean;
+  parameters: boolean
+  locations: boolean;
+  suppliers: boolean;
+  parents: boolean;
+  product: boolean;
+};
+
+export type AssembleDTO = {
+  add: number, 
+  build: number, 
+  locationId: number
+}
+
 @Injectable()
 export class WorkspaceService {
   companyDetails = new BehaviorSubject<Company>(null);
@@ -15,6 +33,18 @@ export class WorkspaceService {
 
   closeAlert = new BehaviorSubject<boolean>(false);
   errorResponse = new BehaviorSubject<HttpErrorResponse>(null);
+
+  itemFilter = new BehaviorSubject<FilterSet>({
+      image: true,
+      code: true,
+      name: true,
+      description: true,
+      parameters: true,
+      locations: true,
+      suppliers: true,
+      parents: true,
+      product: false,
+  });
 
   private API_PATH = "/api/rest/v1/secret/";
 
@@ -168,6 +198,14 @@ export class WorkspaceService {
       parents,
       { ...this.getHeaders() }
     ).subscribe(this.subscriptionTemplate('Error assigning Parents to an Item:'));
+  }
+
+  assembleItem(body: AssembleDTO, itemId: number) {
+    this.http.post<AssembleDTO>(
+      `${environment.API_SERVER + this.API_PATH}item/assemble/${itemId}`,
+      body,
+      { ...this.getHeaders() }
+    ).subscribe(this.subscriptionTemplate('Error assembling an Item:'));
   }
 
   private getLatestUpdates(result: any): void {

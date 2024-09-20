@@ -4,6 +4,7 @@
     import jakarta.validation.Valid;
     import jakarta.validation.constraints.NotNull;
     import lombok.RequiredArgsConstructor;
+    import lt.project.sklad.dto_request.AssemleDTO;
     import lt.project.sklad.entities.Item;
     import lt.project.sklad.services.ItemService;
     import org.slf4j.Logger;
@@ -83,7 +84,15 @@
                 @RequestBody HashMap<Long, Long> quantity,
                 HttpServletRequest request
         ) {
-//            logger.info(quantity.toString());
             return itemService.putItemParents(itemId, quantity, request);
+        }
+
+        @PostMapping("/assemble/{itemId}")
+        public ResponseEntity<?> updateItemParents(
+                @PathVariable @NotNull Long itemId,
+                @RequestBody AssemleDTO body,
+                HttpServletRequest request
+        ) {
+            return itemService.assembleItem(itemId, body, request);
         }
     }

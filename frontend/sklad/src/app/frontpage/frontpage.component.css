@@ -1,5 +1,5 @@
 .frontpage-banner {
-  margin-top: 120px;
+  margin-top: min(10vw,120px);
   margin-bottom: 120px;
 }
 
@@ -97,7 +97,9 @@
 }
 
 .frontpage-window-top-header {
-  height: 3rem;
+  height: max(2rem, min(7vw, 3rem));
+  padding: min(2vw, 1rem);
+  overflow: hidden;
 }
 
 .loader {

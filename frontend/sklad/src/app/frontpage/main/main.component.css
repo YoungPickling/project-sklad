@@ -8,11 +8,11 @@
 }
 
 .frontpage-banner-quote h1 {
-  font-size: 6rem;
+  font-size: min(13vw, 6rem);
 }
 
 .frontpage-banner-quote p {
-  font-size: 1.4rem; 
+  font-size: max(min(3vw, 1.4rem), 0.85rem); 
 }
 
 .frontpage-banner-quote p,
@@ -29,6 +29,7 @@
 .frontpage-banner-buttons {
   width: 100%;
   display: flex;
+  flex-wrap: wrap;
   flex-direction: row;
   justify-content: center;
   margin-right: 2rem;
@@ -56,6 +57,10 @@
   cursor: pointer;
 }
 
+.light-button:first-of-type {
+  margin-bottom: 1rem;
+}
+
 .light-button:hover {
   background-color: #ff0a0aaa;
   color: #fffd;
@@ -79,6 +84,7 @@
   outline: 2px solid #ff0a0a;
   outline-offset: -1px;
   cursor: pointer;
+  height: 48px;
 }
 
 .lighter-button:hover {
@@ -95,7 +101,7 @@
 
 .space-wrap {
   background-color: black;
-  min-height: 700px;
+  min-height: min(70svh, 100vw);
   width: -webkit-fill-available;
   display: flex;
   align-content: space-around;
@@ -191,6 +197,15 @@ p {
   .waves {
     height:40px;
     min-height:40px;
+  }
+  .light-button {
+    margin-right: 0;
+    padding: 11px 32px;
+  }
+  .frontpage-banner-buttons {
+    /* align-content: stretch; */
+    align-items: center;
+    flex-direction: column;
   }
 }
 

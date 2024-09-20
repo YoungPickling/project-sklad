@@ -1,6 +1,6 @@
 header {
   background-color: #fbfafa;
-  height: 80px;
+  height: max(60px, min(11vw, 80px));
   width: 100%;
   -webkit-box-shadow: 0 2px 8px rgba(4,65,96,.08);
   box-shadow: 0 2px 8px rgba(4,65,96,.08);
@@ -11,6 +11,7 @@ header {
 
 .frontpage-navigation-wrapper {
   display: flex;
+  overflow-x: overlay;
   max-width: 1208px;
   align-items: center;
   -webkit-box-align: center;
@@ -77,4 +78,13 @@ a {
 
 a:hover {
   color: #2963c0;
+}
+
+@media (max-width: 533px) {
+  /* header {
+    height: 60px;
+  } */
+  nav ul li a {
+    font-size: 0.88rem;
+  }
 }
