@@ -20,6 +20,12 @@ export type FilterSet = {
   product: boolean;
 };
 
+export type AssembleDTO = {
+  add: number, 
+  build: number, 
+  locationId: number
+}
+
 @Injectable()
 export class WorkspaceService {
   companyDetails = new BehaviorSubject<Company>(null);
@@ -192,6 +198,14 @@ export class WorkspaceService {
       parents,
       { ...this.getHeaders() }
     ).subscribe(this.subscriptionTemplate('Error assigning Parents to an Item:'));
+  }
+
+  assembleItem(body: AssembleDTO, itemId: number) {
+    this.http.post<AssembleDTO>(
+      `${environment.API_SERVER + this.API_PATH}item/assemble/${itemId}`,
+      body,
+      { ...this.getHeaders() }
+    ).subscribe(this.subscriptionTemplate('Error assembling an Item:'));
   }
 
   private getLatestUpdates(result: any): void {

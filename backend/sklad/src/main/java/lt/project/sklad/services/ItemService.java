@@ -7,6 +7,7 @@ import lt.project.sklad._security.entities.User;
 import lt.project.sklad._security.repositories.UserRepository;
 import lt.project.sklad._security.services.TokenService;
 import lt.project.sklad._security.utils.MessagingUtils;
+import lt.project.sklad.dto_request.AssemleDTO;
 import lt.project.sklad.entities.*;
 import lt.project.sklad.repositories.*;
 import org.slf4j.Logger;
@@ -525,5 +526,73 @@ public class ItemService {
                 names.add(existingColumn.getName());
             }
         }
+    }
+
+    @Transactional
+    public ResponseEntity<?> assembleItem(
+            final Long itemId,
+            final AssemleDTO body,
+            final HttpServletRequest request
+    ) {
+        String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+
+        if (msgUtils.isBearer(authHeader))
+            return msgUtils.error(UNAUTHORIZED, "Bad credentials");
+
+        String jwt = authHeader.substring(7);
+        Token token = tokenService.findByToken(jwt).orElse(null);
+
+        if (token == null)
+            return msgUtils.error(UNAUTHORIZED, "Token not found");
+
+        final User user = userRepository.findById(token.getUser().getId()).orElse(null);
+
+        if (user == null) {
+            return msgUtils.error(NOT_FOUND, "User not found");
+        }
+
+        Item item = itemRepository.findById(itemId).orElse(null);
+
+        if (item == null)
+            return msgUtils.error(NOT_FOUND, "Items not found");
+
+        if (user.getCompany().stream().noneMatch(c -> c.getId().equals(item.getCompany().getId())))
+            return msgUtils.error(FORBIDDEN, "Access to the item denied");
+
+        System.out.println(item.getQuantity().get(body.getLocationId()));
+        System.out.println(body.getAdd());
+        System.out.println(body.getBuild());
+        System.out.println(item.getQuantity().getOrDefault(body.getLocationId(), 0L) + body.getAdd() + body.getBuild());
+        System.out.println();
+
+        item.getQuantity().put(
+                body.getLocationId(),
+                item.getQuantity().getOrDefault(body.getLocationId(), 0L) + body.getAdd() + body.getBuild()
+        );
+
+        if(body.getBuild() != 0L) {
+            List<Item> parentItems = itemRepository.findAllById(item.getParents().keySet());
+            for (Item x : parentItems) {
+                System.out.println(x.getQuantity().getOrDefault(body.getLocationId(), 0L));
+                System.out.println(item.getParents().get(x.getId()));
+                System.out.println(body.getBuild() );
+                System.out.println((x.getQuantity().getOrDefault(body.getLocationId(), 0L) +
+                        item.getParents().get(x.getId()) *
+                                body.getBuild()) + "\n");
+
+                x.getQuantity().put(
+                        body.getLocationId(),
+                        x.getQuantity().getOrDefault(body.getLocationId(), 0L) -
+                                item.getParents().get(x.getId()) *
+                                        body.getBuild()
+                );
+            }
+            parentItems.add(item);
+            itemRepository.saveAll(parentItems);
+        } else {
+            itemRepository.save(item);
+        }
+
+        return ResponseEntity.ok().body(body);
     }
 }

@@ -7,10 +7,8 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ItemDTO {
-    private String code;
-    private String name;
-    private Integer color;
-    private ItemColumnDTO columns;
-
+public class AssemleDTO {
+    private Long add;
+    private Long build;
+    private Long locationId;
 }

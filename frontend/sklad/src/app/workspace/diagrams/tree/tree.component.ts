@@ -4,8 +4,9 @@ import { Item } from '../../../shared/models/item.model';
 import { environment } from '../../../../environments/environment';
 import { ImageService } from '../../../shared/image.service';
 import { CommonModule } from '@angular/common';
-import { DiagramService } from '../diagram.service';
+import { DiagramService, NodeSelectParams } from '../diagram.service';
 import { Subscription } from 'rxjs';
+import { WorkspaceService } from '../../workspace.service';
 
 export interface TreeNode {
   item: Item;
@@ -26,11 +27,13 @@ export class TreeComponent implements OnInit, OnChanges, OnDestroy {
   @Input() data: TreeNode;
   @Input() selectedItem: number;
   @Input() selectedLocation: number;
-  // @Input() selection: number;
-  // @Output() selectionChange: EventEmitter<number> = new EventEmitter<number>();
   selection: number | null;
   private selectionSub: Subscription;
   @Output() loading: EventEmitter<boolean> = new EventEmitter<boolean>();
+
+  selectParams: NodeSelectParams;
+  private selectParamsSub: Subscription;
+  private workspaceSub: Subscription;
 
   private _cachedHashes: Map<number, string> = new Map();
 
@@ -40,6 +43,7 @@ export class TreeComponent implements OnInit, OnChanges, OnDestroy {
     .separation(() => 1);
 
   constructor(
+    private workspace: WorkspaceService,
     private imageService: ImageService,
     private diagramService: DiagramService,
     private renderer: Renderer2
@@ -52,6 +56,15 @@ export class TreeComponent implements OnInit, OnChanges, OnDestroy {
         this.updateTree();
       }
     )
+
+    this.selectParamsSub = this.diagramService.params.subscribe(
+      parameters => {
+        this.selectParams = parameters;
+        this.updateTree();
+      }
+    )
+
+    this.workspaceSub = this.workspace.companyDetails.subscribe(() => this.updateTree())
   }
 
   ngOnChanges() {
@@ -65,6 +78,8 @@ export class TreeComponent implements OnInit, OnChanges, OnDestroy {
 
   ngOnDestroy(): void {
     this.selectionSub.unsubscribe();
+    this.selectParamsSub.unsubscribe();
+    this.workspaceSub.unsubscribe();
   }
 
   // get selection() {
@@ -201,13 +216,9 @@ export class TreeComponent implements OnInit, OnChanges, OnDestroy {
         <div class="w-block">
           <div 
           class="w-quantity"
-          style="background-color:
-          ${d.data.item.quantity[this.selectedLocation] !== 0 ? 
-            d.data.item.quantity[this.selectedLocation] >= d.data.amount ? 
-            '#3e3': 'revert-layer' : '#f33'}"
-          >${d.data.item.quantity[this.selectedLocation]}</div>
-          ${+d.data.item.id !== this.data.item.id ? 
-            `<div class="w-needed">x${d.data.amount}</div>` : ''}
+          style="background-color:${this.amountColor(d)}"
+          >${this.amountNumber(d)}</div>
+          ${+d.data.item.id !== this.data.item.id ? `<div class="w-needed">x${d.data.amount}</div>` : ''}
           <img
             src="${this._cachedHashes.get(d.data.item.id)}"
             alt="${d.data.item.name}"
@@ -235,5 +246,35 @@ export class TreeComponent implements OnInit, OnChanges, OnDestroy {
 
     // Handle node updates and removal
     node.exit().remove();
+  }
+
+  quantity(d: d3.HierarchyPointNode<TreeNode>) {
+    // console.log(this.selectParams?.modifyAmount)
+    return d.data.item.quantity[this.selectedLocation] + this.selectParams?.modifyAmount + this.selectParams?.assembleAmount;
+  }
+
+  isNodeSelected(d: d3.HierarchyPointNode<TreeNode>) {
+    return /*this.selectParams.itemParents.includes(+d.data.item.id) && this.selectParams.assembleAmount ||*/ +d.data.item.id === this.selection;
+  }
+  
+  isParent(d: d3.HierarchyPointNode<TreeNode>) {
+    return this.selectParams.itemParents.includes(+d.data.item.id) && this.selectParams.assembleAmount !== 0;
+  }
+
+  amountColor(d: d3.HierarchyPointNode<TreeNode>): string {
+    if(this.isParent(d) || this.isNodeSelected(d) && (this.selectParams.modifyAmount !== 0 || this.selectParams.assembleAmount !== 0)) { 
+      return 'white' 
+    } else if(d.data.item.quantity[this.selectedLocation] !== 0) {
+      if(d.data.item.quantity[this.selectedLocation] >= d.data.amount) {
+        return '#3e3'
+      }
+      return 'revert-layer'
+    }
+    return '#f33'
+  }
+
+  amountNumber(d: d3.HierarchyPointNode<TreeNode>) {
+    return !this.isNodeSelected(d) ? this.isParent(d) ? d.data.item.quantity[this.selectedLocation] - (this.selectParams.assembleAmount * d.data.amount):
+      d.data.item.quantity[this.selectedLocation] : this.quantity(d) 
   }
 }

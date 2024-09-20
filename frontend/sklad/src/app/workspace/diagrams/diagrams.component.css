@@ -49,8 +49,8 @@
 .w-popup {
   --w-popup-width: 400px;
   --w-popup-height: 12rem;
-  width: var(--w-popup-width);
-  height: var(--w-popup-height);
+  /* width: var(--w-popup-width); */
+  /* height: var(--w-popup-height); */
   padding: 0.5rem;
   border: 0.0625rem solid;
   background-color: #fff;

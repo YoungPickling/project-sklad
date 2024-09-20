@@ -4,7 +4,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { AlertComponent } from '../../shared/alert/alert.component';
 import { ImageCacheDirective } from '../../shared/directives/image.directive';
 import { Company } from '../../shared/models/company.model';
-import { WorkspaceService } from '../workspace.service';
+import { AssembleDTO, WorkspaceService } from '../workspace.service';
 import { Subscription } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
@@ -13,7 +13,7 @@ import { Item } from '../../shared/models/item.model';
 import { FormsModule } from '@angular/forms';
 import { Location } from '../../shared/models/location.model';
 import { ClickOutsideDirective } from '../../shared/directives/clickOutside.directive';
-import { DiagramService } from './diagram.service';
+import { DiagramService, EMPTY_PARAMS, NodeSelectParams } from './diagram.service';
 
 @Component({
   selector: 'app-diagrams',
@@ -42,10 +42,16 @@ export class DiagramsComponent implements OnInit, OnDestroy {
   editItem: number = null;
   editItemName: string;
   private editItemSub: Subscription;
-  modifyAmount: number = 0;
-  assembleAmount: number = 0;
-  maxAssembleAmount: number | null;
-  minAssembleAmount: number | null;
+  // modifyAmount: number = 0;
+  // private modifyAmountSub: Subscription;
+  // assembleAmount: number = 0;
+  // private assembleAmountSub: Subscription;
+  // maxAssembleAmount: number | null;
+  // private maxAssembleAmountSub: Subscription;
+  // minAssembleAmount: number | null;
+  // private minAssembleAmountSub: Subscription;
+  selectParams: NodeSelectParams;
+  private selectParamsSub: Subscription;
 
   selectedItem: number;
   selectedLocation: number;
@@ -63,7 +69,7 @@ export class DiagramsComponent implements OnInit, OnDestroy {
 
   constructor(
     private workspaceService: WorkspaceService,
-    private diagramService: DiagramService
+    private dService: DiagramService
   ) {}
 
   ngOnInit(): void {
@@ -99,23 +105,62 @@ export class DiagramsComponent implements OnInit, OnDestroy {
       }
     );
 
-    this.editItemSub = this.diagramService.editItem.subscribe(
+    this.selectParamsSub = this.dService.params.subscribe( p => this.selectParams = p);
+
+    // this.modifyAmountSub = this.dService.modifyAmount.subscribe( num => this.modifyAmount = num);
+    // this.assembleAmountSub = this.dService.assembleAmount.subscribe( num => this.assembleAmount = num);
+    // this.maxAssembleAmountSub = this.dService.maxAssembleAmount.subscribe( num => this.maxAssembleAmount = num);
+    // this.minAssembleAmountSub = this.dService.minAssembleAmount.subscribe( num => this.minAssembleAmount = num);
+
+    this.editItemSub = this.dService.editItem.subscribe(
       num => {
         this.editItem = num;
         const item = this.findItemById(num);
         this.editItemName = item?.name || '';
-        this.modifyAmount = 0;
-        this.assembleAmount = 0;
-        this.maxAssembleAmount = this.maxAssemble();
-        this.minAssembleAmount = item?.quantity[this.selectedLocation] * -1
+
+        const parentIds: number[] = [];
+        if (item?.parents) {
+          for (let [key, value] of Object.entries(item?.parents)) {
+            parentIds.push(+key);
+          }
+        }
+        // item?.parents.forEach(
+        //   (value: number, key: number) => parentIds.push(key)
+        // );
+
+        const min = item?.quantity[this.selectedLocation] * -1
+
+        this.dService.params.next({
+          modifyAmount: 0,
+          minModifyAmount: min, 
+          assembleAmount: 0,
+          maxAssembleAmount: this.maxAssemble(),
+          minAssembleAmount: min,
+          itemParents: parentIds
+        });
+
+        console.log(this.selectParams)
       }
     );
 
-    // this.selectedItem
+    // this.dService.modifyAmount.next(0);
+    // this.dService.assembleAmount.next(0);
+    // this.dService.maxAssembleAmount.next(this.maxAssemble());
+    // this.dService.minAssembleAmount.next(item?.quantity[this.selectedLocation] * -1)
+
+    // this.modifyAmount = 0;
+    // this.assembleAmount = 0;
+    // this.maxAssembleAmount = this.maxAssemble();
+    // this.minAssembleAmount = item?.quantity[this.selectedLocation] * -1
+
+    
 
     this.loadingSubscription = this.workspaceService.isLoading.subscribe(
       state => {
         this.isLoading = state;
+        if(!state && this.selectedItem !== null) {
+          this.onItemChange(this.selectedItem);
+        }
       }
     );
 
@@ -128,8 +173,13 @@ export class DiagramsComponent implements OnInit, OnDestroy {
   
   ngOnDestroy(): void {
     this.workspaceService.errorResponse.next(null);
-    this.diagramService.editItem.next(null);
+
+    this.dService.editItem.next(null);
+    this.dService.params.next(EMPTY_PARAMS);
+
     this.editItemSub.unsubscribe();
+    this.selectParamsSub.unsubscribe();
+    
     this.companyDetailSub.unsubscribe();
     this.loadingSubscription.unsubscribe();
     this.errorSubscription.unsubscribe();
@@ -160,7 +210,7 @@ export class DiagramsComponent implements OnInit, OnDestroy {
   private safeRemoveSelection() {
     if(this.editItem) {
       // this.editItem = null;
-      this.diagramService.editItem.next(null);
+      this.dService.editItem.next(null);
     }
   }
 
@@ -203,7 +253,7 @@ export class DiagramsComponent implements OnInit, OnDestroy {
   }
 
   canSubmit(): boolean {
-    return !(this.modifyAmount !== 0 || this.assembleAmount !== 0);
+    return !(this.selectParams.modifyAmount !== 0 || this.selectParams.assembleAmount !== 0);
   }
 
   private maxAssemble() {
@@ -247,7 +297,28 @@ export class DiagramsComponent implements OnInit, OnDestroy {
     return undefined;
   }
 
+  refreshTree() {
+    this.dService.params.next(this.selectParams);
+  }
+
   onSubmitChanges() {
-    
+    this.isLoading = true;
+
+    const itemId = this.editItem;
+    const body: AssembleDTO = {
+      add: this.selectParams.modifyAmount,
+      build: this.selectParams.assembleAmount ,
+      locationId: this.selectedLocation
+    };
+
+    this.dService.editItem.next(null);
+    this.dService.params.next(EMPTY_PARAMS);
+
+    try {
+      this.workspaceService.assembleItem(body, itemId);
+    } catch(error) {
+      console.error(error);
+      this.isLoading = false;
+    }
   }
 }

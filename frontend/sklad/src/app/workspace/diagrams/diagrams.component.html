@@ -56,16 +56,24 @@
   >
     <u><b>{{editItemName}}</b></u><br/>
     <label for="a">Adjust Item Quantity:</label><br/>
-    <input class="w-number" type="number" name="a" [(ngModel)]="modifyAmount"><br/>
+    <input 
+      class="w-number" 
+      type="number" 
+      name="a" 
+      [(ngModel)]="selectParams.modifyAmount"
+      (input)="refreshTree()"
+      [min]="selectParams.minModifyAmount"
+    ><br/>
     <label for="b">Assemble/Disassemble Item:</label><br/>
     <input 
       class="w-number" 
       type="number" 
-      name="b" 
-      [(ngModel)]="assembleAmount" 
-      [max]="maxAssembleAmount"
-      [min]="minAssembleAmount"
-      ><br/>
+      name="b"
+      [(ngModel)]="selectParams.assembleAmount"
+      (input)="refreshTree()"
+      [max]="selectParams.maxAssembleAmount"
+      [min]="selectParams.minAssembleAmount"
+    ><br/>
     <button class="button-42" type="button" (click)="onSubmitChanges()" [disabled]="canSubmit()">Submit</button>
   </div>
 
