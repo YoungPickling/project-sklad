@@ -108,6 +108,7 @@
   justify-content: space-between;
   align-items: stretch;
   flex-direction: column;
+  margin-bottom: 3rem;
 }
 
 .space-wrap h1, .space-wrap p {
@@ -223,4 +224,9 @@ p {
   animation-name: examp;
   animation-duration: 1s;
   animation-iteration-count: 1;
+}
+
+.frontpage-center {
+  display: grid;
+  justify-content: center;
 }

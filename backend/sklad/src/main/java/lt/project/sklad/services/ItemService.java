@@ -520,7 +520,6 @@ public class ItemService {
         while (iterator.hasNext()) {
             ItemColumn existingColumn = iterator.next();
             if (names.contains(existingColumn.getName()) || existingColumn.getValue().isBlank()) {
-//                logger.info("Removing - " + existingColumn.getName());
                 iterator.remove();
             } else {
                 names.add(existingColumn.getName());
@@ -559,12 +558,6 @@ public class ItemService {
         if (user.getCompany().stream().noneMatch(c -> c.getId().equals(item.getCompany().getId())))
             return msgUtils.error(FORBIDDEN, "Access to the item denied");
 
-        System.out.println(item.getQuantity().get(body.getLocationId()));
-        System.out.println(body.getAdd());
-        System.out.println(body.getBuild());
-        System.out.println(item.getQuantity().getOrDefault(body.getLocationId(), 0L) + body.getAdd() + body.getBuild());
-        System.out.println();
-
         item.getQuantity().put(
                 body.getLocationId(),
                 item.getQuantity().getOrDefault(body.getLocationId(), 0L) + body.getAdd() + body.getBuild()
@@ -573,13 +566,6 @@ public class ItemService {
         if(body.getBuild() != 0L) {
             List<Item> parentItems = itemRepository.findAllById(item.getParents().keySet());
             for (Item x : parentItems) {
-                System.out.println(x.getQuantity().getOrDefault(body.getLocationId(), 0L));
-                System.out.println(item.getParents().get(x.getId()));
-                System.out.println(body.getBuild() );
-                System.out.println((x.getQuantity().getOrDefault(body.getLocationId(), 0L) +
-                        item.getParents().get(x.getId()) *
-                                body.getBuild()) + "\n");
-
                 x.getQuantity().put(
                         body.getLocationId(),
                         x.getQuantity().getOrDefault(body.getLocationId(), 0L) -

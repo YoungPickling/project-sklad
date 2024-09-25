@@ -30,8 +30,10 @@ export class LandingPageComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.companyDetailSub = this.workspaceService.companyDetails.subscribe(
       company => {
-        this.company = company;
-        this.companyId = company.id;
+        if(company) {
+          this.company = company;
+          this.companyId = company.id;
+        }
       }
     );
   }

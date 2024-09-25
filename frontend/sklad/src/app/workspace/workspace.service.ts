@@ -7,6 +7,8 @@ import { BriefUserModel } from "../frontpage/login/briefUser.model";
 import { Item } from "../shared/models/item.model";
 import { Supplier } from "../shared/models/supplier.model";
 import { Location } from "../shared/models/location.model";
+import { ImageService } from "../shared/image.service";
+import { Image } from "../shared/models/image.model";
 
 export type FilterSet = {
   image: boolean;
@@ -35,177 +37,489 @@ export class WorkspaceService {
   errorResponse = new BehaviorSubject<HttpErrorResponse>(null);
 
   itemFilter = new BehaviorSubject<FilterSet>({
-      image: true,
-      code: true,
-      name: true,
-      description: true,
-      parameters: true,
-      locations: true,
-      suppliers: true,
-      parents: true,
-      product: false,
+    image: true,
+    code: true,
+    name: true,
+    description: true,
+    parameters: true,
+    locations: true,
+    suppliers: true,
+    parents: true,
+    product: false,
   });
 
+  private hashIncrement: number = 0; // For demo version inmemory images
   private API_PATH = "/api/rest/v1/secret/";
 
   constructor(
-    private http: HttpClient
+    private http: HttpClient,
+    private imageService: ImageService
   ) {}
 
   get companyId() {
-    return this.companyDetails.value.id;
+    return this.companyDetails.value?.id;
   }
 
   getCompany(id: number): void {
-    this.http.get<any>(
-      environment.API_SERVER + this.API_PATH + "company/" + id,
-      { ...this.getHeaders() }
-    ).subscribe(
-      {
-        next: (result: Company) => {
-          console.log(result);
-          result.items?.sort((a, b) => a.id - b.id);
-          this.companyDetails.next(result);
-        },
-        error: error => {
-          this.errorResponse.next(error);
-          this.isLoading.next(false);
-          console.error('Error getting a Company:', error);
-        },
-        complete: () => {
-          this.isLoading.next(false);
-          this.closeAlert.next(false);
+    // If demo mode is on, company id is 0
+    if(id == 0) {
+      this.companyDetails.next(environment.DEFAULT_COMPANY as Company);
+      this.isLoading.next(false);
+      this.closeAlert.next(false);
+    } else {
+      console.log('fired')
+      this.http.get<any>(
+        environment.API_SERVER + this.API_PATH + "company/" + id,
+        { ...this.getHeaders() }
+      ).subscribe(
+        {
+          next: (result: Company) => {
+            console.log(result);
+            result.items?.sort((a, b) => a.id - b.id);
+            this.companyDetails.next(result);
+          },
+          error: error => {
+            this.errorResponse.next(error);
+            this.isLoading.next(false);
+            console.error('Error getting a Company:', error);
+          },
+          complete: () => {
+            this.isLoading.next(false);
+            this.closeAlert.next(false);
+          }
         }
-      }
-    );
+      );
+    }
   }
 
   addItem(item: Item): void {
-    this.http.post<Item>(
-      environment.API_SERVER + this.API_PATH + "item/" + this.companyId,
-      item,
-      { ...this.getHeaders() }
-    ).subscribe(this.subscriptionTemplate('Error inserting new item:'));
+    if(this.companyId == 0) {
+      const company: Company = this.companyDetails.value;
+
+      item.id = this.generateId(company.items);
+
+      new Promise(() => {
+        setTimeout(() => {
+          company.items.push(item);
+          this.companyDetails.next(company);
+          this.isLoading.next(false);
+          this.closeAlert.next(false);
+        }, 100);
+      });
+
+    } else {
+      this.http.post<Item>(
+        environment.API_SERVER + this.API_PATH + "item/" + this.companyId,
+        item,
+        { ...this.getHeaders() }
+      ).subscribe(this.subscriptionTemplate('Error inserting new item:'));
+    }
   }
 
   updateItem(item: Item): void {
-    this.http.put<Item>(
-      environment.API_SERVER + this.API_PATH + "item/" + item.id,
-      item,
-      { ...this.getHeaders() }
-    ).subscribe(this.subscriptionTemplate('Error updating existing item:'));
+    if(this.companyId == 0) {
+      const company: Company = this.companyDetails.value;
+      
+      const oldItemId = company.items.findIndex(x => x.id === item.id);
+
+      new Promise(() => {
+        setTimeout(() => {
+          if(oldItemId !== null) {
+            company.items[oldItemId] = item;
+            this.companyDetails.next(company);
+          }
+          this.isLoading.next(false);
+          this.closeAlert.next(false);
+        }, 100);
+      });
+
+    } else {
+      this.http.put<Item>(
+        environment.API_SERVER + this.API_PATH + "item/" + item.id,
+        item,
+        { ...this.getHeaders() }
+      ).subscribe(this.subscriptionTemplate('Error updating existing item:'));
+    }
   }
 
   removeItems(items: number[]): void {
-    this.http.delete<number[]>(
-      environment.API_SERVER + this.API_PATH + "item",
-      {
-        ...this.getHeaders(),
-        params : { "delete": items }
-      }
-    ).subscribe(this.subscriptionTemplate('Error removing items:'));
+    if(this.companyId == 0) {
+      const company: Company = this.companyDetails.value;
+      
+      const updatedItems = company.items.filter(x => !items.includes(x.id));
+
+      new Promise(() => {
+        setTimeout(() => {
+          company.items = updatedItems;
+          this.companyDetails.next(company);
+          this.isLoading.next(false);
+          this.closeAlert.next(false);
+        }, 100);
+      });
+
+    } else {
+      this.http.delete<number[]>(
+        environment.API_SERVER + this.API_PATH + "item",
+        {
+          ...this.getHeaders(),
+          params : { "delete": items }
+        }
+      ).subscribe(this.subscriptionTemplate('Error removing items:'));
+    }
   }
 
   addGalleryImage(image: FormData, companyId: number): void {
-    this.http.post<any>(
-      environment.API_SERVER + this.API_PATH + "image/" + companyId,
-      image,
-      { ...this.getHeaders() }
-    ).subscribe(this.subscriptionTemplate('Error uploading image to Gallery:'));
+    if(this.companyId == 0) {
+      const company: Company = this.companyDetails.value;
+
+      const id = this.generateId(company.imageData);
+      const hash: string = '' + this.hashIncrement++;
+      const file = image.get('image') as File;
+
+      if (file) {
+        this.imageService.setImage(
+          environment.API_SERVER + this.API_PATH + "image/" + hash, 
+          file
+        ); 
+      }
+
+      const newImage: Image = {
+        id: id,
+        name: file.name,
+        hash: hash,
+        type: file.type,
+      }
+
+      new Promise(() => {
+        setTimeout(() => {
+          company.imageData.push(newImage);
+          this.companyDetails.next(company);
+          this.isLoading.next(false);
+          this.closeAlert.next(false);
+        }, 130);
+      });
+
+    } else {
+      this.http.post<any>(
+        environment.API_SERVER + this.API_PATH + "image/" + companyId,
+        image,
+        { ...this.getHeaders() }
+      ).subscribe(this.subscriptionTemplate('Error uploading image to Gallery:'));
+    }
   }
 
   removeGalleryImage(hash: string): void {
-    this.http.delete<any>(
-      environment.API_SERVER + this.API_PATH + "image/" + hash,
-      { ...this.getHeaders() }
-    ).subscribe(this.subscriptionTemplate('Error removing gallery image:'));
+    if(this.companyId == 0) {
+      const company: Company = this.companyDetails.value;
+      
+      const imageId = company.imageData.find(x => x.hash === hash).id
+
+      this.imageService.removeImage(environment.API_SERVER + this.API_PATH + "image/" + hash);
+      const gallery = company.imageData.filter(x => x.hash !== hash);
+
+      for (let i = 0; i < company.items.length; i++) {
+        if(company.items[i].image?.id === imageId) {
+          company.items[i].image = null;
+        }
+      }
+
+      new Promise(() => {
+        setTimeout(() => {
+          company.imageData = gallery;
+          this.companyDetails.next(company);
+          this.isLoading.next(false);
+          this.closeAlert.next(false);
+        }, 100);
+      });
+
+    } else {
+      this.http.delete<any>(
+        environment.API_SERVER + this.API_PATH + "image/" + hash,
+        { ...this.getHeaders() }
+      ).subscribe(this.subscriptionTemplate('Error removing gallery image:'));
+    }
   }
 
   addSupplier(supplier: Supplier): void {
-    this.http.post<Supplier>(
-      environment.API_SERVER + this.API_PATH + "supplier/" + this.companyId,
-      supplier,
-      { ...this.getHeaders() }
-    ).subscribe(this.subscriptionTemplate('Error inserting new Supplier:'));
+    if(this.companyId == 0) {
+      const company: Company = this.companyDetails.value;
+
+      supplier.id = this.generateId(company.suppliers);
+
+      new Promise(() => {
+        setTimeout(() => {
+          company.suppliers.push(supplier);
+          this.companyDetails.next(company);
+          this.isLoading.next(false);
+          this.closeAlert.next(false);
+        }, 100);
+      });
+
+    } else {
+      this.http.post<Supplier>(
+        environment.API_SERVER + this.API_PATH + "supplier/" + this.companyId,
+        supplier,
+        { ...this.getHeaders() }
+      ).subscribe(this.subscriptionTemplate('Error inserting new Supplier:'));
+    }
   }
 
   updateSupplier(supplier: Supplier): void {
-    this.http.put<Supplier>(
-      environment.API_SERVER + this.API_PATH + "supplier/" + this.companyId,
-      supplier,
-      { ...this.getHeaders() }
-    ).subscribe(this.subscriptionTemplate('Error removing suppliers:'));
+    if(this.companyId == 0) {
+      const company: Company = this.companyDetails.value;
+
+      const oldSupplierId = company.suppliers.findIndex(x => x.id === supplier.id);
+
+      for (let i = 0; i < company.items.length; i++) {
+        const index = company.items[i].suppliers?.findIndex(x => x.id === oldSupplierId);
+        if(index !== -1) {
+          company.items[i].suppliers[index] = supplier;
+        }
+      }
+
+      new Promise(() => {
+        setTimeout(() => {
+          if(oldSupplierId !== null) {
+            company.suppliers[oldSupplierId] = supplier;
+            this.companyDetails.next(company);
+          }
+          this.isLoading.next(false);
+          this.closeAlert.next(false);
+        }, 100);
+      });
+
+    } else {
+      this.http.put<Supplier>(
+        environment.API_SERVER + this.API_PATH + "supplier/" + this.companyId,
+        supplier,
+        { ...this.getHeaders() }
+      ).subscribe(this.subscriptionTemplate('Error removing suppliers:'));
+    }
   }
 
   removeSuppliers(suppliers: number[]): void {
-    this.http.delete<number[]>(
-      environment.API_SERVER + this.API_PATH + "supplier/" + this.companyId,
-      {
-        ...this.getHeaders(),
-        params : {"delete": suppliers}
+    if(this.companyId == 0) {
+      const company: Company = this.companyDetails.value;
+      
+      const newSuppliers = company.suppliers.filter(x => !suppliers.includes(x.id));
+
+      for (let i = 0; i < company.items.length; i++) {
+        company.items[i].suppliers = 
+          company.items[i].suppliers.filter(x => !suppliers.includes(x.id));
       }
-    ).subscribe(this.subscriptionTemplate('Error removing suppliers:'));
+
+      new Promise(() => {
+        setTimeout(() => {
+          company.suppliers = newSuppliers;
+          this.companyDetails.next(company);
+          this.isLoading.next(false);
+          this.closeAlert.next(false);
+        }, 100);
+      });
+
+    } else {
+      this.http.delete<number[]>(
+        environment.API_SERVER + this.API_PATH + "supplier/" + this.companyId,
+        {
+          ...this.getHeaders(),
+          params : {"delete": suppliers}
+        }
+      ).subscribe(this.subscriptionTemplate('Error removing suppliers:'));
+    }
   }
 
   addLocation(location): void {
-    this.http.post<Location>(
-      environment.API_SERVER + this.API_PATH + "location/" + this.companyId,
-      location,
-      { ...this.getHeaders() }
-    ).subscribe(this.subscriptionTemplate('Error inserting new Location:'));
+    if(this.companyId == 0) {
+      const company: Company = this.companyDetails.value;
+
+      location.id = this.generateId(company.locations);
+      
+      new Promise(() => {
+        setTimeout(() => {
+          company.locations.push(location);
+          this.companyDetails.next(company);
+          this.isLoading.next(false);
+          this.closeAlert.next(false);
+        }, 100);
+      });
+
+    } else {
+      this.http.post<Location>(
+        environment.API_SERVER + this.API_PATH + "location/" + this.companyId,
+        location,
+        { ...this.getHeaders() }
+      ).subscribe(this.subscriptionTemplate('Error inserting new Location:'));
+    }
   }
 
   updateLocation(location: Location): void {
-    this.http.put<Location>(
-      environment.API_SERVER + this.API_PATH + "location/" + this.companyId,
-      location,
-      { ...this.getHeaders() }
-    ).subscribe(this.subscriptionTemplate('Error updating existing Location:'));
+    if(this.companyId == 0) {
+      const company: Company = this.companyDetails.value;
+
+      const oldLocationId = company.locations.findIndex(x => x.id === location.id);
+
+      new Promise(() => {
+        setTimeout(() => {
+          if(oldLocationId !== null) {
+            company.locations[oldLocationId] = location;
+            this.companyDetails.next(company);
+          }
+          this.isLoading.next(false);
+          this.closeAlert.next(false);
+        }, 100);
+      });
+
+    } else {
+      this.http.put<Location>(
+        environment.API_SERVER + this.API_PATH + "location/" + this.companyId,
+        location,
+        { ...this.getHeaders() }
+      ).subscribe(this.subscriptionTemplate('Error updating existing Location:'));
+    }
   }
 
   removeLocations(locations: number[]): void {
-    this.http.delete<number[]>(
-      environment.API_SERVER + this.API_PATH + "location/" + this.companyId,
-      {
-        ...this.getHeaders(),
-        params : {"delete": locations}
-      }
-    ).subscribe(this.subscriptionTemplate('Error removing locations:'));
+    if(this.companyId == 0) {
+      const company: Company = this.companyDetails.value;
+      
+      const newLocations = company.locations.filter(x => !locations.includes(x.id));
+
+      console.log(newLocations)
+
+      new Promise(() => {
+        setTimeout(() => {
+          company.locations = newLocations;
+          this.companyDetails.next(company);
+          this.isLoading.next(false);
+          this.closeAlert.next(false);
+        }, 100);
+      });
+
+    } else {
+      this.http.delete<number[]>(
+        environment.API_SERVER + this.API_PATH + "location/" + this.companyId,
+        {
+          ...this.getHeaders(),
+          params : {"delete": locations}
+        }
+      ).subscribe(this.subscriptionTemplate('Error removing locations:'));
+    }
   }
 
   updateItemSuppliers(itemId: number, supplierIds: number[]) {
-    this.http.post<any>(
-      environment.API_SERVER + this.API_PATH + "item/suppliers/" + itemId,
-      null,
-      {
-        ...this.getHeaders(),
-        params : {"s": supplierIds}
-      }
-    ).subscribe(this.subscriptionTemplate('Error assigning Suppliers to an Item:'));
+    if(this.companyId == 0) {
+      const company: Company = this.companyDetails.value;
+      
+      const itemIndex = company.items.findIndex(x => x.id === itemId);
+      let supplierList: Supplier[] = company.suppliers.filter(x => supplierIds.includes(x.id));
+
+      console.log(supplierList)
+      
+      new Promise(() => {
+        setTimeout(() => {
+          company.items[itemIndex].suppliers = supplierList;
+          this.companyDetails.next(company);
+          this.isLoading.next(false);
+          this.closeAlert.next(false);
+        }, 110);
+      });
+    } else {
+      this.http.post<any>(
+        environment.API_SERVER + this.API_PATH + "item/suppliers/" + itemId,
+        null,
+        {
+          ...this.getHeaders(),
+          params : {"s": supplierIds}
+        }
+      ).subscribe(this.subscriptionTemplate('Error assigning Suppliers to an Item:'));
+    }
   }
 
   updateItemLocations(itemId: number, locationId: number, quantity: number) {
-    this.http.put<any>(
-      `${environment.API_SERVER + this.API_PATH}item/location/${itemId}/${locationId}`,
-      Number.isNaN(quantity) ? -1 : quantity,
-      { ...this.getHeaders() }
-    ).subscribe(this.subscriptionTemplate('Error assigning Suppliers to an Item:'));
+    if(this.companyId == 0) {
+      const company: Company = this.companyDetails.value;
+      
+      const itemIndex = company.items.findIndex(x => x.id === itemId);
+
+      new Promise(() => {
+        setTimeout(() => {
+          company.items[itemIndex].quantity[locationId] = quantity;
+          this.companyDetails.next(company);
+          this.isLoading.next(false);
+          this.closeAlert.next(false);
+        }, 130);
+      });
+      
+    } else {
+      this.http.put<any>(
+        `${environment.API_SERVER + this.API_PATH}item/location/${itemId}/${locationId}`,
+        Number.isNaN(quantity) ? -1 : quantity,
+        { ...this.getHeaders() }
+      ).subscribe(this.subscriptionTemplate('Error assigning Suppliers to an Item:'));
+    }
   }
 
   updateItemParents(parents: any, itemId: number) {
-    this.http.put<any>(
-      `${environment.API_SERVER + this.API_PATH}item/parents/${itemId}`,
-      parents,
-      { ...this.getHeaders() }
-    ).subscribe(this.subscriptionTemplate('Error assigning Parents to an Item:'));
+    if(this.companyId == 0) {
+      const company: Company = this.companyDetails.value;
+
+      const itemIndex = company.items.findIndex(x => x.id === itemId);
+
+      new Promise(() => {
+        setTimeout(() => {
+          company.items[itemIndex].parents = parents;
+          this.companyDetails.next(company);
+          this.isLoading.next(false);
+          this.closeAlert.next(false);
+        }, 100);
+      });
+
+    } else {
+      this.http.put<any>(
+        `${environment.API_SERVER + this.API_PATH}item/parents/${itemId}`,
+        parents,
+        { ...this.getHeaders() }
+      ).subscribe(this.subscriptionTemplate('Error assigning Parents to an Item:'));
+    }
   }
 
   assembleItem(body: AssembleDTO, itemId: number) {
-    this.http.post<AssembleDTO>(
-      `${environment.API_SERVER + this.API_PATH}item/assemble/${itemId}`,
-      body,
-      { ...this.getHeaders() }
-    ).subscribe(this.subscriptionTemplate('Error assembling an Item:'));
+    if(this.companyId == 0) {
+      const company: Company = this.companyDetails.value;
+
+      const itemIndex = company.items.findIndex(x => x.id === itemId);
+      const locationId = company.locations.findIndex(x => x.id === body.locationId);
+
+      company.items[itemIndex].quantity[body.locationId] += body.add + body.build;
+
+      if(body.build !== 0) {
+        const keySet: string[] = Object.keys(company.items[itemIndex].parents);
+        
+        for(let i = 0; i < company.items.length; i++) {
+          if(keySet.includes("" + company.items[i].id)) {
+            const id = company.items[i].id;
+            company.items[i].quantity[body.locationId] -= 
+              body.build * company.items[itemIndex].parents[id];
+          }
+        }
+      }
+
+      new Promise(() => {
+        setTimeout(() => {
+          // company.items[itemIndex].parents = parents;
+          this.companyDetails.next(company);
+          this.isLoading.next(false);
+          this.closeAlert.next(false);
+        }, 80);
+      });
+
+    } else {
+      this.http.post<AssembleDTO>(
+        `${environment.API_SERVER + this.API_PATH}item/assemble/${itemId}`,
+        body,
+        { ...this.getHeaders() }
+      ).subscribe(this.subscriptionTemplate('Error assembling an Item:'));
+    }
   }
 
   private getLatestUpdates(result: any): void {
@@ -253,5 +567,18 @@ export class WorkspaceService {
         "Authorization": `Bearer ${this.getToken()}`
       }
     }
+  }
+
+  private generateId(object: any[]): number {
+    if(object?.length > 0) {
+      let newId: number = 0;
+      for (let i = 0; i < object.length; i++) {
+        if(object[i].id > newId) {
+          newId = object[i].id;
+        }
+      }
+      return ++newId;
+    }
+    return 1
   }
 }

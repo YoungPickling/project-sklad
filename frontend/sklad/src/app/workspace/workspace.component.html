@@ -137,6 +137,7 @@
           <div
             class="w-max-heading-right-button"
             routerLinkActive="w-max-heading-selected"
+            *ngIf="companyId >= 0; else solidHome"
             [routerLink]="['/workspace', companyId]"
             [routerLinkActiveOptions]="{exact: true}"
           >

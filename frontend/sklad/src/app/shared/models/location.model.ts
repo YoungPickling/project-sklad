@@ -13,6 +13,6 @@ export class Location {
     public phone_number: string,
     public phone_number_two: string,
     public description: string,
-    public owner: Company
+    public owner?: Company
   ) {}
 }

@@ -42,7 +42,6 @@ export class ItemsComponent implements OnInit, OnDestroy, AfterViewChecked {
   isLoading = false;
 
   activeFilterSet: FilterSet;
-  // variableFilterSet: FilterSet = this.activeFilterSet;
   
   itemsToDelete: Set<number> = new Set();
   
@@ -95,7 +94,7 @@ export class ItemsComponent implements OnInit, OnDestroy, AfterViewChecked {
           item?.columns?.forEach(column => {
             this.customColumns[column.name] = {
               value: column.value, 
-              color: Utils.integerToHex(column.color), 
+              color: Utils.integerToHex(+column.color), 
               width: column.width+''
             }
           })
@@ -169,6 +168,15 @@ export class ItemsComponent implements OnInit, OnDestroy, AfterViewChecked {
     return 4 + Object.keys(this.customColumns).length + this.company.locations.length;
   }
 
+  getlocation(item: Item, id: number) {
+    let res = 0 ;
+    try {
+      res = item.quantity[id];
+    } catch (error) {
+    }
+    return res !== 0 ? res : 0; // item.quantity[location.id]
+  }
+
   onClickAddBtn() {
     if(this.removeButtonActive) {
       this.itemsToDelete = new Set();
@@ -214,9 +222,17 @@ export class ItemsComponent implements OnInit, OnDestroy, AfterViewChecked {
     
     let body: Item = this.addItemForm.value;
     body.color = Utils.hexToInteger(body.color + '');
+    body.quantity = {};
+    body.parents = {};
+    body.suppliers = [];
+    body.product = false;
 
     for (let i = 0; i < body.columns?.length; i++) {
       body.columns[i].color = Utils.hexToInteger(body.columns[i].color + '');
+    }
+
+    for (let i = 0; i < this.company.locations.length; i++) { 
+      body.quantity[this.company.locations[i].id] = 0;
     }
 
     try {

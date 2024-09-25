@@ -6,7 +6,7 @@
 
     <ng-template #loginTemplate>
       <div class="error-box" *ngIf="error">{{error}}</div>
-      <p>login</p>
+      <p>Sign In</p>
       <form #authForm="ngForm" (ngSubmit)="onSubmit(authForm)">
         <input 
           type="text" 
@@ -34,8 +34,9 @@
           type="submit"
           class="frontpage-button"
           [disabled]="!authForm.valid"
-          >SIGN IN</button>
+        >SIGN IN</button>
       </form>
+      <a [routerLink]="['/join']">Create account</a>
     </ng-template>
   </div>
 </div>

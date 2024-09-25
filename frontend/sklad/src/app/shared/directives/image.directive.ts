@@ -18,6 +18,7 @@ export class ImageCacheDirective implements OnInit {
       
       imageObservable.subscribe({
         next: (res: string) => {
+          // console.log(this.imageUrl)
           // console.log(res);
           // this.el.nativeElement.src = this.imageUrl;
           if (this.el.nativeElement.tagName.toLowerCase() === 'img') {

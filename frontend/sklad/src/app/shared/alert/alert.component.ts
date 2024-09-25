@@ -89,6 +89,7 @@ export class AlertComponent implements OnInit, AfterViewInit {
 
   @Input() items: Item[];
 
+  fileToUpload: File | null = null;
   ItemAmountMap: Map<number, number>;
 
   selectedItemChildren: number[] = [];
@@ -491,8 +492,9 @@ export class AlertComponent implements OnInit, AfterViewInit {
         break; 
       } 
       case AlertPresets.addGalleryImage: { 
-        const imageFile = this.formGroup.get('image').value;
-        this.addGalleryImage.emit({ image: imageFile }); 
+        // const imageFile = this.formGroup.get('image').value;
+        // this.addGalleryImage.emit({ image: imageFile }); 
+        this.addGalleryImage.emit({ image: this.fileToUpload });
         break; 
       } 
       case AlertPresets.addSupplier: { 
@@ -553,9 +555,10 @@ export class AlertComponent implements OnInit, AfterViewInit {
   uploadImage(event: Event) {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
-      const file = input.files[0];
-      this.formGroup.patchValue({ image: file });
-      this.formGroup.get('image').updateValueAndValidity();
+      this.fileToUpload = input.files[0];
+      // const file = input.files[0];
+      // this.formGroup.patchValue({ image: file });
+      // this.formGroup.get('image').updateValueAndValidity();
     }
   }
 

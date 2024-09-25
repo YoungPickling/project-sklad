@@ -1,11 +1,18 @@
 import { CommonModule } from '@angular/common';
 import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { ImageCacheDirective } from '../../shared/directives/image.directive';
+import { environment } from '../../../environments/environment';
+import { NodeComponent } from './node/node.component';
 
 @Component({
   selector: 'app-main',
   standalone: true,
-  imports: [CommonModule],
+  imports: [
+    CommonModule,
+    NodeComponent,
+    ImageCacheDirective,
+  ],
   templateUrl: './main.component.html',
   styleUrl: './main.component.css',
   // encapsulation: ViewEncapsulation.None
@@ -15,10 +22,9 @@ export class MainComponent implements OnInit, AfterViewInit, OnDestroy {
   bannerSubheading: string = 'Visualise, reduce costs, maximize productivity';
 
   delayOne: boolean = false;
+  link = environment.FRONT_SERVER;
 
   constructor(private router: Router) {}
-  
-  //Math.floor(Math.random() * max);
 
   ngOnInit() {
     // const bannerHeaders = [
@@ -61,7 +67,7 @@ export class MainComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   onTryOut() {
-    this.router.navigate(['workspace']);
+    this.router.navigate(['workspace',0]);
   }
 
   onSignIn() {

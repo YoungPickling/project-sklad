@@ -395,7 +395,7 @@
               <div
                 [id]="i + '-' + (ii + locationPostfix)"
                 *ngIf="!cellEditMode[i + '-' + (ii + locationPostfix)]" 
-                >{{ item.quantity[location.id] }}</div>
+                >{{ getlocation(item, location.id) }}</div>
               <span
                 [id]="i + '-' + (ii + locationPostfix) + 'f'"
                 *ngIf="cellEditMode[i + '-' + (ii + locationPostfix)]" 

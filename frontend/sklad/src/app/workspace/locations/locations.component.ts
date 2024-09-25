@@ -150,7 +150,7 @@ export class LocationsComponent implements OnInit, OnDestroy {
   onRemoveRows() {
     this.isLoading = true;
     this.removeButtonActive = false;
-    this.workspaceService.removeSuppliers(Array.from(this.locationsToDelete.values()));
+    this.workspaceService.removeLocations(Array.from(this.locationsToDelete.values()));
   }
 
   // ###########

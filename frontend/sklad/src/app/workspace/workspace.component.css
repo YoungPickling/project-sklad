@@ -436,14 +436,10 @@ header a {
   padding: 0.25rem;
 }
 
-/* .workspace-table .w-suppliers {
-  display: flex;
-  align-items: center;
-} */
-
 .ws-icon-cell div {
   display: flex;
   align-items: center;
+  justify-content: center;
 }
 
 .ws-icon-cell > div > mat-icon {
@@ -460,13 +456,6 @@ header a {
 .ws-even-cell > div * {
   color: #000;
 }
-
-/* .workspace-table td > input[type=text] {
-  border: none;
-  font-size: 1rem;
-  padding: 0;
-  box-sizing: content-box;
-} */
 
 .workspace-table td > span {
   border: none;
@@ -485,7 +474,7 @@ header a {
   position: relative;
 }
 
-/* 0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 */
+/* 00000000000000000000000000000000000000000000 */
 .cell-empty-image {
   color: black;
   font-size: 3.75rem;

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, HostListener, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, HostListener, OnChanges, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
 import { MatIconModule} from '@angular/material/icon';
 import { ActivatedRoute, NavigationEnd, Params, Router, RouterModule, RouterOutlet } from '@angular/router';
 import { Subscription, filter } from 'rxjs';
@@ -26,10 +26,9 @@ import { ImageCacheDirective } from '../shared/directives/image.directive';
   styleUrls: ['./workspace.component.css'],
   encapsulation: ViewEncapsulation.None
 })
-export class WorkspaceComponent implements OnInit, OnDestroy {
+export class WorkspaceComponent implements OnInit, OnChanges, OnDestroy {
   companyId: number;
   isLoading = false; // not implemented
-  // showLeftBar = true;
   sideBarMaximized = false;
 
   loginMenu = false;
@@ -43,7 +42,6 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
   
   company: Company;
   currentRoute: string[][];
-  // breadcrum: {name: string, url: string[]}[];
 
   private routeParamsSub: Subscription;
   private routerEventsSub: Subscription;
@@ -80,9 +78,9 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
       }
     );
 
-    this.currentRoute = this.onBreadcrumbUpdate(this.router.url);
+    // this.companyId = +this.route.snapshot.params['companyId'];
 
-    this.companyId = +this.route.snapshot.params['companyId'];
+    // this.currentRoute = this.onBreadcrumbUpdate(this.router.url);
 
     this.routeParamsSub = this.route.params.subscribe({
       next: (params: Params) => {
@@ -102,7 +100,11 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
     });
 
     this.companyDetailSub = this.workspaceService.companyDetails.subscribe(
-      company => this.company = company
+      company => {
+        this.company = company
+        this.companyId = company.id
+        this.currentRoute = this.onBreadcrumbUpdate(this.router.url);
+      }
     );
 
     this.routerEventsSub = this.router.events
@@ -146,20 +148,16 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
     // ]
   }
 
+  ngOnChanges() {
+    
+  }
+
   ngOnDestroy() {
     this.routeParamsSub.unsubscribe();
     this.routerEventsSub.unsubscribe();
     this.companyDetailSub.unsubscribe();
     this.userDetailsSubscription.unsubscribe();
   }
-
-  // toggleLeftBar() {
-  //   this.showLeftBar = !this.showLeftBar;
-  // }
-
-  // isActive(route: string): boolean {
-  //   return this.currentRoute === route;
-  // }
 
   closeLoginMenu() {
     this.loginMenu = false;
