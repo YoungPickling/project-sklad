@@ -6,7 +6,7 @@
 
     <ng-template #regTemplate>
       <div class="error-box" *ngIf="error">{{ error }}</div>
-      <p>registration form</p>
+      <p>Register</p>
       <form class="w-reg-form" #authForm="ngForm" (ngSubmit)="onSubmit(authForm)">
         <input 
           type="text" 
@@ -73,8 +73,9 @@
           type="submit"
           class="frontpage-button"
           [disabled]="!authForm.valid"
-          >REGISTER</button>
+        >REGISTER</button>
       </form>
+      <a [routerLink]="['/login']">Already have an account?</a>
     </ng-template>
   </div>
 </div>

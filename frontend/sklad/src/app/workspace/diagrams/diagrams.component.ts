@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
-import { AlertComponent } from '../../shared/alert/alert.component';
 import { ImageCacheDirective } from '../../shared/directives/image.directive';
 import { Company } from '../../shared/models/company.model';
 import { AssembleDTO, WorkspaceService } from '../workspace.service';
@@ -42,14 +41,6 @@ export class DiagramsComponent implements OnInit, OnDestroy {
   editItem: number = null;
   editItemName: string;
   private editItemSub: Subscription;
-  // modifyAmount: number = 0;
-  // private modifyAmountSub: Subscription;
-  // assembleAmount: number = 0;
-  // private assembleAmountSub: Subscription;
-  // maxAssembleAmount: number | null;
-  // private maxAssembleAmountSub: Subscription;
-  // minAssembleAmount: number | null;
-  // private minAssembleAmountSub: Subscription;
   selectParams: NodeSelectParams;
   private selectParamsSub: Subscription;
 
@@ -76,18 +67,20 @@ export class DiagramsComponent implements OnInit, OnDestroy {
     this.companyDetailSub = this.workspaceService.companyDetails.subscribe(
       company => {
         this.company = company;
+        console.log(company);
         // check if any item has inheritance
         let tempNoTies = true;
-        // const empty: {} = {};
 
-        this.noLocations = !company?.locations?.length
+        this.noLocations = !company?.locations?.length;
+        console.log("no locations: " + company?.locations?.length);
 
         if(this.noLocations) {
           return;
         }
 
         for (let i = 0; i < company?.items?.length; i++) {
-          const parents = company.items[i].parents;
+          const parents = company?.items[i]?.parents;
+          console.log(company?.items[i]?.parents);
           if(Object.keys(parents).length > 0) {
             tempNoTies = false;
             break;
@@ -99,18 +92,13 @@ export class DiagramsComponent implements OnInit, OnDestroy {
           return;
         }
 
-        if(company.locations[0]?.id) {
-          this.selectedLocation = company.locations[0].id
+        if(!this.selectedLocation && company?.locations[0]?.id) {
+          this.selectedLocation = company?.locations[0]?.id;
         }
       }
     );
 
     this.selectParamsSub = this.dService.params.subscribe( p => this.selectParams = p);
-
-    // this.modifyAmountSub = this.dService.modifyAmount.subscribe( num => this.modifyAmount = num);
-    // this.assembleAmountSub = this.dService.assembleAmount.subscribe( num => this.assembleAmount = num);
-    // this.maxAssembleAmountSub = this.dService.maxAssembleAmount.subscribe( num => this.maxAssembleAmount = num);
-    // this.minAssembleAmountSub = this.dService.minAssembleAmount.subscribe( num => this.minAssembleAmount = num);
 
     this.editItemSub = this.dService.editItem.subscribe(
       num => {
@@ -124,9 +112,6 @@ export class DiagramsComponent implements OnInit, OnDestroy {
             parentIds.push(+key);
           }
         }
-        // item?.parents.forEach(
-        //   (value: number, key: number) => parentIds.push(key)
-        // );
 
         const min = item?.quantity[this.selectedLocation] * -1
 
@@ -139,21 +124,9 @@ export class DiagramsComponent implements OnInit, OnDestroy {
           itemParents: parentIds
         });
 
-        console.log(this.selectParams)
+        // console.log(this.selectParams)
       }
     );
-
-    // this.dService.modifyAmount.next(0);
-    // this.dService.assembleAmount.next(0);
-    // this.dService.maxAssembleAmount.next(this.maxAssemble());
-    // this.dService.minAssembleAmount.next(item?.quantity[this.selectedLocation] * -1)
-
-    // this.modifyAmount = 0;
-    // this.assembleAmount = 0;
-    // this.maxAssembleAmount = this.maxAssemble();
-    // this.minAssembleAmount = item?.quantity[this.selectedLocation] * -1
-
-    
 
     this.loadingSubscription = this.workspaceService.isLoading.subscribe(
       state => {
@@ -186,30 +159,26 @@ export class DiagramsComponent implements OnInit, OnDestroy {
   }
 
   onItemChange(itemId: number): void {
-    this.safeRemoveSelection()
+    this.safeRemoveSelection();
     const selectedItem = this.findItemById(itemId);
     
     if(selectedItem) {
-      // Build the tree starting from the selected item
       const tree = this.buildTreeNode(selectedItem, 0);
       
-      // Update the treeData with the constructed tree
       this.treeData = tree;
-      // console.log('Tree data updated:', this.treeData);
     }
   }
 
   onLocationChange(LocationId?: number): void {
-    this.safeRemoveSelection()
+    this.safeRemoveSelection();
   }
 
   onOutsideClick() {
-    this.safeRemoveSelection()
+    this.safeRemoveSelection();
   }
 
   private safeRemoveSelection() {
     if(this.editItem) {
-      // this.editItem = null;
       this.dService.editItem.next(null);
     }
   }
@@ -220,10 +189,9 @@ export class DiagramsComponent implements OnInit, OnDestroy {
       amount: amount,
       children: []
     };
-  
-    // If the item has parents, recursively add them as children nodes
+
     if (item.parents && Object.keys(item.parents).length > 0) {
-      const itemIds: string[] = [...Object.keys(item.parents)]
+      const itemIds: string[] = [...Object.keys(item.parents)];
 
       itemIds.forEach((parentId) => {
         const parentItem = this.findItemById(+parentId);
@@ -267,17 +235,13 @@ export class DiagramsComponent implements OnInit, OnDestroy {
       return 0; // No children found for the item
     }
   
-    // Initialize a large number to compare with
     let maxAssemblies = Number.MAX_VALUE;
   
-    // Iterate over each child component (e.g., bolts, plates)
     currentNode.children.forEach(child => {
-      const requiredAmount = child.amount; // Amount needed to assemble one parent item
-      const availableAmount: number = child.item.quantity[this.selectedLocation] // Get available amount from stock
-      // Calculate how many times we can assemble with this child component
+      const requiredAmount = child.amount;
+      const availableAmount: number = child.item.quantity[this.selectedLocation];
       const assembliesWithThisChild = Math.floor(availableAmount / requiredAmount);
   
-      // The limiting factor will be the minimum assemblies we can make
       maxAssemblies = Math.min(maxAssemblies, assembliesWithThisChild);
     });
     

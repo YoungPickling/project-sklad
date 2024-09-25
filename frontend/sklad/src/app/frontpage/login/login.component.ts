@@ -1,22 +1,24 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { Observable } from 'rxjs';
 import { LoginResponseData, AuthService } from './auth.service';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [
+    CommonModule, 
+    FormsModule, 
+    RouterModule
+  ],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'
 })
 export class LoginComponent {
   isLoading = false;
   error: string;
-
-  // private closeSub: Subscription;
 
   constructor(
     private loginService: AuthService,
@@ -38,7 +40,6 @@ export class LoginComponent {
 
     authObs.subscribe({
       next: (resData) => {
-        // console.log(resData);
         this.isLoading = false;
         this.router.navigate(['/']);
       },
@@ -61,10 +62,4 @@ export class LoginComponent {
   onHandleError() {
     this.error = null;
   }
-
-  // ngOnDestroy() {
-  //   if (this.closeSub) {
-  //     this.closeSub.unsubscribe();
-  //   }
-  // }
 }

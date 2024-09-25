@@ -82,10 +82,6 @@ export class TreeComponent implements OnInit, OnChanges, OnDestroy {
     this.workspaceSub.unsubscribe();
   }
 
-  // get selection() {
-  //   return this.diagramService.editItem.getValue()
-  // }
-
   private preloadImages(node: TreeNode): Promise<void> {
 
     const imageRequests: Promise<void>[] = [];
@@ -127,16 +123,8 @@ export class TreeComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   changeSelection(value: number) {
-    // this.selection = value;
-    // this.selectionChange.emit(this.selection);
     this.diagramService.editItem.next(value)
   }
-
-  // onOutsideClick() {
-  //   if (this.selection !== null) {
-  //     this.changeSelection(null);
-  //   }
-  // }
 
   onContainerClick(event: MouseEvent) {
     const target = event.target as HTMLElement;
@@ -249,16 +237,16 @@ export class TreeComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   quantity(d: d3.HierarchyPointNode<TreeNode>) {
-    // console.log(this.selectParams?.modifyAmount)
     return d.data.item.quantity[this.selectedLocation] + this.selectParams?.modifyAmount + this.selectParams?.assembleAmount;
   }
 
   isNodeSelected(d: d3.HierarchyPointNode<TreeNode>) {
-    return /*this.selectParams.itemParents.includes(+d.data.item.id) && this.selectParams.assembleAmount ||*/ +d.data.item.id === this.selection;
+    return  +d.data.item.id === this.selection;
   }
   
   isParent(d: d3.HierarchyPointNode<TreeNode>) {
-    return this.selectParams.itemParents.includes(+d.data.item.id) && this.selectParams.assembleAmount !== 0;
+    return this.selectParams ? this.selectParams.assembleAmount !== 0 && 
+      this.selectParams.itemParents?.includes(+d.data.item.id) : false;
   }
 
   amountColor(d: d3.HierarchyPointNode<TreeNode>): string {
@@ -274,7 +262,7 @@ export class TreeComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   amountNumber(d: d3.HierarchyPointNode<TreeNode>) {
-    return !this.isNodeSelected(d) ? this.isParent(d) ? d.data.item.quantity[this.selectedLocation] - (this.selectParams.assembleAmount * d.data.amount):
-      d.data.item.quantity[this.selectedLocation] : this.quantity(d) 
+    return (!this.isNodeSelected(d) ? this.isParent(d) ? d.data.item.quantity[this.selectedLocation] - (this.selectParams.assembleAmount * d.data.amount):
+      d.data.item.quantity[this.selectedLocation] : this.quantity(d)) | 0;
   }
 }

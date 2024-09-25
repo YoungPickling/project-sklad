@@ -33,6 +33,7 @@
       class="button-42 button-42-icon" 
       [ngClass]="{'button-42-active': removeButtonActive}"
       [disabled]="company?.imageData?.length === 0"
+      *ngIf="false"
       (click)="onClickRemoveBtn()"
     >
       <mat-icon>delete_forever</mat-icon>

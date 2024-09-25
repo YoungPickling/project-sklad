@@ -2,18 +2,18 @@
   <div class="frontpage-navigation-wrapper">
     <a [routerLink]="['/']">
       <div>
-        <img src="/assets/sklad-s.svg" alt="logo" style="height: auto; width: 1.5rem; margin: auto 0.45rem auto;">
+        <img [src]="'/assets/sklad-s.svg'" alt="logo" style="height: auto; width: 1.5rem; margin: auto 0.45rem auto;">
         <h2 class="not-for-mobile">ScalePilot</h2>
       </div>
     </a>
 
-    <nav>
+    <!-- <nav>
       <ul>
         <li><a [routerLink]="['/about']">about</a></li>
         <li><a [routerLink]="['/join']">join</a></li>
         <li><a [routerLink]="['/blog']">blog</a></li>
       </ul>
-    </nav>
+    </nav> -->
 
     <li class="frontpage-navigation-buttons" style="min-width:4rem;align-items: center;flex-direction: row;">
       <ng-template [ngIf]="isLoggedIn">

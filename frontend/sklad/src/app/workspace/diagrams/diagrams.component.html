@@ -13,10 +13,10 @@
 
 <h1 
   class="w-empty" 
-  *ngIf="!noLocations && noTies else view"
+  *ngIf="!noLocations && noTies"
 >No Relations Between Items Found</h1>
 
-<ng-template #view>
+<ng-template [ngIf]="!noLocations && !noTies">
   
   <div class="w-l" style="margin-bottom: 0.2rem">
     <div class="w-button-bar">

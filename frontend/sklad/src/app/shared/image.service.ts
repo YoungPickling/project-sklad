@@ -14,44 +14,6 @@ interface CachedImage {
 
   constructor(private http: HttpClient) {}
 
-  // getImage(url: string): Observable<Blob | string> {
-  //   const index = this._cachedImages.findIndex(image => image.url === url);
-  //   console.log(url)
-  //   // console.log(index);
-  //   if (index > -1) {
-  //     // console.log(this._cacheUrls);
-  //     // console.log(this._cachedImages);
-  //     const image = this._cachedImages[index];
-  //     return of(URL.createObjectURL(image.blob));
-  //   }
-  //     console.log("no?")
-  //     return this.http.get(url, { responseType: 'blob' }).pipe(
-  //       tap(blob => this.checkAndCacheImage(url, blob as Blob))
-  //   );
-  // }
-
-  // getImage(url: string): Observable<string> {
-  //   const cachedImage = this._cachedImages.find(image => image.url === url);
-
-  //   if (cachedImage) {
-  //     // Return the cached image as an observable
-  //     return of(URL.createObjectURL(cachedImage.blob));
-  //   } else {
-  //     // Fetch the image from the server and cache it
-  //     return this.http.get(url, { responseType: 'blob' }).pipe(
-  //       tap(blob => this.cacheImage(url, blob as Blob)),
-  //       // Convert the blob to a URL and return it
-  //       map(blob => URL.createObjectURL(blob))
-  //     );
-  //   }
-  // }
-
-  // checkAndCacheImage(url: string, blob: Blob) {
-  //   // if (this._cacheUrls.indexOf(url)) { // gives errors
-  //     this._cachedImages.push({url, blob});
-  //   // }
-  // }
-
   getImage(url: string): Observable<string> {
     const cachedUrl = this._cachedImages.get(url);
 
@@ -68,6 +30,15 @@ interface CachedImage {
         })
       );
     }
+  }
+
+  setImage(url: string, blob: File | Blob): void {
+    const objectUrl = URL.createObjectURL(blob);
+    this._cachedImages.set(url, objectUrl);
+  }
+
+  removeImage(url: string): boolean {
+    return this._cachedImages.delete(url)
   }
 
   // private cacheImage(url: string, blob: Blob) {

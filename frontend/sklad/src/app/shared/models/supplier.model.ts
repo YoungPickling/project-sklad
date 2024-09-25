@@ -14,6 +14,6 @@ export class Supplier {
     public phone_number_two: string,
     public website: string,
     public description: string,
-    public owner: Company
+    public owner?: Company
   ) {}
 }

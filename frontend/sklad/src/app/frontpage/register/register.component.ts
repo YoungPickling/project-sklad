@@ -1,4 +1,4 @@
-import { Router } from "@angular/router";
+import { Router, RouterModule } from "@angular/router";
 import { Component } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { FormsModule, NgForm } from "@angular/forms";
@@ -8,7 +8,11 @@ import { Observable } from "rxjs";
 @Component({
   standalone: true,
   selector: 'app-register',
-  imports: [CommonModule, FormsModule],
+  imports: [
+    CommonModule, 
+    FormsModule, 
+    RouterModule
+  ],
   templateUrl: './register.component.html',
   styleUrl: './register.component.css'
 })
