@@ -43,9 +43,11 @@ export class DiagramsComponent implements OnInit, OnDestroy {
   private editItemSub: Subscription;
   selectParams: NodeSelectParams;
   private selectParamsSub: Subscription;
+  locationSet: number[];
 
   selectedItem: number;
   selectedLocation: number;
+  private diagramSub: Subscription;
 
   isPopupVisible: boolean = false;
 
@@ -67,20 +69,24 @@ export class DiagramsComponent implements OnInit, OnDestroy {
     this.companyDetailSub = this.workspaceService.companyDetails.subscribe(
       company => {
         this.company = company;
-        console.log(company);
+
         // check if any item has inheritance
         let tempNoTies = true;
 
         this.noLocations = !company?.locations?.length;
-        console.log("no locations: " + company?.locations?.length);
 
         if(this.noLocations) {
           return;
         }
 
+        const locations: number[] = [];
+        for (let i = 0; i < company?.locations?.length; i++) {
+          locations.push(company?.locations[i].id);
+        }
+        this.locationSet = locations;
+
         for (let i = 0; i < company?.items?.length; i++) {
           const parents = company?.items[i]?.parents;
-          console.log(company?.items[i]?.parents);
           if(Object.keys(parents).length > 0) {
             tempNoTies = false;
             break;
@@ -94,6 +100,15 @@ export class DiagramsComponent implements OnInit, OnDestroy {
 
         if(!this.selectedLocation && company?.locations[0]?.id) {
           this.selectedLocation = company?.locations[0]?.id;
+        }
+      }
+    );
+
+    this.diagramSub = this.dService.diagram.subscribe(
+      (d: {item: number, location: number}) => {
+        if(d) {
+          this.selectedItem = d.item;
+          this.selectedLocation = d.location;
         }
       }
     );
@@ -123,8 +138,6 @@ export class DiagramsComponent implements OnInit, OnDestroy {
           minAssembleAmount: min,
           itemParents: parentIds
         });
-
-        // console.log(this.selectParams)
       }
     );
 
@@ -152,6 +165,7 @@ export class DiagramsComponent implements OnInit, OnDestroy {
 
     this.editItemSub.unsubscribe();
     this.selectParamsSub.unsubscribe();
+    this.diagramSub.unsubscribe();
     
     this.companyDetailSub.unsubscribe();
     this.loadingSubscription.unsubscribe();
@@ -164,12 +178,13 @@ export class DiagramsComponent implements OnInit, OnDestroy {
     
     if(selectedItem) {
       const tree = this.buildTreeNode(selectedItem, 0);
-      
+      this.dService.diagram.next({item: this.selectedItem, location: this.selectedLocation});
       this.treeData = tree;
     }
   }
 
   onLocationChange(LocationId?: number): void {
+    this.dService.diagram.next({item: this.selectedItem, location: this.selectedLocation});
     this.safeRemoveSelection();
   }
 
@@ -184,8 +199,10 @@ export class DiagramsComponent implements OnInit, OnDestroy {
   }
 
   buildTreeNode(item: Item, amount = 0): TreeNode {
+    const tempItem = {...item}
+
     const treeNode: TreeNode = {
-      item: item,
+      item: tempItem,
       amount: amount,
       children: []
     };

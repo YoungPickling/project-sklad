@@ -33,12 +33,30 @@ interface CachedImage {
   }
 
   setImage(url: string, blob: File | Blob): void {
+    const cachedUrl = this._cachedImages.get(url);
+    if (cachedUrl) {
+      URL.revokeObjectURL(cachedUrl);
+    }
     const objectUrl = URL.createObjectURL(blob);
     this._cachedImages.set(url, objectUrl);
   }
 
   removeImage(url: string): boolean {
+    const cachedUrl = this._cachedImages.get(url);
+    if (cachedUrl) {
+      // This is important to avoid memory leaks
+      URL.revokeObjectURL(cachedUrl);
+    }
     return this._cachedImages.delete(url)
+  }
+
+  clearCache() {
+    this._cachedImages.forEach((objectUrl) => URL.revokeObjectURL(objectUrl));
+    this._cachedImages = new Map();
+  }
+
+  imagePresent(url): boolean {
+    return !!this._cachedImages.get(url);
   }
 
   // private cacheImage(url: string, blob: Blob) {

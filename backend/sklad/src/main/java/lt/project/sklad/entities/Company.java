@@ -2,7 +2,6 @@ package lt.project.sklad.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -71,6 +70,10 @@ public class Company {
     @JsonIgnoreProperties("owner")
     @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER, cascade = {CascadeType.ALL}, orphanRemoval = true)
     private List<Supplier> suppliers;
+
+    @JsonIgnoreProperties("ownedByCompany")
+    @OneToMany(mappedBy = "ownedByCompany", fetch = FetchType.EAGER, cascade = {CascadeType.ALL}, orphanRemoval = true)
+    private List<ItemGroup> itemGroups;
 
     @JsonIgnore
     @OneToMany(mappedBy = "company", fetch = FetchType.EAGER, cascade = {CascadeType.ALL}, orphanRemoval = true)

@@ -22,4 +22,10 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
 
     @Query("SELECT i FROM Item i WHERE i.company.id = :Id")
     List<Item> findAllByCompanyId(@Param("Id") final Long id);
+
+    @Query("SELECT i FROM Item i WHERE i.company.id = :companyId AND i.itemGroups IN :groupIds")
+    List<Item> findAllByItemGroupsId(
+            @Param("companyId") final Long companyId,
+            @Param("groupIds") final List<Long> groupIds
+    );
 }

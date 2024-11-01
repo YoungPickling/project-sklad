@@ -4,6 +4,7 @@ import { Location } from './location.model';
 import { Item } from './item.model';
 import { Supplier } from './supplier.model';
 import { CompanyLog } from './company-log.model';
+import { Group } from './group.model';
 
 export class Company {
   constructor(
@@ -16,6 +17,7 @@ export class Company {
     public items?: Item[],
     public suppliers?: Supplier[],
     public log?: CompanyLog[],
-    public description?: string
+    public description?: string,
+    public itemGroups?: Group[]
   ) {}
 }

@@ -31,7 +31,6 @@ export class SuppliersComponent implements OnInit, OnDestroy {
   suppliersToDelete: Set<number> = new Set();
 
   private focusCellKey: string | null = null;
-  customColumns: { [key: string]: {value: string, color: string, width: string}; } = {};
   cellEditMode: { [key: string]: boolean } = {};
   cellSelected: { [key: string]: boolean } = {};
   tempCellValue: string = '';

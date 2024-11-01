@@ -6,36 +6,33 @@ import lt.project.sklad._security.entities.Token;
 import lt.project.sklad._security.services.TokenService;
 import lt.project.sklad._security.utils.MessagingUtils;
 import lt.project.sklad.entities.Company;
-import lt.project.sklad.entities.Location;
+import lt.project.sklad.entities.Item;
+import lt.project.sklad.entities.ItemGroup;
 import lt.project.sklad.repositories.CompanyRepository;
-import lt.project.sklad.repositories.LocationRepository;
+import lt.project.sklad.repositories.ItemGroupRepository;
+import lt.project.sklad.repositories.ItemRepository;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.springframework.http.HttpStatus.*;
 
-/**
- * {@link Location} service
- * @since 1.0, 29 Jan 2024
- * @author Maksim Pavlenko
- */
 @Service
 @RequiredArgsConstructor
-public class LocationService {
-    private final LocationRepository locationRepository;
+public class ItemGroupService {
+    private final ItemGroupRepository itemGroupRepository;
+    private final ItemRepository itemRepository;
     private final CompanyRepository companyRepository;
     private final TokenService tokenService;
     private final MessagingUtils msgUtils;
 
     @Transactional
-    public ResponseEntity<?> createLocation(
+    public ResponseEntity<?> createGroup(
             final Long companyId,
-            final Location location,
+            final ItemGroup itemGroup,
             final HttpServletRequest request
     ) {
         final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
@@ -57,28 +54,17 @@ public class LocationService {
         if(!company.getUser().contains(token.getUser()))
             return msgUtils.error(FORBIDDEN, "Access denied");
 
-        Location result = locationRepository.save(Location.builder()
-                .name(location.getName())
-                .streetAndNumber(location.getStreetAndNumber())
-                .cityOrTown(location.getCityOrTown())
-                .countryCode(location.getCountryCode())
-                .postalCode(location.getPostalCode())
-                .phoneNumber(location.getPhoneNumber())
-                .phoneNumberTwo(location.getPhoneNumberTwo())
-                .description(location.getDescription())
-                .owner(company)
-                .build()
-        );
+        ItemGroup result = itemGroupRepository.save(new ItemGroup(itemGroup.getName(),company));
 
-        company.getLocations().add(result);
+        company.getItemGroups().add(result);
 
         return ResponseEntity.ok().body(result);
     }
 
     @Transactional
-    public ResponseEntity<?> updateLocation(
+    public ResponseEntity<?> updateGroup(
             final long companyId,
-            final Location location,
+            final ItemGroup itemGroup,
             final HttpServletRequest request
     ) {
         final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
@@ -100,29 +86,22 @@ public class LocationService {
         if(!company.getUser().contains(token.getUser()))
             return msgUtils.error(FORBIDDEN, "Access denied");
 
-        Location existingLocation = locationRepository.findById(location.getId()).orElse(null);
+        ItemGroup existingItemGroup = itemGroupRepository.findById(itemGroup.getId()).orElse(null);
 
-        if(existingLocation == null || existingLocation.getOwner().getId() != companyId)
+        if(existingItemGroup == null || existingItemGroup.getOwnedByCompany().getId() != companyId)
             return msgUtils.error(FORBIDDEN, "Access denied");
 
-        existingLocation.setName(location.getName());
-        existingLocation.setStreetAndNumber(location.getStreetAndNumber());
-        existingLocation.setCityOrTown(location.getCityOrTown());
-        existingLocation.setCountryCode(location.getCountryCode());
-        existingLocation.setPostalCode(location.getPostalCode());
-        existingLocation.setPhoneNumber(location.getPhoneNumber());
-        existingLocation.setPhoneNumberTwo(location.getPhoneNumberTwo());
-        existingLocation.setDescription(location.getDescription());
+        existingItemGroup.setName(itemGroup.getName());
 
-        locationRepository.save(existingLocation);
+        itemGroupRepository.save(existingItemGroup);
 
-        return ResponseEntity.ok().body(existingLocation);
+        return ResponseEntity.ok().body(existingItemGroup);
     }
 
     @Transactional
-    public ResponseEntity<?> deleteLocation(
+    public ResponseEntity<?> deleteGroup(
             final long companyId,
-            final List<Long> locations,
+            final List<Long> groups,
             final HttpServletRequest request
     ) {
         final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
@@ -141,26 +120,36 @@ public class LocationService {
         if (company == null)
             return ResponseEntity.notFound().build();
 
-        List<Location> foundLocations = locationRepository.findAllById(locations);
+        List<ItemGroup> foundItemGroups = itemGroupRepository.findAllById(groups);
 
-        if (foundLocations == null || foundLocations.isEmpty())
-            return msgUtils.error(NOT_FOUND, "Location not found");
+        if (foundItemGroups == null || foundItemGroups.isEmpty())
+            return msgUtils.error(NOT_FOUND, "Groups not found");
 
-        boolean wrongCompany = foundLocations.stream().anyMatch(
-                x -> x.getOwner().getId() != companyId);
+        boolean wrongCompany = foundItemGroups.stream().anyMatch(
+                x -> x.getOwnedByCompany().getId() != companyId);
 
-        if(wrongCompany)
-            return msgUtils.error(NOT_FOUND, "Alien location in the list");
+        if (wrongCompany)
+            return msgUtils.error(NOT_FOUND, "Alien group in the list");
 
-//        company.getSuppliers().removeAll(foundLocations);
-        company.getLocations().removeAll(foundLocations);
+        // Removing groups
+        company.getItemGroups().removeAll(foundItemGroups);
 
-        List<Location> postDeleteLocations = locationRepository.findAllById(locations);
-        if (!postDeleteLocations.isEmpty()) {
-            System.err.println("Locations not deleted: " + postDeleteLocations.stream().map(Location::getId).toList()); // .collect(Collectors.toList())
-            return msgUtils.error(INTERNAL_SERVER_ERROR, "Failed to delete some locations");
+        List<ItemGroup> postDeleteItemGroups = itemGroupRepository.findAllById(groups);
+        if (!postDeleteItemGroups.isEmpty()) {
+            System.err.println("Groups not deleted: " + postDeleteItemGroups.stream().map(ItemGroup::getId).toList()); // .collect(Collectors.toList())
+            return msgUtils.error(INTERNAL_SERVER_ERROR, "Failed to delete some of the groups");
         }
 
-        return ResponseEntity.ok().body(null);
+        List<Item> itemsInvolved = itemRepository.findAllByItemGroupsId(companyId, groups);
+
+        if(!itemsInvolved.isEmpty()) {
+            for (Item x : itemsInvolved) {
+                x.setItemGroups(x.getItemGroups().stream().filter(y -> !groups.contains(y)).toList());
+            }
+        }
+
+        itemRepository.saveAll(itemsInvolved);
+
+        return ResponseEntity.ok().body(groups);
     }
 }

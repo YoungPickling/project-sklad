@@ -15,6 +15,7 @@ export const environment = {
     name: "UAB SAFETECH",
     image: null,
     user: [],
+    itemGroups: [],
     imageData: [
       {
         id: 6,

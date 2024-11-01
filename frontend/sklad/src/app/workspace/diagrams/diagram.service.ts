@@ -24,6 +24,7 @@ export class DiagramService {
   editItem = new BehaviorSubject<number | null>(null);
 
   params = new BehaviorSubject<NodeSelectParams>(EMPTY_PARAMS);
+  diagram = new BehaviorSubject<{item: number, location: number}>(null);
 
   // modifyAmount = new BehaviorSubject<number>(0);
   // assembleAmount = new BehaviorSubject<number>(0);

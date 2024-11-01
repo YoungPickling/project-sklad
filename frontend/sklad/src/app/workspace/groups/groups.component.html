@@ -1,0 +1,106 @@
+<!-- <app-alert
+  *ngIf="alertOpen"
+  [(isLoadig)]="isLoading"
+  [preset]="alertPreset"
+  [message]="error"
+  [error]="errorResponse"
+  (close)="onCloseAlert()"
+  (addLocation)="onAddLocation($event)"
+></app-alert> -->
+
+<div class="w-l">
+  <div class="w-title-bar">
+    <h1 class="w-title">Groups</h1>
+    <span *ngIf="isLoading" class="loader-round"></span>
+  </div>
+
+  <div class="w-button-bar">
+    <button
+      class="button-42" 
+      [ngClass]="{'button-42-active': addButtonActive}"
+      (click)="onClickAddBtn()"
+    >Add Group</button>
+
+    <button 
+      class="button-42" 
+      (click)="onClickRemoveBtn()"
+      [ngClass]="{'button-42-active': removeButtonActive}"
+      [disabled]="company?.itemGroups?.length === 0"
+    >Delete Groups</button>
+  </div>
+
+
+  <div *ngIf="!isLoading && addButtonActive">
+    <hr/>
+    <form [formGroup]="addGroupForm" (ngSubmit)="onSubmitAddGroup()">
+      <div class="w-form-container">
+        <div class="input-container">
+          <input placeholder="name" formControlName="name" class="input-field" type="text" autocomplete="false" />
+          <label for="name" class="input-label">name</label>
+          <span class="input-highlight"></span>
+        </div>
+      </div>
+      
+      <div class="w-form-submit-box">
+        <button class="button-42" type="submit" [disabled]="addGroupForm.invalid ">Submit</button>
+      </div>
+    </form>
+    <hr/>
+  </div>
+</div>
+
+<h1 class="w-empty" *ngIf="company?.itemGroups?.length === 0 else view">No groups created yet</h1>
+
+<ng-template #view>
+  <div class="w-table-container">
+    <table class="workspace-table">
+      <thead>
+        <tr>
+          <th *ngIf="removeButtonActive">
+            <mat-icon>delete</mat-icon>
+          </th>
+          <th>name</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let itemGroup of itemGroups; let i = index">
+          <td *ngIf="removeButtonActive">
+            <input 
+              type="checkbox" 
+              id="r{{i}}" 
+              name="remove" 
+              class="ws-check-box"
+              (change)="onCheckboxChange($event, itemGroup?.id)"/>
+          </td>
+
+          <td 
+            [ngClass]="{'cell-edit-border': cellEditMode[i + '-0']}"
+            (click)="doubleClickCell(i,0)"
+          >
+            <div
+              [id]="i + '-0'"
+              *ngIf="!cellEditMode[i + '-0']"
+              >{{ itemGroup?.name }}</div>
+            <span
+              [id]="i + '-0f'"
+              *ngIf="cellEditMode[i + '-0']" 
+              [(inputValue)]="tempCellValue"
+              (clickOutside)="onClickOutsideCell(i + '-0')"
+              (keydown.enter)="updateCellValue(i, 0)"
+              contenteditable
+            ></span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</ng-template>
+
+<div class="w-l">
+  <button
+    *ngIf="removeButtonActive"
+    class="button-42" 
+    [disabled]="isLoading"
+    (click)="onRemoveRows()"
+  >Submit Removal</button>
+</div>
