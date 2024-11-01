@@ -1,5 +1,4 @@
 <ng-template *ngIf="isLoading else workspacePage">
-
 </ng-template>
 
 <ng-template #workspacePage>
@@ -76,6 +75,17 @@
           <div class="w-header-button">
             <mat-icon>photo_library</mat-icon>
             <p>gallery</p>
+          </div>
+        </div>
+
+        <div 
+          class="w-header-box"
+          routerLinkActive="w-header-button-selected"
+          [routerLink]="['/workspace', companyId, 'groups']"
+        >
+          <div class="w-header-button">
+            <mat-icon>collections_bookmark</mat-icon>
+            <p>groups</p>
           </div>
         </div>
       </div>

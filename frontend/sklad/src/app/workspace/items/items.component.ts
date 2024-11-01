@@ -16,6 +16,7 @@ import { ItemColumn } from '../../shared/models/item-column.model';
 import { ImageCacheDirective } from '../../shared/directives/image.directive';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FilterSet } from '../workspace.service'
+import { ImageService } from '../../shared/image.service';
 
 @Component({
   selector: 'app-items',
@@ -82,7 +83,8 @@ export class ItemsComponent implements OnInit, OnDestroy, AfterViewChecked {
 
   constructor(
     private workspaceService: WorkspaceService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private imageService: ImageService
   ) {}
 
   ngOnInit() {
@@ -178,9 +180,6 @@ export class ItemsComponent implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   onClickAddBtn() {
-    if(this.removeButtonActive) {
-      this.itemsToDelete = new Set();
-    }
     this.itemsToDelete = new Set();
     this.addButtonActive = !this.addButtonActive;
     this.removeButtonActive = false;
@@ -188,9 +187,7 @@ export class ItemsComponent implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   onClickRemoveBtn() {
-    if(this.removeButtonActive) {
-      this.itemsToDelete = new Set();
-    }
+    this.itemsToDelete = new Set();
     this.removeButtonActive = !this.removeButtonActive;
     this.addButtonActive = false;
     this.filterButtonActive = false;
@@ -256,6 +253,9 @@ export class ItemsComponent implements OnInit, OnDestroy, AfterViewChecked {
     }
   }
 
+  imagePresent(url) {
+    return this.imageService.imagePresent(url);
+  }
 
   getItemById(id: number) {
     return this.company.items.filter(i => i?.id == id)[0] || {};

@@ -2,6 +2,7 @@ import { Image } from './image.model';
 import { ItemColumn } from './item-column.model';
 import { Company } from './company.model';
 import { Supplier } from './supplier.model';
+import { Group } from './group.model';
 
 export class Item {
   constructor(
@@ -16,6 +17,7 @@ export class Item {
     public company?: Company,
     public suppliers?: Supplier[],
     public product?: boolean,
-    public description?: string
+    public description?: string,
+    public itemGroups?: Group[]
   ) {}
 }

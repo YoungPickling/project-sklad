@@ -9,6 +9,7 @@ import { AuthService } from '../frontpage/login/auth.service';
 import { ClickOutsideDirective } from '../shared/directives/clickOutside.directive';
 import { environment } from '../../environments/environment';
 import { ImageCacheDirective } from '../shared/directives/image.directive';
+import { ImageService } from '../shared/image.service';
 
 @Component({
   selector: 'app-workspace',
@@ -53,7 +54,8 @@ export class WorkspaceComponent implements OnInit, OnChanges, OnDestroy {
     private authService: AuthService,
     private router: Router,
     private route: ActivatedRoute,
-    private workspaceService: WorkspaceService
+    private workspaceService: WorkspaceService,
+    private imageService: ImageService
     // private matIconRegistry: MatIconRegistry,
     // private domSanitizer: DomSanitizer
   ) {
@@ -70,11 +72,13 @@ export class WorkspaceComponent implements OnInit, OnChanges, OnDestroy {
   ngOnInit() {
     this.userDetailsSubscription = this.authService.userDetails.subscribe(
       user => {
-        this.isLoggedIn = !!user;
-        console.log(this.isLoggedIn);
-        this.username = user?.username || "";
-        this.initials = user?.firstname.toUpperCase().at(0) + user?.lastname.toUpperCase().at(0);
-        this.userImageHash = user?.image?.hash || "";
+        if(user) {
+          this.isLoggedIn = !!user;
+          // console.log(this.isLoggedIn);
+          this.username = user?.username || "";
+          this.initials = user?.firstname.toUpperCase().at(0) + user?.lastname.toUpperCase().at(0);
+          this.userImageHash = user?.image?.hash || "";
+        }
       }
     );
 
@@ -85,11 +89,11 @@ export class WorkspaceComponent implements OnInit, OnChanges, OnDestroy {
     this.routeParamsSub = this.route.params.subscribe({
       next: (params: Params) => {
         this.companyId = params['companyId'];
-        try {
-          this.workspaceService.getCompany(this.companyId);
-        } catch(error) {
-          console.error(error);
-        }
+          try {
+            this.workspaceService.getCompany(this.companyId);
+          } catch(error) {
+            console.error(error);
+          }
       },
       error: (error) => {
         console.log(error);
@@ -101,9 +105,11 @@ export class WorkspaceComponent implements OnInit, OnChanges, OnDestroy {
 
     this.companyDetailSub = this.workspaceService.companyDetails.subscribe(
       company => {
-        this.company = company
-        this.companyId = company.id
-        this.currentRoute = this.onBreadcrumbUpdate(this.router.url);
+        if(company) {
+          this.company = company
+          this.companyId = company.id
+          this.currentRoute = this.onBreadcrumbUpdate(this.router.url);
+        }
       }
     );
 
@@ -153,6 +159,7 @@ export class WorkspaceComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnDestroy() {
+    this.imageService.clearCache()
     this.routeParamsSub.unsubscribe();
     this.routerEventsSub.unsubscribe();
     this.companyDetailSub.unsubscribe();

@@ -1,7 +1,7 @@
 import { HttpClient, HttpErrorResponse } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { catchError, switchMap, tap } from "rxjs/operators";
-import { BehaviorSubject, throwError } from "rxjs";
+import { catchError, switchMap, tap, delay } from "rxjs/operators";
+import { BehaviorSubject, throwError, of } from "rxjs";
 import { environment } from "../../../environments/environment";
 import { BriefUserModel } from "./briefUser.model";
 import { User } from "../../shared/models/user.model";
@@ -23,6 +23,7 @@ export interface RegisterData {
 export class AuthService {
   user = new BehaviorSubject<BriefUserModel>(null);
   userDetails = new BehaviorSubject<User>(null);
+  initialCheck = new BehaviorSubject<boolean>(false);
   // private tokenExpirationTimer: any;
 
   constructor(
@@ -135,6 +136,7 @@ export class AuthService {
   // }
 
   autoLogin() {
+    this.makeCheck();
     if (typeof localStorage === 'undefined') {
       // Handle the case where localStorage is not available, such as SSR or non-browser environment
       return;
@@ -164,6 +166,9 @@ export class AuthService {
           // Handle error, maybe logout user or show a message
           console.error("Error fetching user details:", error);
           this.logout();
+        },
+        complete: () => {
+          this.initialCheck.next(true);
         }
       });
 
@@ -180,6 +185,12 @@ export class AuthService {
       //   new Date().getTime();
       // this.autoLogout(expirationDuration);
     }
+  }
+
+  private makeCheck() {
+    of(null).pipe(
+      delay(1)
+    ).subscribe(() => this.initialCheck.next(true));
   }
 
   

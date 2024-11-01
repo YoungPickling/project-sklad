@@ -87,6 +87,15 @@
             return itemService.putItemParents(itemId, quantity, request);
         }
 
+        @PutMapping("/{itemId}/status/{companyId}")
+        public ResponseEntity<?> updateProductStatus(
+                @PathVariable @NotNull Long itemId,
+                @PathVariable @NotNull Long companyId,
+                HttpServletRequest request
+        ) {
+            return itemService.updateProductStatus(itemId, companyId, request);
+        }
+
         @PostMapping("/assemble/{itemId}")
         public ResponseEntity<?> updateItemParents(
                 @PathVariable @NotNull Long itemId,

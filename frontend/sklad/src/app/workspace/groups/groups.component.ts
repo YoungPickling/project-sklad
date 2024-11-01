@@ -1,34 +1,35 @@
-import { ChangeDetectorRef, Component, HostListener, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component } from '@angular/core';
 import { Company } from '../../shared/models/company.model';
-import { WorkspaceService } from '../workspace.service';
+import { HttpErrorResponse } from '@angular/common/http';
 import { Subscription } from 'rxjs';
+import { WorkspaceService } from '../workspace.service';
 import { CommonModule } from '@angular/common';
-import { AlertComponent, AlertPresets } from '../../shared/alert/alert.component';
-import { Location } from '../../shared/models/location.model';
 import { ClickOutsideDirective } from '../../shared/directives/clickOutside.directive';
 import { ContentEditableModel } from '../../shared/directives/contenteditable.directive';
-import { HttpErrorResponse } from '@angular/common/http';
 import { MatIconModule } from '@angular/material/icon';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Group } from '../../shared/models/group.model';
 
 @Component({
-  selector: 'app-locations',
+  selector: 'app-groups',
   standalone: true,
   imports: [
     CommonModule, 
-    AlertComponent,
+    ReactiveFormsModule,
     ClickOutsideDirective,
     ContentEditableModel,
     MatIconModule
   ],
-  templateUrl: './locations.component.html',
-  styleUrl: './locations.component.css'
+  templateUrl: './groups.component.html',
+  styleUrl: './groups.component.css'
 })
-export class LocationsComponent implements OnInit, OnDestroy {
+export class GroupsComponent {
   company: Company;
+  addButtonActive = false;
   removeButtonActive = false;
   isLoading = false;
 
-  locationsToDelete: Set<number> = new Set();
+  groupsToDelete: Set<number> = new Set();
 
   private focusCellKey: string | null = null;
   cellEditMode: { [key: string]: boolean } = {};
@@ -38,8 +39,10 @@ export class LocationsComponent implements OnInit, OnDestroy {
   lastCellClickedY: number;
   isCellFirstClicked = false;
 
-  alertOpen = false;
-  alertPreset: AlertPresets = null;
+  addGroupForm: FormGroup;
+
+  // alertOpen = false;
+  // alertPreset: AlertPresets = null;
   error: string;
   errorResponse: HttpErrorResponse;
 
@@ -50,7 +53,7 @@ export class LocationsComponent implements OnInit, OnDestroy {
 
   private companyDetailSub: Subscription;
   private loadingSubscription: Subscription;
-  private alertWindowSubscription: Subscription;
+  // private alertWindowSubscription: Subscription;
   private errorSubscription: Subscription;
 
   ngOnInit() {
@@ -66,17 +69,19 @@ export class LocationsComponent implements OnInit, OnDestroy {
       }
     );
 
-    this.alertWindowSubscription = this.workspaceService.closeAlert.subscribe(
-      state => {
-        this.alertOpen = state;
-      }
-    );
+    // this.alertWindowSubscription = this.workspaceService.closeAlert.subscribe(
+    //   state => {
+    //     this.alertOpen = state;
+    //   }
+    // );
 
     this.errorSubscription = this.workspaceService.errorResponse.subscribe(
       error => {
         this.errorResponse = error;
       }
     );
+
+    this.resetForm();
   }
 
   ngAfterViewChecked() {
@@ -92,45 +97,48 @@ export class LocationsComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.workspaceService.errorResponse.next(null);
-    if(this.companyDetailSub) {
-      this.companyDetailSub.unsubscribe()
-    }
+    this.companyDetailSub.unsubscribe()
     this.loadingSubscription.unsubscribe();
-    this.alertWindowSubscription.unsubscribe();
     this.errorSubscription.unsubscribe();
   }
 
-  get locations() {
-    return this.company?.locations.sort((a, b) => a.id - b.id);
-  }
-
-  @HostListener('document:keydown', ['$event'])
-  handleKeyboardEvent(event: KeyboardEvent) {
-    if (event.key === "Escape" && this.alertOpen) {
-      this.alertOpen = false;
-    }
+  get itemGroups() {
+    return this.company?.itemGroups?.sort((a, b) => a.id - b.id);
   }
 
   onClickAddBtn() {
-    this.alertPreset = AlertPresets.addLocation
+    console.log(this.company?.itemGroups)
+    this.groupsToDelete = new Set();
+    this.addButtonActive = !this.addButtonActive;
+    this.removeButtonActive = false;
     this.error = null;
-    this.alertOpen = true;
   }
 
   onClickRemoveBtn() {
-    if(this.removeButtonActive) {
-      this.locationsToDelete = new Set();
-    }
+    this.groupsToDelete = new Set();
     this.removeButtonActive = !this.removeButtonActive;
+    this.addButtonActive = false;
+    this.resetForm();
   }
 
-  onAddLocation(location: any) {
+  onSubmitAddGroup() {
     this.isLoading = true;
-    this.workspaceService.addLocation(location);
+    this.addButtonActive = false;
+    this.removeButtonActive = false;
+
+    try {
+      this.workspaceService.addGroup(this.addGroupForm.value as Group);
+    } catch(error) {
+      console.error(error)
+    }
+    this.isLoading = false;
+    this.resetForm();
   }
 
-  onCloseAlert() {
-    this.alertOpen = false;
+  resetForm() {
+    this.addGroupForm = new FormGroup({
+      name: new FormControl(null, [Validators.required]),
+    });
   }
 
   // ###########
@@ -140,16 +148,16 @@ export class LocationsComponent implements OnInit, OnDestroy {
   onCheckboxChange(event: Event, index: number): void {
     const checkbox = event.target as HTMLInputElement;
     if (checkbox.checked) {
-      this.locationsToDelete.add(index);
+      this.groupsToDelete.add(index);
     } else {
-      this.locationsToDelete.delete(index);
+      this.groupsToDelete.delete(index);
     }
   }
 
   onRemoveRows() {
     this.isLoading = true;
     this.removeButtonActive = false;
-    this.workspaceService.removeLocations(Array.from(this.locationsToDelete.values()));
+    this.workspaceService.removeGroups(Array.from(this.groupsToDelete.values()));
   }
 
   // ###########
@@ -182,7 +190,7 @@ export class LocationsComponent implements OnInit, OnDestroy {
       this.lastCellClickedX = x;
       this.lastCellClickedY = y;
 
-      new Promise((resolve, reject) => {
+      new Promise(() => {
         setTimeout(() => {
           this.isCellFirstClicked = false;
         }, 300);
@@ -194,21 +202,12 @@ export class LocationsComponent implements OnInit, OnDestroy {
     this.isLoading = true;
     this.cellEditMode[x + '-' + y] = false;
 
-    // Create a deep copy of the Location
-    let tempLocation: Location = {...this.company.locations[x]};
+    // Create a deep copy of the Group
+    const tempGroup: Group = {...this.company.itemGroups[x]};
+    tempGroup.name = this.tempCellValue;
 
-    switch(y) {
-      case 0: { tempLocation.name = this.tempCellValue; break; }
-      case 1: { tempLocation.street_and_number = this.tempCellValue; break; }
-      case 2: { tempLocation.city_or_town = this.tempCellValue; break; }
-      case 3: { tempLocation.country_code = this.tempCellValue; break; }
-      case 4: { tempLocation.postal_code = this.tempCellValue; break; }
-      case 5: { tempLocation.phone_number = this.tempCellValue; break; }
-      case 6: { tempLocation.phone_number_two = this.tempCellValue; break; }
-      case 7: { tempLocation.description = this.tempCellValue; break; }
-    }
     try {
-      this.workspaceService.updateLocation(tempLocation);
+      this.workspaceService.updateGroup(tempGroup);
       console.log(this.tempCellValue, x + '-' + y);
     } catch (error) {
       console.error(error)

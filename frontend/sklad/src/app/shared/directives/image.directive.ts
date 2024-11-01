@@ -4,10 +4,12 @@ import { Observable } from 'rxjs';
 
 @Directive({
   standalone: true,
-  selector: '[cacheSrc]'
+  selector: '[cacheSrc]',
+  host: {ngSkipHydration: 'true'},
 })
 export class ImageCacheDirective implements OnInit {
   @Input('cacheSrc') imageUrl: string;
+  @Input('cacheDemo') isDemo: boolean = false;
 
   constructor(private el: ElementRef, private imageService: ImageService) {}
 

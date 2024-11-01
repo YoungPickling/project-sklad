@@ -9,6 +9,7 @@ import { Supplier } from "../shared/models/supplier.model";
 import { Location } from "../shared/models/location.model";
 import { ImageService } from "../shared/image.service";
 import { Image } from "../shared/models/image.model";
+import { Group } from "../shared/models/group.model";
 
 export type FilterSet = {
   image: boolean;
@@ -30,6 +31,7 @@ export type AssembleDTO = {
 
 @Injectable()
 export class WorkspaceService {
+  initial = true;
   companyDetails = new BehaviorSubject<Company>(null);
   isLoading = new BehaviorSubject<boolean>(false);
 
@@ -62,12 +64,14 @@ export class WorkspaceService {
 
   getCompany(id: number): void {
     // If demo mode is on, company id is 0
-    if(id == 0) {
-      this.companyDetails.next(environment.DEFAULT_COMPANY as Company);
+    if(id === 0 || id == undefined) {
+      if(this.initial) {
+        this.companyDetails.next(environment.DEFAULT_COMPANY as Company);
+        this.initial = false;
+      }
       this.isLoading.next(false);
       this.closeAlert.next(false);
     } else {
-      console.log('fired')
       this.http.get<any>(
         environment.API_SERVER + this.API_PATH + "company/" + id,
         { ...this.getHeaders() }
@@ -101,6 +105,7 @@ export class WorkspaceService {
       new Promise(() => {
         setTimeout(() => {
           company.items.push(item);
+          this.initial = true;
           this.companyDetails.next(company);
           this.isLoading.next(false);
           this.closeAlert.next(false);
@@ -124,10 +129,9 @@ export class WorkspaceService {
 
       new Promise(() => {
         setTimeout(() => {
-          if(oldItemId !== null) {
-            company.items[oldItemId] = item;
-            this.companyDetails.next(company);
-          }
+          company.items[oldItemId] = item;
+          this.initial = true;
+          this.companyDetails.next(company);
           this.isLoading.next(false);
           this.closeAlert.next(false);
         }, 100);
@@ -151,6 +155,7 @@ export class WorkspaceService {
       new Promise(() => {
         setTimeout(() => {
           company.items = updatedItems;
+          this.initial = true;
           this.companyDetails.next(company);
           this.isLoading.next(false);
           this.closeAlert.next(false);
@@ -193,6 +198,7 @@ export class WorkspaceService {
       new Promise(() => {
         setTimeout(() => {
           company.imageData.push(newImage);
+          this.initial = true;
           this.companyDetails.next(company);
           this.isLoading.next(false);
           this.closeAlert.next(false);
@@ -226,6 +232,7 @@ export class WorkspaceService {
       new Promise(() => {
         setTimeout(() => {
           company.imageData = gallery;
+          this.initial = true;
           this.companyDetails.next(company);
           this.isLoading.next(false);
           this.closeAlert.next(false);
@@ -249,6 +256,7 @@ export class WorkspaceService {
       new Promise(() => {
         setTimeout(() => {
           company.suppliers.push(supplier);
+          this.initial = true;
           this.companyDetails.next(company);
           this.isLoading.next(false);
           this.closeAlert.next(false);
@@ -279,10 +287,9 @@ export class WorkspaceService {
 
       new Promise(() => {
         setTimeout(() => {
-          if(oldSupplierId !== null) {
-            company.suppliers[oldSupplierId] = supplier;
-            this.companyDetails.next(company);
-          }
+          company.suppliers[oldSupplierId] = supplier;
+          this.initial = true;
+          this.companyDetails.next(company);
           this.isLoading.next(false);
           this.closeAlert.next(false);
         }, 100);
@@ -311,6 +318,7 @@ export class WorkspaceService {
       new Promise(() => {
         setTimeout(() => {
           company.suppliers = newSuppliers;
+          this.initial = true;
           this.companyDetails.next(company);
           this.isLoading.next(false);
           this.closeAlert.next(false);
@@ -337,6 +345,7 @@ export class WorkspaceService {
       new Promise(() => {
         setTimeout(() => {
           company.locations.push(location);
+          this.initial = true;
           this.companyDetails.next(company);
           this.isLoading.next(false);
           this.closeAlert.next(false);
@@ -360,10 +369,9 @@ export class WorkspaceService {
 
       new Promise(() => {
         setTimeout(() => {
-          if(oldLocationId !== null) {
-            company.locations[oldLocationId] = location;
-            this.companyDetails.next(company);
-          }
+          company.locations[oldLocationId] = location;
+          this.initial = true;
+          this.companyDetails.next(company);
           this.isLoading.next(false);
           this.closeAlert.next(false);
         }, 100);
@@ -384,11 +392,30 @@ export class WorkspaceService {
       
       const newLocations = company.locations.filter(x => !locations.includes(x.id));
 
-      console.log(newLocations)
+      // for (let i = 0; i < company.items.length; i++) {
+      //   company.items[i].quantity.forEach(key => {
+      //     if (key in locations) {
+      //       delete company.items[i].quantity[key];
+      //     }
+      //   });
+      // }
+
+      for (let i = 0; i < company.items.length; i++) {
+        const quantity = company.items[i].quantity;
+        
+        Object.keys(quantity).forEach(key => {
+          const numericKey = +key;
+
+          if (locations.includes(numericKey)) {
+            delete quantity[numericKey];
+          }
+        });
+      }
 
       new Promise(() => {
         setTimeout(() => {
           company.locations = newLocations;
+          this.initial = true;
           this.companyDetails.next(company);
           this.isLoading.next(false);
           this.closeAlert.next(false);
@@ -418,6 +445,7 @@ export class WorkspaceService {
       new Promise(() => {
         setTimeout(() => {
           company.items[itemIndex].suppliers = supplierList;
+          this.initial = true;
           this.companyDetails.next(company);
           this.isLoading.next(false);
           this.closeAlert.next(false);
@@ -444,6 +472,7 @@ export class WorkspaceService {
       new Promise(() => {
         setTimeout(() => {
           company.items[itemIndex].quantity[locationId] = quantity;
+          this.initial = true;
           this.companyDetails.next(company);
           this.isLoading.next(false);
           this.closeAlert.next(false);
@@ -468,6 +497,7 @@ export class WorkspaceService {
       new Promise(() => {
         setTimeout(() => {
           company.items[itemIndex].parents = parents;
+          this.initial = true;
           this.companyDetails.next(company);
           this.isLoading.next(false);
           this.closeAlert.next(false);
@@ -506,7 +536,7 @@ export class WorkspaceService {
 
       new Promise(() => {
         setTimeout(() => {
-          // company.items[itemIndex].parents = parents;
+          this.initial = true;
           this.companyDetails.next(company);
           this.isLoading.next(false);
           this.closeAlert.next(false);
@@ -519,6 +549,108 @@ export class WorkspaceService {
         body,
         { ...this.getHeaders() }
       ).subscribe(this.subscriptionTemplate('Error assembling an Item:'));
+    }
+  }
+
+  addGroup(body: Group) {
+    if(this.companyId == 0) {
+      const company: Company = this.companyDetails.value;
+
+      body.id = this.generateId(company.itemGroups);
+
+      new Promise(() => {
+        setTimeout(() => {
+          company.itemGroups.push(body);
+          this.initial = true;
+          this.companyDetails.next(company);
+          this.isLoading.next(false);
+          this.closeAlert.next(false);
+        }, 100);
+      });
+
+    } else {
+      this.http.post<Group>(
+        `${environment.API_SERVER + this.API_PATH}group/${this.companyId}`,
+        body,
+        { ...this.getHeaders() }
+      ).subscribe(this.subscriptionTemplate('Error inserting new Group:'));
+    }
+  }
+
+  updateGroup(body: Group) {
+    if(this.companyId == 0) {
+      const company: Company = this.companyDetails.value;
+
+      const groupIndex = company.itemGroups.findIndex(x => x.id === body.id);
+
+      new Promise(() => {
+        setTimeout(() => {
+          company.itemGroups[groupIndex].name = body.name;
+          this.initial = true;
+          this.companyDetails.next(company);
+          this.isLoading.next(false);
+          this.closeAlert.next(false);
+        }, 100);
+      });
+
+    } else {
+      this.http.put<Group>(
+        `${environment.API_SERVER + this.API_PATH}group/${this.companyId}`,
+        body,
+        { ...this.getHeaders() }
+      ).subscribe(this.subscriptionTemplate('Error updating existing Group:'));
+    }
+  }
+
+  itemProductStatus(id: number, status: number) {
+    if(this.companyId == 0) {
+      const company: Company = this.companyDetails.value;
+
+      const itemIndex = company.items?.findIndex(x => x.id === id);
+
+      new Promise(() => {
+        setTimeout(() => {
+          company.items[itemIndex].product = status > 0;
+          this.initial = true;
+          this.companyDetails.next(company);
+          this.isLoading.next(false);
+          this.closeAlert.next(false);
+        }, 100);
+      });
+
+    } else {
+      this.http.put<Group>(
+        `${environment.API_SERVER + this.API_PATH}item/${id}/status/${status}`,
+        null,
+        { ...this.getHeaders() }
+      ).subscribe(this.subscriptionTemplate('Error updating product status for Item:'));
+    }
+  }
+
+  removeGroups(groups: number[]): void {
+    if(this.companyId == 0) {
+      const company: Company = this.companyDetails.value;
+      
+      const updatedItems = company.itemGroups.filter(x => !groups.includes(x.id));
+
+      new Promise(() => {
+        setTimeout(() => {
+          company.itemGroups = updatedItems;
+          this.initial = true;
+          this.companyDetails.next(company);
+          this.isLoading.next(false);
+          this.closeAlert.next(false);
+        }, 100);
+      });
+
+    } else {
+      this.http.delete<number[]>(
+        `${environment.API_SERVER + this.API_PATH}item/${this.companyId}`,
+        {
+          ...this.getHeaders(),
+          params : { "delete": groups }
+        }
+      ).subscribe(this.subscriptionTemplate('Error removing Groups:'));
     }
   }
 

@@ -72,6 +72,11 @@ public class Item {
     private Map<Long, Long> quantity;
 
     /**
+     * Group Ids for which this Item belongs
+     */
+    private List<Long> itemGroups;
+
+    /**
      * Company this item belongs to.
      * Part of the company's item gallery
      */
@@ -83,8 +88,6 @@ public class Item {
     /**
      * Suppliers of this item
      */
-//    @OneToMany(fetch = FetchType.EAGER)
-//    @JoinColumn(name = "item_id")
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(name = "item_supplier",
             joinColumns = @JoinColumn(name = "item_id"),
