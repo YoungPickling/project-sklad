@@ -4,6 +4,8 @@ import { WorkspaceService } from '../workspace.service';
 import { Subscription } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { AlertComponent } from '../../shared/alert/alert.component';
+import { ActivatedRoute, Event, NavigationEnd, NavigationStart, Router } from '@angular/router';
+import { filter, map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-users',
@@ -19,9 +21,11 @@ export class UsersComponent implements OnInit, OnDestroy {
   company: Company;
 
   isLoading = false;
+  isEvaluationVersion = false;
 
   constructor(
-    private workspaceService: WorkspaceService
+    private workspaceService: WorkspaceService,
+    private router: Router,
   ) {}
 
   private companyDetailSub: Subscription;
@@ -32,11 +36,13 @@ export class UsersComponent implements OnInit, OnDestroy {
         this.company = company;
       }
     );
+
+    this.isEvaluationVersion = this.router.url.includes('workspace/0');
   }
 
   ngOnDestroy() {
     if(this.companyDetailSub) {
-      this.companyDetailSub.unsubscribe()
+      this.companyDetailSub.unsubscribe();
     }
   }
 }

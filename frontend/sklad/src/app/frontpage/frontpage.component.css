@@ -221,3 +221,25 @@
     display:none;
   }
 }
+
+.footer {
+  margin-top: 1rem;
+  background-color: #000;
+}
+
+.footer p {
+  font-size: 0.67rem;
+  color: #fff !important;
+}
+
+.frontpage-center {
+  display: grid;
+  justify-content: center;
+}
+
+.general-wrap {
+  min-height: 100svh;
+  justify-content: space-between;
+  display: flex;
+  flex-direction: column;
+}

@@ -4,6 +4,8 @@
     <span *ngIf="isLoading" class="loader-round"></span>
   </div>
 </div>
+
+<h1 class="w-empty" *ngIf="isEvaluationVersion">No Users In Evaluation Version</h1>
 <h1 class="w-empty" *ngIf="company?.user?.length === 0 && company?.id !== 0 else view">No users in this company</h1>
 
 <ng-template #view>

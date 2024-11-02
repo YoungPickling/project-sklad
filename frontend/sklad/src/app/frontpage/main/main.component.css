@@ -226,7 +226,3 @@ p {
   animation-iteration-count: 1;
 }
 
-.frontpage-center {
-  display: grid;
-  justify-content: center;
-}

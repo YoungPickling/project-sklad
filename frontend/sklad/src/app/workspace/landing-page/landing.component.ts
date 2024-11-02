@@ -37,6 +37,7 @@ export class LandingPageComponent implements OnInit, OnDestroy {
       }
     );
   }
+    
 
   ngOnDestroy() {
     if(this.companyDetailSub) {
