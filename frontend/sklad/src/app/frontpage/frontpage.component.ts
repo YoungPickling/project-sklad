@@ -18,5 +18,7 @@ import { ClickOutsideDirective } from '../shared/directives/clickOutside.directi
   encapsulation: ViewEncapsulation.None
 })
 export class FrontpageComponent {
-  
+  private year: number = (new Date()).getFullYear();
+  private datestamp: string = this.year === 2024 ? '2024' : '2024-' + this.year;
+  copyright: string = "© " + this.datestamp + " Maksim Pavlenko";
 }
