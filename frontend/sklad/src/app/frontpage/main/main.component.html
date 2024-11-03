@@ -1,6 +1,6 @@
 <div class="space-wrap">
 
-  <div class="frontpage-banner" style="margin-bottom:1rem">
+  <div class="frontpage-banner" style="margin-bottom:2rem">
     <div class="frontpage-banner-wrapper">
       <div class="frontpage-banner-row">
         <div class="frontpage-banner-quote"> <!-- style="animation-name: examp;" frontpage-slide-->
@@ -36,99 +36,105 @@
       </g>
     </svg>
   </div>
-
 </div>
 
-<div class="frontpage-center">
-  <svg width="390" height="400">
-    <g transform="translate(70, 200)">
-      <path class="link" d="M0,0C125,0,125,-150,250,-150" fill="none" stroke="#111" stroke-width="1.7"></path>
-      <path class="link" d="M0,0C125,0,125,-50,250,-50" fill="none" stroke="#111" stroke-width="1.7"></path>
-      <path class="link" d="M0,0C125,0,125,50,250,50" fill="none" stroke="#111" stroke-width="1.7"></path>
-      <path class="link" d="M0,0C125,0,125,150,250,150" fill="none" stroke="#111" stroke-width="1.7"></path>
-      <g class="node" transform="translate(-70, -50)">
-          <foreignObject width="140" height="100">
-            <!-- <div class="w-block-wrap">
-                <div class="w-block">
-                  <div class="w-quantity" style="background-color:#3e3">2</div>
-                  <img [cacheSrc]="link + '/assets/dispenser.jpg'" alt="Dispenser" style="width:50px;height:50px">
-                  <p style="margin:0.2rem 0">Dispenser</p>
-                </div>
-            </div> -->
-            <app-node
-              [link]="'/assets/dispenser.jpg'"
-              [name]="'Dispenser'"
-              [stock]="2"
-              [needed]="''"
+<div class="frontpage-center" style="height: 80svh;flex-direction: row-reverse;">
+  
+  <div style="width: 400px">
+    <h1>Batch manage warehouse elements in a fast and convenient way</h1>
+  </div>
+
+  <div style="margin-right:max(2rem,3vw)">
+    <svg width="390" height="400">
+      <g transform="translate(70, 200)">
+        <path class="link" d="M0,0C125,0,125,-150,250,-150" fill="none" stroke="#111" stroke-width="1.7"></path>
+        <path class="link" d="M0,0C125,0,125,-50,250,-50" fill="none" stroke="#111" stroke-width="1.7"></path>
+        <path class="link" d="M0,0C125,0,125,50,250,50" fill="none" stroke="#111" stroke-width="1.7"></path>
+        <path class="link" d="M0,0C125,0,125,150,250,150" fill="none" stroke="#111" stroke-width="1.7"></path>
+        <g class="node" transform="translate(-70, -50)">
+            <foreignObject width="140" height="100">
+              <!-- <div class="w-block-wrap">
+                  <div class="w-block">
+                    <div class="w-quantity" style="background-color:#3e3">2</div>
+                    <img [cacheSrc]="link + '/assets/dispenser.jpg'" alt="Dispenser" style="width:50px;height:50px">
+                    <p style="margin:0.2rem 0">Dispenser</p>
+                  </div>
+              </div> -->
+              <app-node
+                [link]="'/assets/dispenser.jpg'"
+                [name]="'Dispenser'"
+                [stock]="2"
+                [needed]="''"
+              ></app-node>
+            </foreignObject>
+        </g>
+        <g class="node" transform="translate(180, -200)">
+            <foreignObject width="140" height="100">
+              <!-- <div class="w-block-wrap">
+                  <div class="w-block">
+                    <div class="w-quantity" style="background-color:#3e3">6</div>
+                    <div class="w-needed">x1</div>
+                    <img [cacheSrc]="link + '/assets/feed_shaft.jpg'" alt="Feed Shaft" style="width:50px;height:50px">
+                    <p style="margin:0.2rem 0">Feed Shaft</p>
+                  </div>
+              </div> -->
+              <app-node
+                [link]="'/assets/feed_shaft.jpg'"
+                [name]="'Feed Shaft'"
+                [stock]="6"
+                [needed]="'x1'"
+              ></app-node>
+            </foreignObject>
+        </g>
+        <g class="node" transform="translate(180, -100)">
+            <foreignObject width="140" height="100">
+              <!-- <div class="w-block-wrap">
+                  <div class="w-block">
+                    <div class="w-quantity" style="background-color:#3e3">10</div>
+                    <div class="w-needed">x3</div>
+                    <img [cacheSrc]="link + '/assets/gear.jpg'" alt="Gear" style="width:50px;height:50px">
+                    <p style="margin:0.2rem 0">Gear</p>
+                  </div>
+              </div> -->
+              <app-node
+                [link]="'/assets/gear.jpg'"
+                [name]="'Gear'"
+                [stock]="10"
+                [needed]="'x3'"
+              ></app-node>
+            </foreignObject>
+        </g>
+        <g class="node" transform="translate(180, 0)">
+            <foreignObject width="140" height="100">
+              <!-- <div class="w-block-wrap">
+                  <div class="w-block">
+                    <div class="w-quantity" style="background-color:#3e3">9</div>
+                    <div class="w-needed">x1</div>
+                    <img [cacheSrc]="link + '/assets/electric_motor.jpg'" alt="Electric Motor" style="width:50px;height:50px">
+                    <p style="margin:0.2rem 0">Electric Motor</p>
+                  </div>
+              </div> -->
+              <app-node
+                [link]="'/assets/electric_motor.jpg'"
+                [name]="'Electric Motor'"
+                [stock]="9"
+                [needed]="'x1'"
+              ></app-node>
+            </foreignObject>
+        </g>
+        <g class="node" transform="translate(180, 100)">
+            <foreignObject width="140" height="100">
+              <app-node
+              [link]="'/assets/belt.jpg'"
+              [name]="'Belt'"
+              [stock]="60"
+              [needed]="'x2'"
             ></app-node>
-          </foreignObject>
+            </foreignObject>
+        </g>
       </g>
-      <g class="node" transform="translate(180, -200)">
-          <foreignObject width="140" height="100">
-            <!-- <div class="w-block-wrap">
-                <div class="w-block">
-                  <div class="w-quantity" style="background-color:#3e3">6</div>
-                  <div class="w-needed">x1</div>
-                  <img [cacheSrc]="link + '/assets/feed_shaft.jpg'" alt="Feed Shaft" style="width:50px;height:50px">
-                  <p style="margin:0.2rem 0">Feed Shaft</p>
-                </div>
-            </div> -->
-            <app-node
-              [link]="'/assets/feed_shaft.jpg'"
-              [name]="'Feed Shaft'"
-              [stock]="6"
-              [needed]="'x1'"
-            ></app-node>
-          </foreignObject>
-      </g>
-      <g class="node" transform="translate(180, -100)">
-          <foreignObject width="140" height="100">
-            <!-- <div class="w-block-wrap">
-                <div class="w-block">
-                  <div class="w-quantity" style="background-color:#3e3">10</div>
-                  <div class="w-needed">x3</div>
-                  <img [cacheSrc]="link + '/assets/gear.jpg'" alt="Gear" style="width:50px;height:50px">
-                  <p style="margin:0.2rem 0">Gear</p>
-                </div>
-            </div> -->
-            <app-node
-              [link]="'/assets/gear.jpg'"
-              [name]="'Gear'"
-              [stock]="10"
-              [needed]="'x3'"
-            ></app-node>
-          </foreignObject>
-      </g>
-      <g class="node" transform="translate(180, 0)">
-          <foreignObject width="140" height="100">
-            <!-- <div class="w-block-wrap">
-                <div class="w-block">
-                  <div class="w-quantity" style="background-color:#3e3">9</div>
-                  <div class="w-needed">x1</div>
-                  <img [cacheSrc]="link + '/assets/electric_motor.jpg'" alt="Electric Motor" style="width:50px;height:50px">
-                  <p style="margin:0.2rem 0">Electric Motor</p>
-                </div>
-            </div> -->
-            <app-node
-              [link]="'/assets/electric_motor.jpg'"
-              [name]="'Electric Motor'"
-              [stock]="9"
-              [needed]="'x1'"
-            ></app-node>
-          </foreignObject>
-      </g>
-      <g class="node" transform="translate(180, 100)">
-          <foreignObject width="140" height="100">
-            <app-node
-            [link]="'/assets/belt.jpg'"
-            [name]="'Belt'"
-            [stock]="60"
-            [needed]="'x2'"
-          ></app-node>
-          </foreignObject>
-      </g>
-    </g>
-  </svg>
+    </svg>
+  </div>
 </div>
 
 
