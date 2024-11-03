@@ -215,7 +215,6 @@
       </nav>
 
       <div class="w-main-window">
-        <!-- <b style="margin-left: 1rem">{{ currentRoute }}</b> -->
         <div class="w-l">
           <ng-container *ngFor="let route of currentRoute; let l = last">
             <b><a *ngIf="!l" [routerLink]="[route[1]]">{{route[0]}}</a></b>
