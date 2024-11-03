@@ -274,7 +274,7 @@
               <ng-template #imageBlock>
                 <div 
                   class="cell-empty-image"
-                  [cacheSrc]="link + item?.image?.hash"
+                  [cacheSrc]="(item?.image?.internal ? altLink : link) + item?.image?.hash"
                 ></div>
               </ng-template>
 

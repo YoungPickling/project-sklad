@@ -21,11 +21,11 @@ export class LandingPageComponent implements OnInit, OnDestroy {
   company: Company;
   companyId: number;
 
+  private companyDetailSub: Subscription;
+
   constructor(
     private workspaceService: WorkspaceService
   ) {}
-
-  private companyDetailSub: Subscription;
 
   ngOnInit() {
     this.companyDetailSub = this.workspaceService.companyDetails.subscribe(
@@ -38,7 +38,6 @@ export class LandingPageComponent implements OnInit, OnDestroy {
     );
   }
     
-
   ngOnDestroy() {
     if(this.companyDetailSub) {
       this.companyDetailSub.unsubscribe()

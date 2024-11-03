@@ -93,7 +93,8 @@
 
         <div style="display: flex; flex-direction: row; justify-content: space-between">
           <div style="display: flex; justify-content: center; width: 50%;">
-            <img class="shadow" [cacheSrc]="link + 'image/' + imageData?.hash" [alt]="imageData?.name" style="max-width: 95%; max-height: 300px;"/>
+            <!-- [cacheSrc]="link + imageData?.hash" -->
+            <img [cacheSrc]="(imageData?.internal ? altLink : link ) + imageData?.hash" class="shadow" [alt]="imageData?.name" style="max-width: 95%; max-height: 300px;"/>
           </div>
           <div class="image-contents" style="display: flex; flex-direction: column;">
             <h3>Name</h3>
@@ -149,16 +150,16 @@
       <div class="w-gallery-table">
         <ng-container *ngFor="let image of onFilter()">
           <div class="w-gallery-cell-container" [ngClass]="{'w-gallery-cell-selected': checkedImageId === image?.id}">
-            <!-- [ngStyle]="{'background-image': 'url(' + link + 'image/' + image?.hash + ')'}" -->
+            <!-- [cacheSrc]="link + image?.hash" -->
             <div 
               class="w-gallery-cell-background"
-              [cacheSrc]="link + 'image/' + image?.hash"
+              [cacheSrc]="(image?.internal ? altLink : link ) + image?.hash"
             ></div>
             <div
               class="w-gallery-cell "
               (click)="checkedImageId = image?.id"
             >
-              <img [cacheSrc]="link + 'image/' + image?.hash" [alt]="image?.name" class="disable-blur" loading="lazy"/>
+              <img [cacheSrc]="(image?.internal ? altLink : link ) + image?.hash" [alt]="image?.name" class="disable-blur" loading="lazy"/>
               <div class="w-gallery-cell-overlay">
                 <div class="w-gallery-cell-overlay-text">{{image?.name}}</div>
               </div>
@@ -325,7 +326,7 @@
                       <ng-template #imageBlock>
                         <div 
                           class="cell-empty-image"
-                          [cacheSrc]="link + 'image/' + item?.image?.hash"
+                          [cacheSrc]="(item?.image?.internal ? altLink : link ) + item?.image?.hash"
                           [ngStyle]="{'filter': getQuantity(item.id) > 0 ? 'none' : 'grayscale(100%)'}"
                         ></div>
                       </ng-template>

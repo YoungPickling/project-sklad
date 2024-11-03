@@ -25,6 +25,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 export class GalleryComponent implements OnInit, OnDestroy {
   company: Company;
   link = environment.API_SERVER + "/api/rest/v1/secret/image/";
+  altLink = environment.FRONT_SERVER;
 
   addButtonActive = false;
   removeButtonActive = false;

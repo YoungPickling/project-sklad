@@ -233,8 +233,11 @@
 }
 
 .frontpage-center {
-  display: grid;
+  display: flex;
   justify-content: center;
+  flex-wrap: wrap;
+  align-content: center;
+  align-items: flex-start;
 }
 
 .general-wrap {

@@ -204,6 +204,14 @@
           <mat-icon>photo_library</mat-icon>
           <p>gallery({{ company?.imageData?.length }})</p>
         </div>
+        <div 
+          class="w-max-element" 
+          routerLinkActive="w-max-element-selected"
+          [routerLink]="['/workspace', companyId, 'groups']" 
+        >
+          <mat-icon>collections_bookmark</mat-icon>
+          <p>groups({{ company?.itemGroups?.length }})</p>
+        </div>
       </nav>
 
       <div class="w-main-window">
@@ -215,7 +223,6 @@
             <b *ngIf="!l"> > </b>
           </ng-container>
         </div>
-
         <router-outlet></router-outlet>
       </div>
     </div>

@@ -94,7 +94,8 @@ export class AlertComponent implements OnInit, AfterViewInit {
 
   selectedItemChildren: number[] = [];
 
-  link = environment.API_SERVER + "/api/rest/v1/secret/";
+  link = environment.API_SERVER + "/api/rest/v1/secret/image/";
+  altLink = environment.FRONT_SERVER;
 
   private lastMessage: string;
   private formGroup: FormGroup;

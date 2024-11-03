@@ -49,13 +49,13 @@
         <div class="w-gallery-cell-container">
           <div 
             [ngClass]="'w-gallery-cell-background'"
-            [cacheSrc]="link + image?.hash"
+            [cacheSrc]="(image?.internal ? altLink : link) + image?.hash"
           ></div>
           <div 
             class="w-gallery-cell"
             (click)="onClickOpenImage(image)"
           >
-            <img [cacheSrc]="link + image?.hash" [alt]="image?.name" [ngClass]="'disable-blur'" loading="lazy"/>
+            <img [cacheSrc]="(image?.internal ? altLink : link) + image?.hash" [alt]="image?.name" [ngClass]="'disable-blur'" loading="lazy"/>
             <div class="w-gallery-cell-overlay">
               <div class="w-gallery-cell-overlay-text">{{image?.name}}</div>
             </div>

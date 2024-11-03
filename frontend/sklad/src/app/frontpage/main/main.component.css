@@ -101,14 +101,14 @@
 
 .space-wrap {
   background-color: black;
-  min-height: min(70svh, 100vw);
+  min-height: min(85svh, 100vw);
   width: -webkit-fill-available;
   display: flex;
   align-content: space-around;
   justify-content: space-between;
   align-items: stretch;
   flex-direction: column;
-  margin-bottom: 3rem;
+  margin-bottom: 4rem;
 }
 
 .space-wrap h1, .space-wrap p {

@@ -24,6 +24,7 @@ export interface TreeNode {
 })
 export class TreeComponent implements OnInit, OnChanges, OnDestroy {
   link = environment.API_SERVER + "/api/rest/v1/secret/image/";
+  altLink = environment.FRONT_SERVER;
   @Input() data: TreeNode;
   @Input() selectedItem: number;
   @Input() selectedLocation: number;
@@ -89,7 +90,8 @@ export class TreeComponent implements OnInit, OnChanges, OnDestroy {
     
     const traverse = (node: TreeNode) => {
       if (node.item.image?.hash) {
-        const imageUrl = this.link + node.item.image.hash;
+        // [cacheSrc]="(item?.image?.internal ? altLink : link) + item?.image?.hash"
+        const imageUrl = (node.item.image.internal ? this.altLink : this.link )+ node.item.image.hash;
 
         // Push each image request as a Promise
         const imageRequest = new Promise<void>((resolve) => {

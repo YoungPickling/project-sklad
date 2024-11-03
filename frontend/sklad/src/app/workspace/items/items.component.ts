@@ -75,6 +75,7 @@ export class ItemsComponent implements OnInit, OnDestroy, AfterViewChecked {
   parentsMap: Map<number,number>;
 
   link = environment.API_SERVER + "/api/rest/v1/secret/image/";
+  altLink = environment.FRONT_SERVER;
 
   private companyDetailSub: Subscription;
   private loadingSubscription: Subscription;
