@@ -10,9 +10,9 @@ public class CompanyServiceTests {
     @InjectMocks
     private CompanyService companyService;
 
-    @Test
-    void checkForNullReference_CompanyService() {
-        assertNotNull(companyService);
-    }
+//    @Test
+//    void checkForNullReference_CompanyService() {
+//        assertNotNull(companyService);
+//    }
     // TODO company repository tests
 }

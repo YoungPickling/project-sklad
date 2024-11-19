@@ -208,9 +208,7 @@ public class ImageService {
 
         company.getImageData().remove(image);
         imageRepository.delete(image);
-        return msgUtils.msg("Removed successfully");
+//        return msgUtils.msg("Removed successfully");
+        return new ResponseEntity<>(HttpStatus.OK);
     }
-
-//  TODO update image service
-
 }
