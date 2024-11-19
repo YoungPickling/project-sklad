@@ -13,7 +13,7 @@ pipeline {
     //         echo 'Testing..'
     //     }
     // }
-    
+
     stage('Deploy') {
         steps {
             sh """
@@ -31,7 +31,19 @@ pipeline {
             """
 
             sh """
-              docker compose up
+              docker build -t scalepilot-front ./frontend/sklad
+            """
+
+            sh """
+              docker run -d --name scalepilot-front -p 8072:80 scalepilot-front
+            """
+            
+            sh """
+              docker build -t scalepilot-back ./backend/sklad
+            """
+
+            sh """
+              docker run -d --name scalepilot-back -p 8082:8082 scalepilot-back
             """
         }
     }
