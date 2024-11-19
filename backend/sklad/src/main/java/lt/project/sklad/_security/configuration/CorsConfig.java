@@ -30,7 +30,8 @@ public class CorsConfig implements WebMvcConfigurer {
                         "http://localhost:4200",
                         "http://192.168.10.127:4200",
                         "http://192.168.10.250",
-                        "https://192.168.10.250"
+                        "https://192.168.10.250",
+                        "https://scalepilot.pavlenkomaksim.com"
                 ) // Allow requests from these origins
                 .allowedMethods("*") // Allow specific HTTP methods
                 .allowedHeaders("*")
