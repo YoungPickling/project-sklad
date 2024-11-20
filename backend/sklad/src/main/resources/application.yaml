@@ -23,7 +23,7 @@ spring:
     ansi:
       enabled: ALWAYS
   config:
-    import: optional:secrets.yaml
+    import: secrets.yaml
 
 # ===============================
 #            SERVER

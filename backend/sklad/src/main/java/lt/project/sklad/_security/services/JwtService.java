@@ -5,6 +5,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -226,5 +227,15 @@ public class JwtService {
         refreshTokenCookie.setPath("/"); // Set the cookie's path to match where it was set
         refreshTokenCookie.setHttpOnly(true); // Set the cookie as HttpOnly
         response.addCookie(refreshTokenCookie);
+    }
+
+    /**
+     * Makes sure the secret key works
+     */
+    @PostConstruct
+    public void init() {
+        if (secretKey == null) {
+            secretKey = System.getenv("JWT_SECRET_KEY");
+        }
     }
 }
