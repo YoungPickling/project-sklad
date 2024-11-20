@@ -23,7 +23,7 @@ docker build -t scalepilot-front ./frontend/sklad
 docker build -t scalepilot-back ./backend/sklad
 ```
 
-Run images
+Run containers
 
 ```sh
 docker run -d --name scalepilot-front -p 8072:80 scalepilot-front
