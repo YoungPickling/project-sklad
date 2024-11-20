@@ -31,8 +31,8 @@ import jakarta.servlet.http.HttpServletRequest;
 @Service
 @RequiredArgsConstructor
 public class JwtService {
-    @Value("${application.security.jwt.secret-key}")
-    private String secretKey;
+//    @Value("${application.security.jwt.secret-key}")
+    private String secretKey = "86256E326557E632345366A5756575387854262F413F40472B4B4284066B59702357E63326546E5135B32566A6B5970865670657532B4878440475262F4284F4";
     @Value("${application.security.jwt.expiration}")
     private long jwtExpiration;
     @Value("${application.security.jwt.refresh-token.expiration}")

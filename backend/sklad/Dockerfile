@@ -19,4 +19,4 @@ COPY --from=build /app/target/*.jar app.jar
 
 EXPOSE 8082
 
-ENTRYPOINT ["java", "-jar", "app.jar", "--spring.config.location=classpath:/application.yaml,classpath:/secrets.yaml"]
+ENTRYPOINT ["java", "-jar", "app.jar"]
