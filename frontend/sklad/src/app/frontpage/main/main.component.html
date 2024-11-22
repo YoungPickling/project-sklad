@@ -38,20 +38,25 @@
   </div>
 </div>
 
-<div class="frontpage-center" style="height: 80svh;flex-direction: row-reverse;">
+<div class="frontpage-center" style="min-height: 80svh;flex-direction: row-reverse;">
   
-  <div style="width: 400px">
+  <div class="slide-title">
     <h1>Batch manage warehouse elements in a fast and convenient way</h1>
   </div>
 
-  <div style="margin-right:max(2rem,3vw)">
-    <svg width="390" height="400">
+  <div class="svg-container">
+    <svg [attr.width]="svgWidth" height="397">
       <g transform="translate(70, 200)">
-        <path class="link" d="M0,0C125,0,125,-150,250,-150" fill="none" stroke="#111" stroke-width="1.7"></path>
-        <path class="link" d="M0,0C125,0,125,-50,250,-50" fill="none" stroke="#111" stroke-width="1.7"></path>
-        <path class="link" d="M0,0C125,0,125,50,250,50" fill="none" stroke="#111" stroke-width="1.7"></path>
-        <path class="link" d="M0,0C125,0,125,150,250,150" fill="none" stroke="#111" stroke-width="1.7"></path>
-        <g class="node" transform="translate(-70, -50)">
+        <!-- 
+        <path d="M0,0C125,0,125,-150,250,-150" fill="none" stroke="#111" stroke-width="1.7"></path>
+        <path d="M0,0C125,0,125,-50,250,-50" fill="none" stroke="#111" stroke-width="1.7"></path>
+        <path d="M0,0C125,0,125,50,250,50" fill="none" stroke="#111" stroke-width="1.7"></path>
+        <path d="M0,0C125,0,125,150,250,150" fill="none" stroke="#111" stroke-width="1.7"></path> -->
+        <path [attr.d]="pathD[0]" fill="none" stroke="#111" stroke-width="1.7"></path>
+        <path [attr.d]="pathD[1]" fill="none" stroke="#111" stroke-width="1.7"></path>
+        <path [attr.d]="pathD[2]" fill="none" stroke="#111" stroke-width="1.7"></path>
+        <path [attr.d]="pathD[3]" fill="none" stroke="#111" stroke-width="1.7"></path>
+        <g transform="translate(-70, -50)">
             <foreignObject width="140" height="100">
               <!-- <div class="w-block-wrap">
                   <div class="w-block">
@@ -68,7 +73,8 @@
               ></app-node>
             </foreignObject>
         </g>
-        <g class="node" transform="translate(180, -200)">
+        <!-- <g class="node1" transform="translate(180, -200)"> -->
+        <g [attr.transform]="'translate(' + translateX + ', -200)'">
             <foreignObject width="140" height="100">
               <!-- <div class="w-block-wrap">
                   <div class="w-block">
@@ -86,7 +92,7 @@
               ></app-node>
             </foreignObject>
         </g>
-        <g class="node" transform="translate(180, -100)">
+        <g [attr.transform]="'translate(' + translateX + ', -100)'">
             <foreignObject width="140" height="100">
               <!-- <div class="w-block-wrap">
                   <div class="w-block">
@@ -104,7 +110,7 @@
               ></app-node>
             </foreignObject>
         </g>
-        <g class="node" transform="translate(180, 0)">
+        <g [attr.transform]="'translate(' + translateX + ', 0)'">
             <foreignObject width="140" height="100">
               <!-- <div class="w-block-wrap">
                   <div class="w-block">
@@ -121,8 +127,8 @@
                 [needed]="'x1'"
               ></app-node>
             </foreignObject>
-        </g>
-        <g class="node" transform="translate(180, 100)">
+          </g>
+          <g [attr.transform]="'translate(' + translateX + ', 100)'">
             <foreignObject width="140" height="100">
               <app-node
               [link]="'/assets/belt.jpg'"

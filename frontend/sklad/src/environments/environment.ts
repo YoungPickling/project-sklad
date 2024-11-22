@@ -8,10 +8,10 @@ import { WAREHOUSE } from "./dataset";
 
 export const environment = {
   production: false,
-  API_SERVER: "http://localhost:8082",
+  API_SERVER: "http://192.168.10.127:8082",
   // API_SERVER: "http://192.168.10.127:8082",
   // FRONT_SERVER: "http://192.168.10.127:4200",
-  FRONT_SERVER: "http://localhost:4200",
+  FRONT_SERVER: "http://192.168.10.127:4200",
   DEFAULT_COMPANY: WAREHOUSE
 };
 
