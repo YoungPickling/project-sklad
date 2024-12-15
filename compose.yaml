@@ -1,16 +1,24 @@
 version: '3.8'
 
+networks:
+  monitoring_network:
+    driver: bridge
+
 services:
   front:
     build: ./frontend/sklad
     image: scalepilot-front
     container_name: scalepilot-front
+    networks:
+      - monitoring_network
     ports:
       - 8072:80
   back:
     build: ./backend/sklad
     image: scalepilot-back
     container_name: scalepilot-back
+    networks:
+      - monitoring_network
     ports:
       - 8082:8082
 
