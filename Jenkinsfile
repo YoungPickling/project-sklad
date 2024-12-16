@@ -3,11 +3,18 @@ pipeline {
 
   stages {
 
-    // stage('Build') {
-    //     steps {
-    //         echo 'Building..'
-    //     }
-    // }
+     stage('Build') {
+         steps {
+             echo 'Building..'
+			 sh """
+              docker build -t scalepilot-front ./frontend/sklad
+            """
+			
+            sh """
+              docker build -t scalepilot-back ./backend/sklad
+            """
+         }
+     }
     // stage('Test') {
     //     steps {
     //         echo 'Testing..'
@@ -15,8 +22,8 @@ pipeline {
     // }
 
     stage('Deploy') {
-        steps {
-            sh """
+        steps {		
+			sh """
               if docker ps -a | grep -q scalepilot-back; then
                 docker stop scalepilot-back || true
                 docker rm scalepilot-back || true
@@ -31,19 +38,11 @@ pipeline {
             """
 
             sh """
-              docker build -t scalepilot-front ./frontend/sklad
+              docker run -d --name scalepilot-front -p 8072:80 --restart=on-failure scalepilot-front
             """
 
             sh """
-              docker run -d --name scalepilot-front -p 8072:80 scalepilot-front
-            """
-            
-            sh """
-              docker build -t scalepilot-back ./backend/sklad
-            """
-
-            sh """
-              docker run -d --name scalepilot-back -p 8082:8082 scalepilot-back
+              docker run -d --name scalepilot-back -p 8082:8082 --restart=on-failure scalepilot-back
             """
         }
     }
