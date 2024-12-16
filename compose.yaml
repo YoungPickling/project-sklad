@@ -3,11 +3,12 @@ version: '3.8'
 networks:
   monitoring_network:
     driver: bridge
-
+    
 services:
   front:
     build: ./frontend/sklad
     image: scalepilot-front
+    restart: unless-stopped
     container_name: scalepilot-front
     networks:
       - monitoring_network
@@ -16,6 +17,7 @@ services:
   back:
     build: ./backend/sklad
     image: scalepilot-back
+    restart: unless-stopped
     container_name: scalepilot-back
     networks:
       - monitoring_network
