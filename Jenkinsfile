@@ -38,11 +38,11 @@ pipeline {
             """
 
             sh """
-              docker run -d --name scalepilot-front -p 8072:80 --restart=on-failure scalepilot-front
+              docker run -d --name scalepilot-front -p 8072:80 --restart=always scalepilot-front
             """
 
             sh """
-              docker run -d --name scalepilot-back -p 8082:8082 --restart=on-failure scalepilot-back
+              docker run -d --name scalepilot-back -p 8082:8082 --restart=always scalepilot-back
             """
         }
     }
