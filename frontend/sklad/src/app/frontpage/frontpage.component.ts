@@ -11,7 +11,7 @@ import { ClickOutsideDirective } from '../shared/directives/clickOutside.directi
     CommonModule, 
     RouterOutlet,
     HeaderComponent,
-    ClickOutsideDirective
+    // ClickOutsideDirective
   ],
   templateUrl: './frontpage.component.html',
   styleUrl: './frontpage.component.css',
@@ -19,6 +19,5 @@ import { ClickOutsideDirective } from '../shared/directives/clickOutside.directi
 })
 export class FrontpageComponent {
   private year: number = (new Date()).getFullYear();
-  private datestamp: string = this.year === 2024 ? '2024' : '2024-' + this.year;
-  copyright: string = "© " + this.datestamp + " Maksim Pavlenko";
+  copyright: string = '© 2022-' + this.year + ' Maksim Pavlenko';
 }
