@@ -3,9 +3,9 @@ package lt.project.sklad.controllers;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
-import lombok.RequiredArgsConstructor;
 import lt.project.sklad.entities.ItemGroup;
 import lt.project.sklad.services.ItemGroupService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,9 +13,14 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/rest/v1/secret/group")
-@RequiredArgsConstructor
 public class GroupController {
-    private final ItemGroupService itemGroupService;
+    private ItemGroupService itemGroupService;
+
+    @Autowired
+    public GroupController(ItemGroupService itemGroupService) {
+        this.itemGroupService = itemGroupService;
+    }
+
     // TODO LocationController POST, GET, PUT, DELETE
 
     @PostMapping("/{companyId}")

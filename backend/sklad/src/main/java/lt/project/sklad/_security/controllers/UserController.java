@@ -7,6 +7,7 @@ import lt.project.sklad._security.entities.User;
 import lt.project.sklad._security.services.TokenService;
 import lt.project.sklad._security.services.UserService;
 import lt.project.sklad._security.utils.MessagingUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,16 +19,21 @@ import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 @RestController
 @RequestMapping("/api/rest/v1/secret/user")
-@RequiredArgsConstructor
 public class UserController {
-    private final UserService userService;
-    private final TokenService tokenService;
-    private final MessagingUtils messagingUtils;
+    private UserService userService;
+    private TokenService tokenService;
+    private MessagingUtils messagingUtils;
 
 //    @GetMapping("/hello")
 //    public String sayHello() {
 //        return "Labas!";
 //    }
+
+    public UserController(UserService userService, TokenService tokenService, MessagingUtils messagingUtils) {
+        this.userService = userService;
+        this.tokenService = tokenService;
+        this.messagingUtils = messagingUtils;
+    }
 
     @GetMapping("/me")
     public ResponseEntity<?> getAuthenticatedUser(
@@ -54,7 +60,7 @@ public class UserController {
     @GetMapping("/role")
     public ResponseEntity<?> checkRole(final HttpServletRequest request) {
         String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-        if (messagingUtils.isBearer(authHeader))
+        if (messagingUtils.isNotBearer(authHeader))
             return messagingUtils.error(UNAUTHORIZED,"Bad credentials");
 
         String jwt = authHeader.substring(7);

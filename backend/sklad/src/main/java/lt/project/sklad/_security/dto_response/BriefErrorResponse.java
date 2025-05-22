@@ -21,4 +21,16 @@ public class BriefErrorResponse implements AbstractResponse {
     private Integer status; // http status code
     private String error; // short error message
     private String details; // long error message
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public String getError() {
+        return error;
+    }
+
+    public String getDetails() {
+        return details;
+    }
 }

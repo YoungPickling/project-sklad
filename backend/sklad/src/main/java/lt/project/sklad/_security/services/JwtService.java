@@ -6,18 +6,18 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
-import org.springframework.beans.factory.annotation.Value;
+
 import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * <p>&emsp;This service class provides utility methods for generating, parsing, and validating
@@ -29,14 +29,20 @@ import jakarta.servlet.http.HttpServletRequest;
  * @author Maksim Pavlenko
  */
 @Service
-@RequiredArgsConstructor
 public class JwtService {
-//    @Value("${application.security.jwt.secret-key}")
-    private String secretKey = "86256E326557E632345366A5756575387854262F413F40472B4B4284066B59702357E63326546E5135B32566A6B5970865670657532B4878440475262F4284F4";
-    @Value("${application.security.jwt.expiration}")
+    private String secretKey;
     private long jwtExpiration;
-    @Value("${application.security.jwt.refresh-token.expiration}")
     private long refreshExpiration;
+
+    public JwtService(
+            @Value("${application.security.jwt.secret-key}") String secretKey,
+            @Value("${application.security.jwt.expiration}") long jwtExpiration,
+            @Value("${application.security.jwt.refresh-token.expiration}") long refreshExpiration
+    ) {
+        this.secretKey = secretKey;
+        this.jwtExpiration = jwtExpiration;
+        this.refreshExpiration = refreshExpiration;
+    }
 
     /**
      * Extracts the username (subject) from the provided JWT token's claims.

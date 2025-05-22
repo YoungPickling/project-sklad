@@ -1,7 +1,6 @@
 package lt.project.sklad.services;
 
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.RequiredArgsConstructor;
 import lt.project.sklad._security.entities.Token;
 import lt.project.sklad._security.services.TokenService;
 import lt.project.sklad._security.utils.MessagingUtils;
@@ -11,6 +10,7 @@ import lt.project.sklad.entities.ItemGroup;
 import lt.project.sklad.repositories.CompanyRepository;
 import lt.project.sklad.repositories.ItemGroupRepository;
 import lt.project.sklad.repositories.ItemRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -21,13 +21,27 @@ import java.util.List;
 import static org.springframework.http.HttpStatus.*;
 
 @Service
-@RequiredArgsConstructor
 public class ItemGroupService {
-    private final ItemGroupRepository itemGroupRepository;
-    private final ItemRepository itemRepository;
-    private final CompanyRepository companyRepository;
-    private final TokenService tokenService;
-    private final MessagingUtils msgUtils;
+    private ItemGroupRepository itemGroupRepository;
+    private ItemRepository itemRepository;
+    private CompanyRepository companyRepository;
+    private TokenService tokenService;
+    private MessagingUtils msgUtils;
+
+    @Autowired
+    public ItemGroupService(
+            ItemGroupRepository itemGroupRepository,
+            ItemRepository itemRepository,
+            CompanyRepository companyRepository,
+            TokenService tokenService,
+            MessagingUtils msgUtils
+    ) {
+        this.itemGroupRepository = itemGroupRepository;
+        this.itemRepository = itemRepository;
+        this.companyRepository = companyRepository;
+        this.tokenService = tokenService;
+        this.msgUtils = msgUtils;
+    }
 
     @Transactional
     public ResponseEntity<?> createGroup(
@@ -37,7 +51,7 @@ public class ItemGroupService {
     ) {
         final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
 
-        if (msgUtils.isBearer(authHeader))
+        if (msgUtils.isNotBearer(authHeader))
             return msgUtils.error(UNAUTHORIZED, "Bad credentials");
 
         String jwt = authHeader.substring(7);
@@ -69,7 +83,7 @@ public class ItemGroupService {
     ) {
         final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
 
-        if (msgUtils.isBearer(authHeader))
+        if (msgUtils.isNotBearer(authHeader))
             return msgUtils.error(UNAUTHORIZED, "Bad credentials");
 
         String jwt = authHeader.substring(7);
@@ -106,7 +120,7 @@ public class ItemGroupService {
     ) {
         final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
 
-        if (msgUtils.isBearer(authHeader))
+        if (msgUtils.isNotBearer(authHeader))
             return msgUtils.error(UNAUTHORIZED, "Bad credentials");
 
         String jwt = authHeader.substring(7);

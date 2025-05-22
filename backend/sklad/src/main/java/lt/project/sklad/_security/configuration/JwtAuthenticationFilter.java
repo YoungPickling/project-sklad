@@ -11,6 +11,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lt.project.sklad._security.services.JwtService;
 import lt.project.sklad._security.services.TokenService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -40,9 +41,16 @@ import java.io.IOException;
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
-    private final UserDetailsService userDetailsService;
-    private final TokenService tokenService;
-    private final JwtService jwtService;
+    private UserDetailsService userDetailsService;
+    private TokenService tokenService;
+    private JwtService jwtService;
+
+//    @Autowired
+//    public JwtAuthenticationFilter(UserDetailsService userDetailsService, TokenService tokenService, JwtService jwtService) {
+//        this.userDetailsService = userDetailsService;
+//        this.tokenService = tokenService;
+//        this.jwtService = jwtService;
+//    }
 
     /**
      * Performs <i><b>JWT</b></i> authentication and authorization logic for incoming requests.

@@ -1,9 +1,9 @@
 package lt.project.sklad._security.services;
 
-import lombok.RequiredArgsConstructor;
 import lt.project.sklad._security.entities.Token;
 import lt.project.sklad._security.entities.User;
 import lt.project.sklad._security.repositories.TokenRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,9 +17,13 @@ import java.util.Optional;
  */
 
 @Service
-@RequiredArgsConstructor
 public class TokenService {
-    private final TokenRepository repo;
+    private TokenRepository repo;
+
+    @Autowired
+    public TokenService(TokenRepository repo) {
+        this.repo = repo;
+    }
 
     /**
      * Retrieves the user associated with the given token.

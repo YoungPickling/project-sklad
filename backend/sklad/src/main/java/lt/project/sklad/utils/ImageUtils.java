@@ -1,7 +1,7 @@
 package lt.project.sklad.utils;
 
 import lombok.Data;
-import lombok.RequiredArgsConstructor;
+
 import java.io.ByteArrayOutputStream;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
@@ -10,12 +10,11 @@ import java.util.zip.Deflater;
 import java.util.zip.Inflater;
 
 @Data
-@RequiredArgsConstructor
 public class ImageUtils {
-    private final String FILE_NAME_PATTERN = "( \\(\\d+\\))";
-    private final Pattern PATTERN_CONSTANT = Pattern.compile(FILE_NAME_PATTERN);
+    private static final String FILE_NAME_PATTERN = "( \\(\\d+\\))";
+    private static final Pattern PATTERN_CONSTANT = Pattern.compile(FILE_NAME_PATTERN);
 
-    public byte[] compressImage(byte[] data) {
+    public static byte[] compressImage(byte[] data) {
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
             Deflater deflater = new Deflater();
             deflater.setLevel(Deflater.BEST_COMPRESSION);
@@ -31,11 +30,11 @@ public class ImageUtils {
             return outputStream.toByteArray();
         } catch (Exception e) {
             e.printStackTrace();
-            return new byte[0]; // Return empty byte array if compression fails
+            return new byte[0]; // Return if compression fails
         }
     }
 
-    public byte[] decompressImage(byte[] data) {
+    public static byte[] decompressImage(byte[] data) {
         Inflater inflater = new Inflater();
         inflater.setInput(data);
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream(data.length);
@@ -54,7 +53,7 @@ public class ImageUtils {
         }
     }
 
-    public String incrementFileName(
+    public static String incrementFileName(
             final String fileName,
             final Predicate<String> isFileNamePresent)
     {
@@ -96,7 +95,7 @@ public class ImageUtils {
     }
 
     // TODO implement effects
-    public byte[] convertToBlackAndWhite(byte[] imageData, int width, int height) {
+    public static byte[] convertToBlackAndWhite(byte[] imageData, int width, int height) {
         // Create a new byte array for the black and white image
         byte[] bwImageData = new byte[imageData.length];
 

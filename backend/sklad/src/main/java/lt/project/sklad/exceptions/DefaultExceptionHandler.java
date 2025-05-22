@@ -4,7 +4,6 @@ import lt.project.sklad._security.dto_response.ErrorResponse;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
@@ -16,7 +15,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
  */
 
 //@ControllerAdvice
-public class CentralExceptionHandler extends ResponseEntityExceptionHandler {
+public class DefaultExceptionHandler extends ResponseEntityExceptionHandler {
     /**
      * Handles DataNotFoundException and returns a ResponseEntity with a predefined
      * error message and status code.

@@ -1,6 +1,5 @@
 package lt.project.sklad.utils;
 
-import lombok.NoArgsConstructor;
 import org.bouncycastle.util.Arrays;
 
 import java.nio.ByteBuffer;
@@ -8,7 +7,6 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 
-@NoArgsConstructor
 public class HashUtils {
     private static final byte[] SALT = {
             (byte) 0xda, (byte) 0x6e, (byte) 0xec, (byte) 0x16,
@@ -21,7 +19,7 @@ public class HashUtils {
             (byte) 0x6e, (byte) 0x30, (byte) 0x19, (byte) 0xc0
     };
 
-    public String hashString(final String input) {
+    public static String hashString(final String input) {
         try {
             // Create MessageDigest instance for SHA-256
             MessageDigest md = MessageDigest.getInstance("SHA-256");
@@ -37,7 +35,7 @@ public class HashUtils {
         }
     }
 
-    public byte[] longToBytes(final long x) {
+    private static byte[] longToBytes(final long x) {
         ByteBuffer buffer = ByteBuffer.allocate(Long.BYTES);
         buffer.putLong(x);
         return buffer.array();

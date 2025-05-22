@@ -1,7 +1,6 @@
 package lt.project.sklad.services;
 
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.RequiredArgsConstructor;
 import lt.project.sklad._security.entities.Token;
 import lt.project.sklad._security.entities.User;
 import lt.project.sklad._security.repositories.UserRepository;
@@ -14,6 +13,7 @@ import lt.project.sklad.repositories.CompanyRepository;
 import lt.project.sklad.repositories.ImageRepository;
 import lt.project.sklad.utils.HashUtils;
 import lt.project.sklad.utils.ImageUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -37,24 +37,30 @@ import static org.springframework.http.HttpStatus.*;
  * @author Maksim Pavlenko
  */
 @Service
-@RequiredArgsConstructor
 public class CompanyService {
-    private final CompanyRepository companyRepository;
-    private final ImageRepository imageRepository;
-    private final ImageUtils imgUtils;
-    private final UserRepository userRepository;
-    private final TokenService tokenService;
-    private final MessagingUtils msgUtils;
-    private final HashUtils hashUtils;
+    private CompanyRepository companyRepository;
+    private ImageRepository imageRepository;
+    private UserRepository userRepository;
+    private TokenService tokenService;
+    private MessagingUtils msgUtils;
+
+    @Autowired
+    public CompanyService(CompanyRepository companyRepository, ImageRepository imageRepository, UserRepository userRepository, TokenService tokenService, MessagingUtils msgUtils) {
+        this.companyRepository = companyRepository;
+        this.imageRepository = imageRepository;
+        this.userRepository = userRepository;
+        this.tokenService = tokenService;
+        this.msgUtils = msgUtils;
+    }
 
     @Transactional
-        public ResponseEntity<?> createCompany(
+    public ResponseEntity<?> createCompany(
             final Company company,
             final HttpServletRequest request
     ) {
         String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
 
-        if (msgUtils.isBearer(authHeader))
+        if (msgUtils.isNotBearer(authHeader))
             return msgUtils.error(UNAUTHORIZED, "Bad credentials");
 
         String jwt = authHeader.substring(7);
@@ -93,7 +99,7 @@ public class CompanyService {
 
         String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
 
-        if (msgUtils.isBearer(authHeader))
+        if (msgUtils.isNotBearer(authHeader))
             return msgUtils.error(UNAUTHORIZED, "Bad credentials");
 
         String jwt = authHeader.substring(7);
@@ -121,7 +127,7 @@ public class CompanyService {
 
         String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
 
-        if (msgUtils.isBearer(authHeader))
+        if (msgUtils.isNotBearer(authHeader))
             return msgUtils.error(UNAUTHORIZED, "Bad credentials");
 
         String jwt = authHeader.substring(7);
@@ -162,7 +168,7 @@ public class CompanyService {
 
         String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
 
-        if (msgUtils.isBearer(authHeader))
+        if (msgUtils.isNotBearer(authHeader))
             return msgUtils.error(UNAUTHORIZED, "Bad credentials");
 
         if (file == null || file.isEmpty())
@@ -179,14 +185,14 @@ public class CompanyService {
         if (company == null)
             return ResponseEntity.notFound().build();
 
-        String hash = hashUtils.hashString(file.getOriginalFilename());
+        String hash = HashUtils.hashString(file.getOriginalFilename());
 
         try {
-            byte[] compressedImage = imgUtils.compressImage(file.getBytes());
+            byte[] compressedImage = ImageUtils.compressImage(file.getBytes());
             int i = 0;
 
             while(imageRepository.findByHash(hash).isPresent()) {
-                hash = hashUtils.hashString(file.getOriginalFilename() + i);
+                hash = HashUtils.hashString(file.getOriginalFilename() + i);
                 i++;
             }
 
@@ -247,7 +253,7 @@ public class CompanyService {
 
         String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
 
-        if (msgUtils.isBearer(authHeader))
+        if (msgUtils.isNotBearer(authHeader))
             return msgUtils.error(UNAUTHORIZED, "Bad credentials");
 
         String jwt = authHeader.substring(7);
@@ -283,7 +289,7 @@ public class CompanyService {
 
         String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
 
-        if (msgUtils.isBearer(authHeader))
+        if (msgUtils.isNotBearer(authHeader))
             return msgUtils.error(UNAUTHORIZED, "Bad credentials");
 
         String jwt = authHeader.substring(7);
@@ -321,7 +327,7 @@ public class CompanyService {
         }
 
         if (image != null) {
-            byte[] result = imgUtils.decompressImage(image.getImageData());
+            byte[] result = ImageUtils.decompressImage(image.getImageData());
             return ResponseEntity.status(HttpStatus.OK)
                     .contentType(MediaType.valueOf(image.getType()))
                     .body(result);

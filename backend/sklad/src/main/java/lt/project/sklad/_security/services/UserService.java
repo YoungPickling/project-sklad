@@ -10,6 +10,7 @@ import lt.project.sklad.entities.Image;
 import lt.project.sklad.repositories.ImageRepository;
 import lt.project.sklad.utils.HashUtils;
 import lt.project.sklad.utils.ImageUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,13 +36,20 @@ import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 @Service
 @RequiredArgsConstructor
 public class UserService {
-    private final UserRepository userRepository;
-    private final MessagingUtils messagingUtils;
-    private final TokenService tokenService;
-    private final MessagingUtils msgUtils;
-    private final ImageUtils imgUtils;
-    private final ImageRepository imageRepository;
-    private final HashUtils hashUtils;
+    private UserRepository userRepository;
+    private MessagingUtils messagingUtils;
+    private TokenService tokenService;
+    private MessagingUtils msgUtils;
+    private ImageRepository imageRepository;
+
+    @Autowired
+    public UserService(UserRepository userRepository, MessagingUtils messagingUtils, TokenService tokenService, MessagingUtils msgUtils, ImageRepository imageRepository) {
+        this.userRepository = userRepository;
+        this.messagingUtils = messagingUtils;
+        this.tokenService = tokenService;
+        this.msgUtils = msgUtils;
+        this.imageRepository = imageRepository;
+    }
 
     /**
      * Retrieves a user by their ID.
@@ -89,7 +97,7 @@ public class UserService {
 
         String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
 
-        if (msgUtils.isBearer(authHeader))
+        if (msgUtils.isNotBearer(authHeader))
             return msgUtils.error(UNAUTHORIZED, "Bad credentials");
 
         final String jwt = authHeader.substring(7);
@@ -103,19 +111,19 @@ public class UserService {
         if (user == null)
             return msgUtils.error(UNAUTHORIZED, "User not found");
 
-        String hash = hashUtils.hashString(file.getOriginalFilename());
+        String hash = HashUtils.hashString(file.getOriginalFilename());
         int i = 0;
 
         if(hash == null)
             return msgUtils.error(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to hash file name");
 
         while(imageRepository.findByHash(hash).isPresent()) {
-            hash = hashUtils.hashString(file.getOriginalFilename() + i);
+            hash = HashUtils.hashString(file.getOriginalFilename() + i);
             i++;
         }
 
         try {
-            final byte[] compressedImage = imgUtils.compressImage(file.getBytes());
+            final byte[] compressedImage = ImageUtils.compressImage(file.getBytes());
 
             final String date = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 
@@ -152,7 +160,7 @@ public class UserService {
     ) {
         String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
 
-        if (msgUtils.isBearer(authHeader))
+        if (msgUtils.isNotBearer(authHeader))
             return msgUtils.error(UNAUTHORIZED, "Bad credentials");
 
         String jwt = authHeader.substring(7);

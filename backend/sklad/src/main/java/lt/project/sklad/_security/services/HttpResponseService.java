@@ -1,17 +1,17 @@
 package lt.project.sklad._security.services;
 
-import lombok.RequiredArgsConstructor;
 import lt.project.sklad._security.dto_request.RegisterRequest;
 import lt.project.sklad._security.dto_response.AbstractResponse;
 import lt.project.sklad._security.dto_response.ErrorResponse;
 import lt.project.sklad._security.dto_response.MultiErrorResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.HashSet;
 import java.util.List;
@@ -39,9 +39,13 @@ import static org.springframework.http.HttpStatus.NOT_ACCEPTABLE;
  * @author Maksim Pavlenko
  */
 @Service
-@RequiredArgsConstructor
 public class HttpResponseService {
-    private final UserService userService;
+    private UserService userService;
+
+    @Autowired
+    public HttpResponseService(UserService userService) {
+        this.userService = userService;
+    }
 
     /**
      * <p>Validates the registration request and checks if the provided username and email are available for registration.</p>

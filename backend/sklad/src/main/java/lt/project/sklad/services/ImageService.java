@@ -1,7 +1,6 @@
 package lt.project.sklad.services;
 
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.RequiredArgsConstructor;
 import lt.project.sklad._security.entities.Token;
 import lt.project.sklad._security.entities.User;
 import lt.project.sklad._security.repositories.UserRepository;
@@ -14,32 +13,51 @@ import lt.project.sklad.repositories.ImageRepository;
 import lt.project.sklad.repositories.ItemRepository;
 import lt.project.sklad.utils.HashUtils;
 import lt.project.sklad.utils.ImageUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import static org.springframework.http.HttpStatus.*;
 
 @Service
-@RequiredArgsConstructor
 public class ImageService {
-    private final ItemRepository itemRepository;
-    private final ImageRepository imageRepository;
-    private final UserRepository userRepository;
-    private final CompanyRepository companyRepository;
-    private final TokenService tokenService;
-    private final MessagingUtils msgUtils;
-    private final ImageUtils imgUtils;
-    private final HashUtils hashUtils;
+    private ItemRepository itemRepository;
+    private ImageRepository imageRepository;
+    private UserRepository userRepository;
+    private CompanyRepository companyRepository;
+    private TokenService tokenService;
+    private MessagingUtils msgUtils;
 
-    Logger logger = LoggerFactory.getLogger(ImageService.class);
+    //Logger logger = LoggerFactory.getLogger(ImageService.class);
+
+    @Autowired
+    public ImageService(
+            ItemRepository itemRepository,
+            ImageRepository imageRepository,
+            UserRepository userRepository,
+            CompanyRepository companyRepository,
+            TokenService tokenService,
+            MessagingUtils msgUtils
+    ) {
+        this.itemRepository = itemRepository;
+        this.imageRepository = imageRepository;
+        this.userRepository = userRepository;
+        this.companyRepository = companyRepository;
+        this.tokenService = tokenService;
+        this.msgUtils = msgUtils;
+    }
 
     @Transactional
     public ResponseEntity<?> uploadImage(
@@ -55,7 +73,7 @@ public class ImageService {
 
         String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
 
-        if (msgUtils.isBearer(authHeader))
+        if (msgUtils.isNotBearer(authHeader))
             return msgUtils.error(UNAUTHORIZED, "Bad credentials");
 
         final String jwt = authHeader.substring(7);
@@ -69,14 +87,14 @@ public class ImageService {
         if (company == null)
             return ResponseEntity.notFound().build();
 
-        String hash = hashUtils.hashString(file.getOriginalFilename());
+        String hash = HashUtils.hashString(file.getOriginalFilename());
         int i = 0;
 
         if(hash == null)
             return msgUtils.error(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to hash file name");
 
         while(imageRepository.findByHash(hash).isPresent()) {
-            hash = hashUtils.hashString(file.getOriginalFilename() + i);
+            hash = HashUtils.hashString(file.getOriginalFilename() + i);
             i++;
         }
 
@@ -86,14 +104,14 @@ public class ImageService {
 
             if (existingImageData.isPresent())
                 // continue incrementing file name while new name is not occupied in database company
-                filename = imgUtils.incrementFileName(
+                filename = ImageUtils.incrementFileName(
                         file.getOriginalFilename(),
                         (x) -> imageRepository.findByNameAndOwnedByCompany(x, company).isPresent()
                 );
             else
                 filename = file.getOriginalFilename();
 
-            final byte[] compressedImage = imgUtils.compressImage(file.getBytes());
+            final byte[] compressedImage = ImageUtils.compressImage(file.getBytes());
 
             Image image = imageRepository.save(Image.builder()
                     .name(filename)
@@ -161,7 +179,7 @@ public class ImageService {
                 return msgUtils.error(UNAUTHORIZED, "Access denied");
         }*/
 
-        byte[] result = imgUtils.decompressImage(image.getImageData());
+        byte[] result = ImageUtils.decompressImage(image.getImageData());
         return ResponseEntity.status(HttpStatus.OK)
                 .contentType(MediaType.valueOf(image.getType()))
                 .body(result);
@@ -177,7 +195,7 @@ public class ImageService {
 
         String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
 
-        if (msgUtils.isBearer(authHeader))
+        if (msgUtils.isNotBearer(authHeader))
             return msgUtils.error(UNAUTHORIZED, "Bad credentials");
 
         String jwt = authHeader.substring(7);

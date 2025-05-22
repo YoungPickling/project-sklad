@@ -1,7 +1,6 @@
 package lt.project.sklad.services;
 
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.RequiredArgsConstructor;
 import lt.project.sklad._security.entities.Token;
 import lt.project.sklad._security.services.TokenService;
 import lt.project.sklad._security.utils.MessagingUtils;
@@ -11,7 +10,7 @@ import lt.project.sklad.entities.Supplier;
 import lt.project.sklad.repositories.CompanyRepository;
 import lt.project.sklad.repositories.ItemRepository;
 import lt.project.sklad.repositories.SupplierRepository;
-import org.apache.commons.lang3.function.Suppliers;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -28,13 +27,27 @@ import static org.springframework.http.HttpStatus.*;
  * @author Maksim Pavlenko
  */
 @Service
-@RequiredArgsConstructor
 public class SupplierService {
-    private final SupplierRepository supplierRepository;
-    private final CompanyRepository companyRepository;
-    private final ItemRepository itemRepository;
-    private final TokenService tokenService;
-    private final MessagingUtils msgUtils;
+    private SupplierRepository supplierRepository;
+    private CompanyRepository companyRepository;
+    private ItemRepository itemRepository;
+    private TokenService tokenService;
+    private MessagingUtils msgUtils;
+
+    @Autowired
+    public SupplierService(
+            SupplierRepository supplierRepository,
+            CompanyRepository companyRepository,
+            ItemRepository itemRepository,
+            TokenService tokenService,
+            MessagingUtils msgUtils
+    ) {
+        this.supplierRepository = supplierRepository;
+        this.companyRepository = companyRepository;
+        this.itemRepository = itemRepository;
+        this.tokenService = tokenService;
+        this.msgUtils = msgUtils;
+    }
 
     @Transactional
     public ResponseEntity<?> createSupplier(
@@ -44,7 +57,7 @@ public class SupplierService {
     ) {
         String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
 
-        if (msgUtils.isBearer(authHeader))
+        if (msgUtils.isNotBearer(authHeader))
             return msgUtils.error(UNAUTHORIZED, "Bad credentials");
 
         String jwt = authHeader.substring(7);
@@ -87,7 +100,7 @@ public class SupplierService {
     ) {
         String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
 
-        if (msgUtils.isBearer(authHeader))
+        if (msgUtils.isNotBearer(authHeader))
             return msgUtils.error(UNAUTHORIZED, "Bad credentials");
 
         String jwt = authHeader.substring(7);
@@ -132,7 +145,7 @@ public class SupplierService {
     ) {
         String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
 
-        if (msgUtils.isBearer(authHeader))
+        if (msgUtils.isNotBearer(authHeader))
             return msgUtils.error(UNAUTHORIZED, "Bad credentials");
 
         String jwt = authHeader.substring(7);

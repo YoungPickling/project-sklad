@@ -2,7 +2,6 @@ package lt.project.sklad._security.services;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
 import lt.project.sklad._security.dto_request.AuthenticationRequest;
 import lt.project.sklad._security.dto_request.ChangePasswordRequest;
 import lt.project.sklad._security.dto_request.RegisterRequest;
@@ -14,6 +13,7 @@ import lt.project.sklad._security.entities.Role;
 import lt.project.sklad._security.entities.Token;
 import lt.project.sklad._security.entities.TokenType;
 import lt.project.sklad._security.entities.User;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -35,15 +35,30 @@ import static org.springframework.http.HttpStatus.FORBIDDEN;
  * @author Maksim Pavlenko
  */
 @Service
-@RequiredArgsConstructor
 public class AuthenticationService {
-    private final UserService userService;
-    private final TokenService tokenService;
-    private final PasswordEncoder passwordEncoder;
-    private final JwtService jwtService;
-    private final AuthenticationManager authenticationManager;
+    private UserService userService;
+    private TokenService tokenService;
+    private PasswordEncoder passwordEncoder;
+    private JwtService jwtService;
+    private AuthenticationManager authenticationManager;
 
-    @Value("${application.security.jwt.refresh-token.expiration}")
+    @Autowired
+    public AuthenticationService(
+            UserService userService,
+            TokenService tokenService,
+            PasswordEncoder passwordEncoder,
+            JwtService jwtService,
+            AuthenticationManager authenticationManager,
+            @Value("${application.security.jwt.refresh-token.expiration}") long refreshExpiration
+    ) {
+        this.userService = userService;
+        this.tokenService = tokenService;
+        this.passwordEncoder = passwordEncoder;
+        this.jwtService = jwtService;
+        this.authenticationManager = authenticationManager;
+        this.refreshExpiration = refreshExpiration;
+    }
+
     private long refreshExpiration;
 
     /**

@@ -1,13 +1,13 @@
 package lt.project.sklad._security.utils;
 
 import lombok.Data;
-import lombok.RequiredArgsConstructor;
 import lt.project.sklad._security.dto_response.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
 
 @Data
-@RequiredArgsConstructor
+@Component
 public class MessagingUtils {
     /**
      * Checks if the provided Authorization header contains a valid Bearer token.
@@ -17,7 +17,7 @@ public class MessagingUtils {
      * @version 1.0, 11 Aug 2023
      * @author Maksim Pavlenko
      */
-    public boolean isBearer(final String authHeader) {
+    public final boolean isNotBearer(final String authHeader) {
         return authHeader == null
                 || !authHeader.startsWith("Bearer ");
     }
@@ -30,14 +30,14 @@ public class MessagingUtils {
      * @version 1.0, 11 Aug 2023
      * @author  Maksim Pavlenko
      */
-    public ResponseEntity<AbstractResponse> error(
+    public final ResponseEntity<AbstractResponse> error(
             final HttpStatus status, final String msg
     ) {
         return ResponseEntity.status( status )
                 .body(new ErrorResponse( status.value() ,msg));
     }
 
-    public ResponseEntity<AbstractResponse> error(
+    public final ResponseEntity<AbstractResponse> error(
             final HttpStatus status, final String msg, final String details
     ) {
         return ResponseEntity.status( status )
@@ -52,11 +52,11 @@ public class MessagingUtils {
      * @version 1.0, 11 Aug 2023
      * @author  Maksim Pavlenko
      */
-    public ResponseEntity<AbstractResponse> msg(final String text) {
+    public final ResponseEntity<AbstractResponse> msg(final String text) {
         return ResponseEntity.ok(new MsgResponse(text));
     }
 
-    public ResponseEntity<AbstractResponse> msg(final String text, final String details) {
+    public final ResponseEntity<AbstractResponse> msg(final String text, final String details) {
         return ResponseEntity.ok(new BriefMsgResponse(text, details));
     }
 }

@@ -1,7 +1,6 @@
 package lt.project.sklad.services;
 
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.RequiredArgsConstructor;
 import lt.project.sklad._security.entities.Token;
 import lt.project.sklad._security.services.TokenService;
 import lt.project.sklad._security.utils.MessagingUtils;
@@ -9,13 +8,13 @@ import lt.project.sklad.entities.Company;
 import lt.project.sklad.entities.Location;
 import lt.project.sklad.repositories.CompanyRepository;
 import lt.project.sklad.repositories.LocationRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.springframework.http.HttpStatus.*;
 
@@ -25,12 +24,24 @@ import static org.springframework.http.HttpStatus.*;
  * @author Maksim Pavlenko
  */
 @Service
-@RequiredArgsConstructor
 public class LocationService {
-    private final LocationRepository locationRepository;
-    private final CompanyRepository companyRepository;
-    private final TokenService tokenService;
-    private final MessagingUtils msgUtils;
+    private LocationRepository locationRepository;
+    private CompanyRepository companyRepository;
+    private TokenService tokenService;
+    private MessagingUtils msgUtils;
+
+    @Autowired
+    public LocationService(
+            LocationRepository locationRepository,
+            CompanyRepository companyRepository,
+            TokenService tokenService,
+            MessagingUtils msgUtils
+    ) {
+        this.locationRepository = locationRepository;
+        this.companyRepository = companyRepository;
+        this.tokenService = tokenService;
+        this.msgUtils = msgUtils;
+    }
 
     @Transactional
     public ResponseEntity<?> createLocation(
@@ -40,7 +51,7 @@ public class LocationService {
     ) {
         final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
 
-        if (msgUtils.isBearer(authHeader))
+        if (msgUtils.isNotBearer(authHeader))
             return msgUtils.error(UNAUTHORIZED, "Bad credentials");
 
         String jwt = authHeader.substring(7);
@@ -83,7 +94,7 @@ public class LocationService {
     ) {
         final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
 
-        if (msgUtils.isBearer(authHeader))
+        if (msgUtils.isNotBearer(authHeader))
             return msgUtils.error(UNAUTHORIZED, "Bad credentials");
 
         String jwt = authHeader.substring(7);
@@ -127,7 +138,7 @@ public class LocationService {
     ) {
         final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
 
-        if (msgUtils.isBearer(authHeader))
+        if (msgUtils.isNotBearer(authHeader))
             return msgUtils.error(UNAUTHORIZED, "Bad credentials");
 
         String jwt = authHeader.substring(7);

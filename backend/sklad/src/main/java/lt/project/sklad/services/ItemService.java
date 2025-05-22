@@ -1,7 +1,6 @@
 package lt.project.sklad.services;
 
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.RequiredArgsConstructor;
 import lt.project.sklad._security.entities.Token;
 import lt.project.sklad._security.entities.User;
 import lt.project.sklad._security.repositories.UserRepository;
@@ -12,6 +11,7 @@ import lt.project.sklad.entities.*;
 import lt.project.sklad.repositories.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -28,19 +28,40 @@ import static org.springframework.http.HttpStatus.*;
  * @author Maksim Pavlenko
  */
 @Service
-@RequiredArgsConstructor
 public class ItemService {
-    private final ItemRepository itemRepository;
-    private final ItemColumnRepository itemColumnRepository;
-    private final CompanyRepository companyRepository;
-    private final UserRepository userRepository;
-    private final TokenService tokenService;
-    private final MessagingUtils msgUtils;
-    private final ImageRepository imageRepository;
-    private final SupplierRepository supplierRepository;
-    private final LocationRepository locationRepository;
+    private ItemRepository itemRepository;
+    private ItemColumnRepository itemColumnRepository;
+    private CompanyRepository companyRepository;
+    private UserRepository userRepository;
+    private TokenService tokenService;
+    private MessagingUtils msgUtils;
+    private ImageRepository imageRepository;
+    private SupplierRepository supplierRepository;
+    private LocationRepository locationRepository;
 
-    private static Logger logger = LoggerFactory.getLogger(ItemService.class);
+    Logger logger = LoggerFactory.getLogger(ItemService.class);
+
+    @Autowired
+    public ItemService(
+            ItemRepository itemRepository,
+            ItemColumnRepository itemColumnRepository,
+            CompanyRepository companyRepository,
+            UserRepository userRepository, TokenService tokenService,
+            MessagingUtils msgUtils,
+            ImageRepository imageRepository,
+            SupplierRepository supplierRepository,
+            LocationRepository locationRepository
+    ) {
+        this.itemRepository = itemRepository;
+        this.itemColumnRepository = itemColumnRepository;
+        this.companyRepository = companyRepository;
+        this.userRepository = userRepository;
+        this.tokenService = tokenService;
+        this.msgUtils = msgUtils;
+        this.imageRepository = imageRepository;
+        this.supplierRepository = supplierRepository;
+        this.locationRepository = locationRepository;
+    }
 
     @Transactional
     public ResponseEntity<?> createItem(
@@ -51,7 +72,7 @@ public class ItemService {
         // Authorization
         String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
 
-        if (msgUtils.isBearer(authHeader))
+        if (msgUtils.isNotBearer(authHeader))
             return msgUtils.error(UNAUTHORIZED, "Bad credentials");
 
         String jwt = authHeader.substring(7);
@@ -120,7 +141,7 @@ public class ItemService {
 
         String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
 
-        if (msgUtils.isBearer(authHeader))
+        if (msgUtils.isNotBearer(authHeader))
             return msgUtils.error(UNAUTHORIZED, "Bad credentials");
 
         String jwt = authHeader.substring(7);
@@ -158,7 +179,7 @@ public class ItemService {
 
         String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
 
-        if (msgUtils.isBearer(authHeader))
+        if (msgUtils.isNotBearer(authHeader))
             return msgUtils.error(UNAUTHORIZED, "Bad credentials");
 
         String jwt = authHeader.substring(7);
@@ -297,7 +318,7 @@ public class ItemService {
     ) {
         String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
 
-        if (msgUtils.isBearer(authHeader))
+        if (msgUtils.isNotBearer(authHeader))
             return msgUtils.error(UNAUTHORIZED, "Bad credentials");
 
         String jwt = authHeader.substring(7);
@@ -334,7 +355,7 @@ public class ItemService {
     ) {
         String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
 
-        if (msgUtils.isBearer(authHeader))
+        if (msgUtils.isNotBearer(authHeader))
             return msgUtils.error(UNAUTHORIZED, "Bad credentials");
 
         String jwt = authHeader.substring(7);
@@ -397,7 +418,7 @@ public class ItemService {
     ) {
         String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
 
-        if (msgUtils.isBearer(authHeader))
+        if (msgUtils.isNotBearer(authHeader))
             return msgUtils.error(UNAUTHORIZED, "Bad credentials");
 
         String jwt = authHeader.substring(7);
@@ -452,7 +473,7 @@ public class ItemService {
     ) {
         String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
 
-        if (msgUtils.isBearer(authHeader))
+        if (msgUtils.isNotBearer(authHeader))
             return msgUtils.error(UNAUTHORIZED, "Bad credentials");
 
         String jwt = authHeader.substring(7);
@@ -512,7 +533,7 @@ public class ItemService {
     ) {
         String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
 
-        if (msgUtils.isBearer(authHeader))
+        if (msgUtils.isNotBearer(authHeader))
             return msgUtils.error(UNAUTHORIZED, "Bad credentials");
 
         String jwt = authHeader.substring(7);
@@ -572,7 +593,7 @@ public class ItemService {
     ) {
         String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
 
-        if (msgUtils.isBearer(authHeader))
+        if (msgUtils.isNotBearer(authHeader))
             return msgUtils.error(UNAUTHORIZED, "Bad credentials");
 
         String jwt = authHeader.substring(7);

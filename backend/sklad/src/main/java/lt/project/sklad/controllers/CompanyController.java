@@ -3,10 +3,10 @@ package lt.project.sklad.controllers;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
-import lombok.RequiredArgsConstructor;
 import lt.project.sklad.dto_request.CompanyDTO;
 import lt.project.sklad.entities.Company;
 import lt.project.sklad.services.CompanyService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartException;
@@ -14,11 +14,16 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/rest/v1/secret/company")
-@RequiredArgsConstructor
 public class CompanyController {
-    private final CompanyService companyService;
+    private CompanyService companyService;
+
+    @Autowired
+    public CompanyController(CompanyService companyService) {
+        this.companyService = companyService;
+    }
 
     @PostMapping
+    //@PreAuthorize("")
     public ResponseEntity<?> createCompany(
             @Valid @RequestBody Company company,
             HttpServletRequest request

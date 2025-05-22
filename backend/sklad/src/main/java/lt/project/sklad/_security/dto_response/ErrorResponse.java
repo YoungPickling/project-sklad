@@ -20,4 +20,12 @@ import lombok.NoArgsConstructor;
 public class ErrorResponse implements AbstractResponse {
     private Integer status; // http status code
     private String error; // error message
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public String getError() {
+        return error;
+    }
 }

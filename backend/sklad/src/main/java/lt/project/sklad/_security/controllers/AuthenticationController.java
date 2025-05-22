@@ -17,6 +17,7 @@ import lt.project.sklad._security.dto_request.RegisterRequest;
 import lt.project.sklad._security.dto_response.*;
 import lt.project.sklad._security.services.AuthenticationService;
 import lt.project.sklad._security.services.HttpResponseService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -47,10 +48,14 @@ import static org.springframework.http.HttpStatus.CREATED;
  */
 @RestController
 @RequestMapping("/api/rest/v1/secret/auth")
-@RequiredArgsConstructor
 public class AuthenticationController {
-    private final AuthenticationService authService;
-    private final HttpResponseService responseService;
+    private AuthenticationService authService;
+    private HttpResponseService responseService;
+
+    public AuthenticationController(AuthenticationService authService, HttpResponseService responseService) {
+        this.authService = authService;
+        this.responseService = responseService;
+    }
 
     /**
      * Handles user registration by processing a {@link RegisterRequest}.

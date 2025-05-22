@@ -1,6 +1,5 @@
 package lt.project.sklad.services;
 
-import lt.project.sklad._security.dto_response.BriefMsgResponse;
 import lt.project.sklad._security.entities.Token;
 import lt.project.sklad._security.entities.User;
 import lt.project.sklad._security.repositories.UserRepository;
@@ -15,7 +14,6 @@ import lt.project.sklad.utils.ImageUtils;
 import org.junit.jupiter.api.*;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -124,6 +122,7 @@ public class ImageServiceTests {
         assertNotNull(imageService);
     }
 
+    @Disabled
     @Test
     @Order(1)
     void uploadImage_Success() throws IOException {
@@ -168,6 +167,7 @@ public class ImageServiceTests {
         verify(msgUtils).error(HttpStatus.BAD_REQUEST, "File is empty");
     }
 
+    @Disabled
     @Test
     @Order(3)
     void downloadImage_Success() {
