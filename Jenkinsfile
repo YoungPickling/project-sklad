@@ -1,48 +1,65 @@
 pipeline {
   agent any
 
+  environment {
+    IMAGE_NAME_F = 'scalepilot-front-img'
+    CONTAINER_NAME_F = 'scalepilot-front'
+    APP_PORT_F = '8072'
+    CONTAINER_PORT_F = '80'
+    IMAGE_NAME_B = 'scalepilot-back-img'
+    CONTAINER_NAME_B = 'scalepilot-back'
+    APP_PORT_B = '8082'
+    CONTAINER_PORT_B = '8082'
+  }
+
   stages {
 
-     stage('Build') {
-         steps {
-             echo 'Building..'
-			 sh """
-              docker build -t scalepilot-front ./frontend/sklad
+    stage('Build') {
+        steps {
+            sh """
+              if docker images | grep -q ${IMAGE_NAME_F}; then
+                  docker rmi -f ${IMAGE_NAME_F} || true
+              fi
+            """
+
+            sh """
+              docker build -t ${IMAGE_NAME_F} ./frontend/sklad
+            """
+
+            sh """
+              if docker images | grep -q ${IMAGE_NAME_B}; then
+                  docker rmi -f ${IMAGE_NAME_B} || true
+              fi
             """
 			
             sh """
-              docker build -t scalepilot-back ./backend/sklad
+              docker build -t ${IMAGE_NAME_B} ./backend/sklad
             """
-         }
-     }
-    // stage('Test') {
-    //     steps {
-    //         echo 'Testing..'
-    //     }
-    // }
+        }
+    }
 
     stage('Deploy') {
-        steps {		
-			sh """
-              if docker ps -a | grep -q scalepilot-back; then
-                docker stop scalepilot-back || true
-                docker rm scalepilot-back || true
+        steps {
+            sh """
+              if docker ps -a | grep -q ${CONTAINER_NAME_B}; then
+                docker stop ${CONTAINER_NAME_B} || true
+                docker rm ${CONTAINER_NAME_B} || true
               fi
             """
 
             sh """
-              if docker ps -a | grep -q scalepilot-front; then
-                docker stop scalepilot-front || true
-                docker rm scalepilot-front || true
+              docker run -d --name ${CONTAINER_NAME_B} -p ${APP_PORT_B}:${CONTAINER_PORT_B} --restart=always ${IMAGE_NAME_B}
+            """
+
+            sh """
+              if docker ps -a | grep -q ${CONTAINER_NAME_F}; then
+                docker stop ${CONTAINER_NAME_F} || true
+                docker rm ${CONTAINER_NAME_F} || true
               fi
             """
 
             sh """
-              docker run -d --name scalepilot-front -p 8072:80 --restart=always scalepilot-front
-            """
-
-            sh """
-              docker run -d --name scalepilot-back -p 8082:8082 --restart=always scalepilot-back
+              docker run -d --name ${CONTAINER_NAME_F} -p ${APP_PORT_F}:${CONTAINER_PORT_F} --restart=always ${IMAGE_NAME_F}
             """
         }
     }
