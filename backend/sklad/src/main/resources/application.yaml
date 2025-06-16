@@ -24,7 +24,9 @@ spring:
       enabled: ALWAYS
   config:
     import: optional:secrets.yaml
-
+#  servlet:
+#    multipart:
+#      max-file-size: 10MB
 # ===============================
 #            SERVER
 # ===============================

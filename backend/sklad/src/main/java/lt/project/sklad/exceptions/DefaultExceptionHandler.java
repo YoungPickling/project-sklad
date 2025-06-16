@@ -5,8 +5,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
-import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 /**
@@ -14,7 +14,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
  * in a centralized manner.
  */
 
-//@ControllerAdvice
+@RestControllerAdvice
 public class DefaultExceptionHandler extends ResponseEntityExceptionHandler {
     /**
      * Handles DataNotFoundException and returns a ResponseEntity with a predefined
@@ -26,7 +26,7 @@ public class DefaultExceptionHandler extends ResponseEntityExceptionHandler {
      */
 
     @ExceptionHandler(DataNotFoundException.class)
-    public ResponseEntity<Object> handleDataNotFoundException(final DataNotFoundException exception, final WebRequest request) {
+    public ResponseEntity<Object> handleDataNotFoundException(DataNotFoundException exception, WebRequest request) {
         HttpStatus status = HttpStatus.NOT_FOUND; // status 404
 
         return handleExceptionInternal(
@@ -37,10 +37,25 @@ public class DefaultExceptionHandler extends ResponseEntityExceptionHandler {
                 request);
     }
 
-    @ExceptionHandler(MaxUploadSizeExceededException.class)
-    public String maxUploadSizeExceeded(MaxUploadSizeExceededException e) {
-        return "max file size exceeded";
-    }
+//    @ExceptionHandler(MaxUploadSizeExceededException.class)
+//    public ResponseEntity<String> handleMaxSizeException(MaxUploadSizeExceededException ex) {
+//        return ResponseEntity
+//                .status(HttpStatus.PAYLOAD_TOO_LARGE)
+//                .body("max file size exceeded! Maximum allowed size is 5MB.");
+//    }
+
+//    @ExceptionHandler(MaxUploadSizeExceededException.class)
+//    public ResponseEntity<?> maxUploadSizeExceeded(MaxUploadSizeExceededException exception, WebRequest request) {
+//        HttpStatus status = HttpStatus.NOT_ACCEPTABLE;
+//
+//        return handleExceptionInternal(
+//                exception,
+//                new ErrorResponse(status.value(), exception.getMessage()),
+//                new HttpHeaders(),
+//                status,
+//                request);
+//        //return "max file size exceeded";
+//    }
 
 //    /**
 //     * Handles InputValidationException and returns a ResponseEntity with a predefined
@@ -57,7 +72,7 @@ public class DefaultExceptionHandler extends ResponseEntityExceptionHandler {
 //
 //        return handleExceptionInternal(
 //                exception,
-//                new ErrorModel("invalid characters", status.value()),
+//                new ErrorResponse("invalid characters", status.value()),
 //                new HttpHeaders(),
 //                status,
 //                request);
