@@ -12,7 +12,7 @@ RUN sed -i 's/localhost/192.168.10.250/' /app/src/main/resources/application.yam
 
 RUN rm -rf /root/.m2/repository
 
-FROM eclipse-temurin:17-jre-noble AS prod
+FROM eclipse-temurin:17-jre-noble
 
 WORKDIR /app
 COPY --from=build /app/target/*.jar scalepilot_back.jar

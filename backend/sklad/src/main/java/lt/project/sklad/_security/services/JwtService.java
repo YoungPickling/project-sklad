@@ -35,11 +35,11 @@ public class JwtService {
     private long refreshExpiration;
 
     public JwtService(
-            @Value("${application.security.jwt.secret-key}") String secretKey,
+            //@Value("${application.security.jwt.secret-key}") String secretKey,
             @Value("${application.security.jwt.expiration}") long jwtExpiration,
             @Value("${application.security.jwt.refresh-token.expiration}") long refreshExpiration
     ) {
-        this.secretKey = secretKey;
+        this.secretKey = "86256E326557E632345366A5756575387854262F413F40472B4B4284066B59702357E63326546E5135B32566A6B5970865670657532B4878440475262F4284F4";
         this.jwtExpiration = jwtExpiration;
         this.refreshExpiration = refreshExpiration;
     }
