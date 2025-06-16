@@ -10,7 +10,6 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import lt.project.sklad._security.dto_request.AuthenticationRequest;
 import lt.project.sklad._security.dto_request.ChangePasswordRequest;
 import lt.project.sklad._security.dto_request.RegisterRequest;
@@ -21,12 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 
@@ -49,7 +43,9 @@ import static org.springframework.http.HttpStatus.CREATED;
 @RestController
 @RequestMapping("/api/rest/v1/secret/auth")
 public class AuthenticationController {
+    @Autowired
     private AuthenticationService authService;
+    @Autowired
     private HttpResponseService responseService;
 
     public AuthenticationController(AuthenticationService authService, HttpResponseService responseService) {
