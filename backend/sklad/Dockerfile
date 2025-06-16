@@ -15,8 +15,8 @@ RUN rm -rf /root/.m2/repository
 FROM eclipse-temurin:17-jre-noble AS prod
 
 WORKDIR /app
-COPY --from=build /app/target/*.jar app.jar
+COPY --from=build /app/target/*.jar scalepilot_back.jar
 
 EXPOSE 8082
 
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-jar", "scalepilot_back.jar"]
